@@ -33,8 +33,8 @@ const About = () => {
     },
     {
       icon: BookOpenIcon,
-      title: "Effortless Documentation",
-      description: "Simplify project documentation effortlessly.",
+      title: "Easy Documentation",
+      description: "Easily simplify your project documentation.",
     },
   ];
 
