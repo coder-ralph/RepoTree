@@ -12,7 +12,7 @@ const Header = () => {
           </div>
           <nav>
             <a 
-              href="https://github.com/yourusername/github-project-structure"
+              href="https://github.com/coder-ralph/RepoTree"
               target="_blank"
               rel="noopener noreferrer"
               aria-label='GitHub Repository'
