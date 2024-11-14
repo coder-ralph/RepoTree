@@ -22,7 +22,7 @@ const CookiePolicy = () => {
         
         <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
           <p>
-            This Cookie Policy explains how RepoTree ("we", "us", and "our") uses cookies and similar technologies to recognize you when you visit our website at https://repotree.com ("Website"). It explains what these technologies are and why we use them, as well as your rights to control our use of them.
+            This Cookie Policy explains how RepoTree (&quot;we&quot;, &quot;us&quot;, and &quot;our&quot;) uses cookies and similar technologies to recognize you when you visit our website at https://repotree.com (&quot;Website&quot;). It explains what these technologies are and why we use them, as well as your rights to control our use of them.
           </p>
           
           <h2 className="text-xl font-semibold">What are cookies?</h2>
@@ -32,7 +32,7 @@ const CookiePolicy = () => {
           
           <h2 className="text-xl font-semibold">Why do we use cookies?</h2>
           <p>
-            We use first party and third party cookies for several reasons. Some cookies are required for technical reasons in order for our Website to operate, and we refer to these as "essential" or "strictly necessary" cookies. Other cookies enable us to track and target the interests of our users to enhance the experience on our Website. Third parties serve cookies through our Website for advertising, analytics and other purposes.
+            We use first party and third party cookies for several reasons. Some cookies are required for technical reasons in order for our Website to operate, and we refer to these as &quot;essential&quot; or &quot;strictly necessary&quot; cookies. Other cookies enable us to track and target the interests of our users to enhance the experience on our Website. Third parties serve cookies through our Website for advertising, analytics and other purposes.
           </p>
           
           <h2 className="text-xl font-semibold">How can I control cookies?</h2>
