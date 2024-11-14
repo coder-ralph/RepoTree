@@ -156,11 +156,11 @@ export default function GitHubProjectStructure() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="w-full max-w-5xl mx-auto p-6 md:p-8 bg-gradient-to-br from-blue-50 to-white shadow-xl" id="generator">
+      <Card className="w-full max-w-5xl mx-auto p-1 md:p-8 bg-gradient-to-br from-blue-50 to-white shadow-xl" id="generator">
         <CardHeader>
-          <CardTitle className="text-lg md:text-xl lg:text-2xl font-semibold text-gray-900 flex items-center justify-center gap-2">
+          <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900 flex items-center justify-center gap-2">
             Generate a <span className="text-blue-600">Tree</span>
-            <ListTree className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-blue-600" />
+            <ListTree className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-blue-600" />
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -221,7 +221,7 @@ export default function GitHubProjectStructure() {
                 >
                   <div className="relative">
                     <pre
-                      className={`bg-gray-800 text-green-400 p-10 md:p-8 rounded-lg overflow-x-auto mt-6 whitespace-pre-wrap break-words ${
+                      className={`bg-gray-800 text-green-400 p-6 rounded-lg overflow-x-auto mt-6 whitespace-pre-wrap break-words ${
                         expanded ? 'max-h-[none]' : 'max-h-96'
                       } overflow-y-auto text-sm`}
                     >
