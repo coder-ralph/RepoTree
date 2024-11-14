@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Octokit } from '@octokit/rest'
 import { saveAs } from 'file-saver'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, Download, Github } from 'lucide-react'
+import { Card, CardContent } from "@/components/ui/card"
+import { Loader2, Download, Github, Copy, Check } from 'lucide-react'
 
 // Define types for TreeItem and ValidationError
 interface TreeItem {
@@ -27,6 +28,7 @@ export default function GitHubProjectStructure() {
   const [structure, setStructure] = useState('')
   const [loading, setLoading] = useState(false)
   const [validation, setValidation] = useState<ValidationError>({ message: '', isError: false })
+  const [copied, setCopied] = useState(false)
 
   // Function to validate GitHub repository URL
   const validateUrl = (url: string): boolean => {
@@ -118,66 +120,103 @@ export default function GitHubProjectStructure() {
     return result
   }
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(structure).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
   return (
-    <Card className="w-full max-w-4xl mx-auto p-6 md:p-8" id="generator">
-      <CardHeader>
-        <CardTitle className="text-xl font-bold text-center">
-          Generate Your Repo<span className="text-blue-600 font-bold">Tree</span>
-        </CardTitle>
-        <p className="text-center text-gray-600">
-          Convert GitHub repository structure into a clean ASCII format, perfect for documentation and sharing.
-        </p>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:space-x-4">
-            <Input
-              placeholder="Enter GitHub repository URL"
-              value={repoUrl}
-              onChange={handleUrlChange}
-              className={`flex-grow ${validation.isError ? 'border-red-500' : ''} p-3`}
-            />
-            <Button
-              onClick={fetchProjectStructure}
-              disabled={loading || validation.isError}
-              className="mt-3 sm:mt-0 w-full sm:w-auto flex items-center justify-center py-3 px-4"
-            >
-              {loading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Github className="h-5 w-5" />
-              )}
-              Generate
-            </Button>
-          </div>
-
-          {validation.isError && (
-            <p className="text-red-500 text-sm mt-2">{validation.message}</p>
-          )}
-
-          {structure && (
-            <>
-              <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto mt-6 whitespace-pre-wrap break-words max-h-96 overflow-y-auto">
-                <code>{structure}</code>
-              </pre>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Card className="w-full max-w-5xl mx-auto p-6 md:p-8 bg-gradient-to-br from-blue-50 to-white shadow-xl" id="generator">
+        <CardContent>
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:space-x-4 mt-8">
+              <Input
+                placeholder="Enter GitHub repository URL"
+                value={repoUrl}
+                onChange={handleUrlChange}
+                className={`flex-grow ${validation.isError ? 'border-red-500' : ''} p-3 text-lg`}
+              />
               <Button
-                onClick={() =>
-                  saveAs(
-                    new Blob([`# Directory Structure\n\n\`\`\`\n${structure}\`\`\``], {
-                      type: 'text/markdown;charset=utf-8',
-                    }),
-                    'README.md'
-                  )
-                }
-                className="mt-4 w-full sm:w-auto"
+                onClick={fetchProjectStructure}
+                disabled={loading || validation.isError}
+                className="mt-3 sm:mt-0 w-full sm:w-auto flex items-center justify-center py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white text-lg transition-colors duration-300"
               >
-                <Download className="h-5 w-5" />
-                Download README.md
+                {loading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Github className="h-5 w-5" />
+                )}
+                Generate
               </Button>
-            </>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            </div>
+
+            <AnimatePresence>
+              {validation.isError && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="text-red-500 text-sm mt-2"
+                >
+                  {validation.message}
+                </motion.p>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {structure && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="relative">
+                    <pre className="bg-gray-800 text-green-400 p-6 rounded-lg overflow-x-auto mt-6 whitespace-pre-wrap break-words max-h-96 overflow-y-auto text-sm">
+                      <code>{structure}</code>
+                    </pre>
+                    <div className="absolute top-2 right-2 md:right-6 flex items-center gap-2">
+                      {copied && (
+                        <span className="bg-gray-500 text-white px-2 py-1 rounded-md text-sm animate-slide-in-left">
+                          Copied!
+                        </span>
+                      )}
+                      <Button
+                        onClick={copyToClipboard}
+                        className="bg-gray-700 hover:bg-gray-600 text-white z-10"
+                        size="sm"
+                      >
+                        {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() =>
+                      saveAs(
+                        new Blob([`# Directory Structure\n\n\`\`\`\n${structure}\`\`\``], {
+                          type: 'text/markdown;charset=utf-8',
+                        }),
+                        'README.md'
+                      )
+                    }
+                    className="mt-4 bg-green-600 hover:bg-green-700 text-white transition-colors duration-300"
+                  >
+                    <Download className="h-5 w-5" />
+                    Download README.md
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }

@@ -1,63 +1,83 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FolderTreeIcon, DownloadIcon, BookOpenIcon } from 'lucide-react';
+'use client'
+
+import { motion } from 'framer-motion'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { FolderTreeIcon, DownloadIcon, BookOpenIcon } from 'lucide-react'
 
 interface AboutCardProps {
-  icon: React.ElementType; // Define the icon type
-  title: string;
-  description: string;
+  icon: React.ElementType
+  title: string
+  description: string
+  index: number
 }
 
-const AboutCard = ({ icon: Icon, title, description }: AboutCardProps) => (
-  <Card className="p-4 rounded-lg bg-blue-100 shadow-lg transform hover:scale-105 transition-all duration-200 hover:shadow-xl">
-    <CardHeader className="flex flex-col items-center space-y-4">
-      <Icon className="w-24 h-24 sm:w-16 sm:h-16 text-blue-500" /> 
-      <CardTitle className="font-semibold text-gray-800 text-lg sm:text-lg md:text-xl lg:text-xl">{title}</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <p className="text-gray-600 text-center text-lg sm:text-base md:text-lg lg:text-md">{description}</p>
-    </CardContent>
-  </Card>
-);
+const AboutCard = ({ icon: Icon, title, description, index }: AboutCardProps) => (
+  <motion.div
+    initial={{ opacity: 0, y: 50 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay: index * 0.2 }}
+  >
+    <Card className="p-6 rounded-xl bg-gradient-to-br from-blue-50 to-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+      <CardHeader className="flex flex-col items-center space-y-4">
+        <Icon className="w-16 h-16 text-blue-600" />
+        <CardTitle className="font-bold text-2xl text-gray-800">{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-gray-600 text-center text-lg">{description}</p>
+      </CardContent>
+    </Card>
+  </motion.div>
+)
 
 const About = () => {
   const features = [
     {
       icon: FolderTreeIcon,
       title: "Preview Structure",
-      description: "Enter GitHub repo URL to preview structure.",
+      description: "Enter GitHub repo URL to preview structure instantly.",
     },
     {
       icon: DownloadIcon,
       title: "Quick Download",
-      description: "Download as README.md with one click.",
+      description: "Download as README.md with just one click.",
     },
     {
       icon: BookOpenIcon,
       title: "Easy Documentation",
-      description: "Easily simplify your project documentation.",
+      description: "Simplify your project documentation effortlessly.",
     },
-  ];
+  ]
 
   return (
-    <div className="container mx-auto p-8">
-      <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-center mb-4">
-        Repo<span className="text-blue-600 font-bold">Tree</span>
-      </h2>
-      <p className="text-lg md:text-xl lg:text-2xl text-center mb-8">
-        <span className="text-blue-600 font-bold">Generate, preview,</span> and <span className="text-blue-600 font-bold">download</span> repository structure in seconds.
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {features.map((feature, index) => (
-          <AboutCard
-            key={index}
-            icon={feature.icon}
-            title={feature.title}
-            description={feature.description}
-          />
-        ))}
+    <section id="about" className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            Discover <span className="text-blue-600">RepoTree</span>
+          </h2>
+          <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">
+            Generate, preview, and download your repository structure in seconds.
+          </p>
+        </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <AboutCard
+              key={index}
+              icon={feature.icon}
+              title={feature.title}
+              description={feature.description}
+              index={index}
+            />
+          ))}
+        </div>
       </div>
-    </div>
-  );
-};
+    </section>
+  )
+}
 
-export default About;
+export default About

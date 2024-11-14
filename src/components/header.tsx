@@ -15,7 +15,7 @@ const Header = () => {
               href="https://github.com/coder-ralph/RepoTree"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label='GitHub Repository'
+              aria-label="GitHub Repository"
               className="flex items-center justify-center p-2 rounded-full bg-gray-900 text-white hover:bg-blue-700 transition-colors duration-200 ease-in-out"
             >
               <Github className="h-5 w-5" />
