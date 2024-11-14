@@ -40,10 +40,10 @@ const Hero = ({ onShowRepoTree }: HeroProps) => {
           </p>
           <Button 
             size="lg" 
-            className="bg-blue-600 hover:bg-blue-700 text-white text-xl py-6 px-10 transition-colors duration-300"
+            className="bg-blue-600 hover:bg-blue-700 text-white text-xl py-6 px-10 rounded-full transition-colors duration-300"
             onClick={scrollToRepoStructure}
           >
-            Try RepoTree Now
+            Get Started
           </Button>
         </motion.div>
       </div>

@@ -14,7 +14,7 @@ const ProductShowcase = () => {
             className="lg:w-1/2 mb-10 lg:mb-0"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Simplify Your Repository Structure
+              Simplify Your <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Repository Structure</span>
             </h2>
             <p className="text-xl text-gray-600 mb-8">
               RepoTree provides a clean and intuitive way to visualize your GitHub repository structure. 
