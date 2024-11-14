@@ -221,7 +221,7 @@ export default function GitHubProjectStructure() {
                 >
                   <div className="relative">
                     <pre
-                      className={`bg-gray-800 text-green-400 p-6 rounded-lg overflow-x-auto mt-6 whitespace-pre-wrap break-words ${
+                      className={`bg-gray-800 text-green-400 p-10 md:p-8 rounded-lg overflow-x-auto mt-6 whitespace-pre-wrap break-words ${
                         expanded ? 'max-h-[none]' : 'max-h-96'
                       } overflow-y-auto text-sm`}
                     >
