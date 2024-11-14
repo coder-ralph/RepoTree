@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Octokit } from '@octokit/rest'
 import { saveAs } from 'file-saver'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
-import { Loader2, Download, Github, Copy, Check } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Loader2, Download, Github, Copy, Check, CircleX, ListTree, Expand } from 'lucide-react'
 
 // Define types for TreeItem and ValidationError
 interface TreeItem {
@@ -29,6 +29,8 @@ export default function GitHubProjectStructure() {
   const [loading, setLoading] = useState(false)
   const [validation, setValidation] = useState<ValidationError>({ message: '', isError: false })
   const [copied, setCopied] = useState(false)
+  const [expanded, setExpanded] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Function to validate GitHub repository URL
   const validateUrl = (url: string): boolean => {
@@ -127,6 +129,27 @@ export default function GitHubProjectStructure() {
     })
   }
 
+  // Handle clear input
+  const handleClearInput = () => {
+    setRepoUrl('')
+    if (inputRef.current) {
+      inputRef.current.focus()
+    }
+  }
+
+  // Toggle expand and scroll to RepoStructure
+  const toggleExpand = () => {
+    setExpanded(!expanded);
+
+    if (expanded) {
+      // Scroll to the generator section when collapsing
+      const repoStructureElement = document.getElementById('generator');
+      if (repoStructureElement) {
+        repoStructureElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -134,15 +157,33 @@ export default function GitHubProjectStructure() {
       transition={{ duration: 0.5 }}
     >
       <Card className="w-full max-w-5xl mx-auto p-6 md:p-8 bg-gradient-to-br from-blue-50 to-white shadow-xl" id="generator">
+        <CardHeader>
+          <CardTitle className="text-lg md:text-xl lg:text-2xl font-semibold text-gray-900 flex items-center justify-center gap-2">
+            Generate a <span className="text-blue-600">Tree</span>
+            <ListTree className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-blue-600" />
+          </CardTitle>
+        </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:space-x-4 mt-8">
-              <Input
-                placeholder="Enter GitHub repository URL"
-                value={repoUrl}
-                onChange={handleUrlChange}
-                className={`flex-grow ${validation.isError ? 'border-red-500' : ''} p-3 text-lg`}
-              />
+            <div className="flex flex-col sm:flex-row sm:space-x-4">
+              <div className="relative flex-grow">
+                <Input
+                  placeholder="Enter GitHub repository URL"
+                  value={repoUrl}
+                  onChange={handleUrlChange}
+                  className={`p-3 text-lg ${validation.isError ? 'border-red-500' : ''}`}
+                  ref={inputRef}
+                />
+                {repoUrl && (
+                  <button
+                    onClick={handleClearInput}
+                    className="absolute inset-y-0 right-0 flex items-center justify-center p-2 text-gray-500 hover:text-gray-900"
+                    aria-label="Clear input"
+                  >
+                    <CircleX size={16} strokeWidth={2} />
+                  </button>
+                )}
+              </div>
               <Button
                 onClick={fetchProjectStructure}
                 disabled={loading || validation.isError}
@@ -179,7 +220,11 @@ export default function GitHubProjectStructure() {
                   transition={{ duration: 0.3 }}
                 >
                   <div className="relative">
-                    <pre className="bg-gray-800 text-green-400 p-6 rounded-lg overflow-x-auto mt-6 whitespace-pre-wrap break-words max-h-96 overflow-y-auto text-sm">
+                    <pre
+                      className={`bg-gray-800 text-green-400 p-6 rounded-lg overflow-x-auto mt-6 whitespace-pre-wrap break-words ${
+                        expanded ? 'max-h-[none]' : 'max-h-96'
+                      } overflow-y-auto text-sm`}
+                    >
                       <code>{structure}</code>
                     </pre>
                     <div className="absolute top-2 right-2 md:right-6 flex items-center gap-2">
@@ -193,7 +238,16 @@ export default function GitHubProjectStructure() {
                         className="bg-gray-700 hover:bg-gray-600 text-white z-10"
                         size="sm"
                       >
-                        {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                        {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    <div className="absolute bottom-2 right-2 md:right-6">
+                      <Button
+                        onClick={toggleExpand}
+                        className="bg-gray-700 hover:bg-gray-600 text-white"
+                        size="sm"
+                      >
+                        <Expand className="h-4 w-4 mr-1" /> {expanded ? 'Collapse' : 'Expand'}
                       </Button>
                     </div>
                   </div>
@@ -206,10 +260,10 @@ export default function GitHubProjectStructure() {
                         'README.md'
                       )
                     }
-                    className="mt-4 bg-green-600 hover:bg-green-700 text-white transition-colors duration-300"
+                    className="mt-4 bg-green-600 hover:bg-green-700 text-white"
                   >
-                    <Download className="h-5 w-5" />
-                    Download README.md
+                    <Download className="h-4 w-4" />
+                    Download README
                   </Button>
                 </motion.div>
               )}
