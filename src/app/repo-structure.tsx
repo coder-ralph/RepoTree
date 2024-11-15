@@ -171,7 +171,7 @@ export default function GitHubProjectStructure() {
                   placeholder="Enter GitHub repository URL"
                   value={repoUrl}
                   onChange={handleUrlChange}
-                  className={`p-3 text-lg sm:text-xl md:text-2xl text-black dark:text-black ${validation.isError ? 'border-red-500' : ''}`}
+                  className={`p-3 pr-10 text-lg text-black dark:text-black ${validation.isError ? 'border-red-500' : ''}`}
                   ref={inputRef}
                 />
                 {repoUrl && (
