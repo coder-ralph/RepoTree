@@ -1,24 +1,13 @@
+/** @type {import('tailwindcss').Config} */
+
 import type { Config } from "tailwindcss";
 import svgToDataUri from "mini-svg-data-uri";
 import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette";
 
-function addVariablesForColors({ addBase, theme }: any) {
-  let allColors = flattenColorPalette(theme("colors"));
-  let newVars = Object.fromEntries(
-    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
-  );
-
-  addBase({
-    ":root": newVars,
-  });
-}
-
 export default {
   darkMode: ["class"],
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{ts,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -56,13 +45,6 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        chart: {
-          "1": "hsl(var(--chart-1))",
-          "2": "hsl(var(--chart-2))",
-          "3": "hsl(var(--chart-3))",
-          "4": "hsl(var(--chart-4))",
-          "5": "hsl(var(--chart-5))",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -73,7 +55,6 @@ export default {
   },
   plugins: [
     require("tailwindcss-animate"),
-    addVariablesForColors,
     function ({ matchUtilities, theme }: any) {
       matchUtilities(
         {
