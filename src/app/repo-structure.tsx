@@ -230,7 +230,7 @@ export default function GitHubProjectStructure() {
                     <div className="absolute top-2 right-2 md:right-6 flex items-center gap-2">
                     {copied ? (
                       <Button
-                        className="p-2 text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-500"
+                        className="p-2 text-green-500 dark:text-green-400"
                         aria-label="Copied"
                       >
                         <Check size={16} />
@@ -238,23 +238,26 @@ export default function GitHubProjectStructure() {
                     ) : (
                       <Button
                         onClick={copyToClipboard}
-                        className="p-2 text-white hover:text-gray-300 dark:text-black dark:hover:text-gray-700"
+                        className="p-2 text-white dark:text-gray-400 dark:hover:text-gray-900 bg-transparent border-none"
                         aria-label="Copy to clipboard"
+                        title="Copy to clipboard"
                       >
                         <Copy size={20} />
                       </Button>
                     )}
                       <Button
                         onClick={toggleExpand}
-                        className="p-2 text-white hover:text-gray-300 dark:text-black dark:hover:text-gray-700"
+                        className="p-2 text-white dark:text-gray-400 dark:hover:text-gray-900 bg-transparent border-none"
                         aria-label={expanded ? 'Collapse' : 'Expand'}
+                        title={expanded ? "Collapse" : "Expand"}
                       >
                         <Maximize size={20} />
                       </Button>
                       <Button
                         onClick={() => saveAs(new Blob([`# Directory Structure\n\n\`\`\`\n${structure}\`\`\``], { type: 'text/markdown;charset=utf-8' }), 'README.md')}
-                        className="p-2 text-white hover:text-gray-300 dark:text-black dark:hover:text-gray-700"
+                        className="p-2 text-white dark:text-gray-400 dark:hover:text-gray-900 bg-transparent border-none"
                         aria-label="Download as README.md"
+                        title="Download as README.md"
                       >
                         <Download size={20} />
                       </Button>
