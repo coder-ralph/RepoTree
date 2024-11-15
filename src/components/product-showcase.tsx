@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 
 const ProductShowcase = () => {
   return (
-    <section className="py-20 bg-white overflow-hidden">
+    <section className="py-20 bg-white dark:bg-gray-900 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row items-center">
           <motion.div
@@ -13,10 +13,10 @@ const ProductShowcase = () => {
             transition={{ duration: 0.6 }}
             className="lg:w-1/2 mb-10 lg:mb-0"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
               Simplify Your <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Repository Structure</span>
             </h2>
-            <p className="text-xl text-gray-600 mb-8">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
               RepoTree provides a clean and intuitive way to visualize your GitHub repository structure. 
               Perfect for documentation and easy sharing with your team.
             </p>

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FolderTreeIcon, DownloadIcon, BookOpenIcon } from 'lucide-react'
 
 interface AboutCardProps {
@@ -17,13 +17,13 @@ const AboutCard = ({ icon: Icon, title, description, index }: AboutCardProps) =>
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay: index * 0.2 }}
   >
-    <Card className="p-6 rounded-xl bg-gradient-to-br from-blue-50 to-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+    <Card className="p-6 rounded-xl bg-gradient-to-br from-blue-50 to-white dark:from-gray-800 dark:to-blue-900 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
       <CardHeader className="flex flex-col items-center space-y-4">
         <Icon className="w-16 h-16 text-blue-600" />
-        <CardTitle className="font-bold text-2xl text-gray-800">{title}</CardTitle>
+        <CardTitle className="font-bold text-xl sm:text-2xl md:text-3xl text-gray-800 dark:text-white">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-gray-600 text-center text-lg">{description}</p>
+        <p className="text-gray-600 dark:text-gray-300 text-center text-sm sm:text-base md:text-lg">{description}</p>
       </CardContent>
     </Card>
   </motion.div>
@@ -49,7 +49,7 @@ const About = () => {
   ]
 
   return (
-    <section id="about" className="py-20 bg-gray-50">
+    <section id="about" className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -57,10 +57,10 @@ const About = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
             Discover <span className="text-blue-600">RepoTree</span>
           </h2>
-          <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Generate, preview, and download your repository structure in seconds.
           </p>
         </motion.div>

@@ -1,17 +1,19 @@
-import { Github, FolderTreeIcon } from 'lucide-react';
+import { Github, FolderTreeIcon } from 'lucide-react'
+import ThemeToggle from './theme-toggle'
 
 const Header = () => {
   return (
-    <header className="w-full bg-gray-900 border-b">
+    <header className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <FolderTreeIcon className="h-6 w-6 text-blue-600 mr-2" />
-            <h1 className="text-2xl text-white font-bold">
+            <h1 className="text-xl sm:text-2xl md:text-3xl text-gray-900 dark:text-white font-bold">
               Repo<span className="text-blue-600">Tree</span>
             </h1>
           </div>
-          <nav>
+          <nav className="flex items-center space-x-4">
+            <ThemeToggle />
             <a
               href="https://github.com/coder-ralph/RepoTree"
               target="_blank"
@@ -25,7 +27,7 @@ const Header = () => {
         </div>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

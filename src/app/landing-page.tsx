@@ -32,7 +32,7 @@ export default function LandingPage() {
       <main>
         <Hero onShowRepoTree={handleShowRepoTree} />
         {showRepoTree && (
-          <section className="py-20 bg-gray-50" id="generator">
+          <section className="py-20 bg-gray-50 dark:bg-gray-900 transition-colors duration-300" id="generator">
             <div className="container mx-auto px-4">
               <RepoTree />
             </div>

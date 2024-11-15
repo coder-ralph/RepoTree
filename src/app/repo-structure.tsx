@@ -4,10 +4,10 @@ import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Octokit } from '@octokit/rest'
 import { saveAs } from 'file-saver'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, Download, Github, Copy, Check, CircleX, ListTree, Expand } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Loader2, Download, Github, Copy, Check, CircleX, ListTree, Maximize } from 'lucide-react'
 
 // Define types for TreeItem and ValidationError
 interface TreeItem {
@@ -34,8 +34,8 @@ export default function GitHubProjectStructure() {
 
   // Function to validate GitHub repository URL
   const validateUrl = (url: string): boolean => {
-    const githubUrlPattern = /^https?:\/\/github\.com\/[\w-]+\/[\w.-]+\/?$/
-    return githubUrlPattern.test(url)
+    const githubUrlPattern = /^https?:\/\/github\.com\/[\w-]+\/[\w.-]+\/?$/;
+    return githubUrlPattern.test(url);
   }
 
   // Handle URL input change and validation
@@ -156,7 +156,7 @@ export default function GitHubProjectStructure() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="w-full max-w-5xl mx-auto p-1 md:p-8 bg-gradient-to-br from-blue-50 to-white shadow-xl" id="generator">
+      <Card className="w-full max-w-4xl mx-auto p-1 md:p-8 bg-gradient-to-br from-blue-50 to-white shadow-xl" id="generator">
         <CardHeader>
           <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900 flex items-center justify-center gap-2">
             Generate a <span className="text-blue-600">Tree</span>
@@ -171,7 +171,7 @@ export default function GitHubProjectStructure() {
                   placeholder="Enter GitHub repository URL"
                   value={repoUrl}
                   onChange={handleUrlChange}
-                  className={`p-3 text-lg ${validation.isError ? 'border-red-500' : ''}`}
+                  className={`p-3 text-lg sm:text-xl md:text-2xl text-black dark:text-black ${validation.isError ? 'border-red-500' : ''}`}
                   ref={inputRef}
                 />
                 {repoUrl && (
@@ -221,50 +221,45 @@ export default function GitHubProjectStructure() {
                 >
                   <div className="relative">
                     <pre
-                      className={`bg-gray-800 text-green-400 p-6 rounded-lg overflow-x-auto mt-6 whitespace-pre-wrap break-words ${
+                      className={`bg-gray-800 text-green-400 p-6 rounded-lg overflow-x-auto mt-6 whitespace-pre-wrap break-words text-sm sm:text-base md:text-lg ${
                         expanded ? 'max-h-[none]' : 'max-h-96'
-                      } overflow-y-auto text-sm`}
+                      } overflow-y-auto`}
                     >
                       <code>{structure}</code>
                     </pre>
                     <div className="absolute top-2 right-2 md:right-6 flex items-center gap-2">
-                      {copied && (
-                        <span className="bg-gray-500 text-white px-2 py-1 rounded-md text-sm animate-slide-in-left">
-                          Copied!
-                        </span>
-                      )}
+                    {copied ? (
+                      <Button
+                        className="p-2 text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-500"
+                        aria-label="Copied"
+                      >
+                        <Check size={16} />
+                      </Button>
+                    ) : (
                       <Button
                         onClick={copyToClipboard}
-                        className="bg-gray-700 hover:bg-gray-600 text-white z-10"
-                        size="sm"
+                        className="p-2 text-white hover:text-gray-300 dark:text-black dark:hover:text-gray-700"
+                        aria-label="Copy to clipboard"
                       >
-                        {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                        <Copy size={20} />
                       </Button>
-                    </div>
-                    <div className="absolute bottom-2 right-2 md:right-6">
+                    )}
                       <Button
                         onClick={toggleExpand}
-                        className="bg-gray-700 hover:bg-gray-600 text-white"
-                        size="sm"
+                        className="p-2 text-white hover:text-gray-300 dark:text-black dark:hover:text-gray-700"
+                        aria-label={expanded ? 'Collapse' : 'Expand'}
                       >
-                        <Expand className="h-4 w-4 mr-1" /> {expanded ? 'Collapse' : 'Expand'}
+                        <Maximize size={20} />
+                      </Button>
+                      <Button
+                        onClick={() => saveAs(new Blob([`# Directory Structure\n\n\`\`\`\n${structure}\`\`\``], { type: 'text/markdown;charset=utf-8' }), 'README.md')}
+                        className="p-2 text-white hover:text-gray-300 dark:text-black dark:hover:text-gray-700"
+                        aria-label="Download as README.md"
+                      >
+                        <Download size={20} />
                       </Button>
                     </div>
                   </div>
-                  <Button
-                    onClick={() =>
-                      saveAs(
-                        new Blob([`# Directory Structure\n\n\`\`\`\n${structure}\`\`\``], {
-                          type: 'text/markdown;charset=utf-8',
-                        }),
-                        'README.md'
-                      )
-                    }
-                    className="mt-4 bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    <Download className="h-4 w-4" />
-                    Download README
-                  </Button>
                 </motion.div>
               )}
             </AnimatePresence>

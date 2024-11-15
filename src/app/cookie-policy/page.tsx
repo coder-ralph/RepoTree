@@ -8,11 +8,11 @@ const CookiePolicy = () => {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <Button
           onClick={() => router.back()}
-          className="mb-8 flex items-center text-white"
+          className="mb-8 flex items-center text-white rounded-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-300"
         >
           <ArrowLeft className="h-4 w-4" />
           Go back
@@ -20,7 +20,7 @@ const CookiePolicy = () => {
         
         <h1 className="text-3xl font-bold mb-6">Cookie Policy</h1>
         
-        <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
+        <div className="p-6 space-y-4 transition-colors duration-300">
           <p>
             This Cookie Policy explains how RepoTree (&quot;we&quot;, &quot;us&quot;, and &quot;our&quot;) uses cookies and similar technologies to recognize you when you visit our website at https://repotree.com (&quot;Website&quot;). It explains what these technologies are and why we use them, as well as your rights to control our use of them.
           </p>

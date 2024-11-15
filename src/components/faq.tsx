@@ -20,13 +20,13 @@ const FAQItem = ({ question, answer }: FAQItemProps) => {
   return (
     <motion.div 
       variants={fadeIn} 
-      className="bg-white rounded-lg shadow-md overflow-hidden"
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden"
     >
       <button
         className="w-full text-left p-6 flex justify-between items-center focus:outline-none"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <h4 className="text-xl font-semibold">{question}</h4>
+        <h4 className="text-base sm:text-xl md:text-2xl font-semibold text-gray-900 dark:text-white">{question}</h4>
         {isOpen ? <Minus className="flex-shrink-0 text-blue-600" /> : <Plus className="flex-shrink-0 text-blue-600" />}
       </button>
       <AnimatePresence>
@@ -37,7 +37,7 @@ const FAQItem = ({ question, answer }: FAQItemProps) => {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <p className="px-6 pb-6 text-gray-600">{answer}</p>
+            <p className="px-6 pb-6 text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300">{answer}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -62,9 +62,9 @@ const FAQ = () => {
   ]
 
   return (
-    <section id="faq" className="py-16 md:py-32 bg-gray-50">
+    <section id="faq" className="py-16 md:py-32 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 md:px-20 lg:px-32">
-        <h3 className="text-3xl md:text-4xl font-bold mb-12 text-center">Frequently Asked Questions</h3>
+        <h3 className="text-3xl md:text-4xl font-bold mb-12 text-center text-gray-900 dark:text-white">Frequently Asked Questions</h3>
         <div className="space-y-6 max-w-3xl mx-auto">
           {faqItems.map((item, index) => (
             <FAQItem key={index} question={item.question} answer={item.answer} />
