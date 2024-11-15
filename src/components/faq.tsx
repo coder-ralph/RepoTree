@@ -49,7 +49,7 @@ const FAQ = () => {
   const faqItems = [
     {
       question: "How does RepoTree work?",
-      answer: "RepoTree fetches the structure of your GitHub repository and converts it into a clean ASCII tree format, making it easy to visualize and share."
+      answer: "RepoTree fetches the structure of your GitHub repository and generates it into a clean ASCII tree format, making it easy to visualize and share."
     },
     {
       question: "Is RepoTree free to use?",

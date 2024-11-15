@@ -245,14 +245,6 @@ export default function GitHubProjectStructure() {
                       </Button>
                     )}
                       <Button
-                        onClick={toggleExpand}
-                        className="p-2 text-white dark:text-gray-400 dark:hover:text-gray-900 bg-transparent border-none"
-                        aria-label={expanded ? 'Collapse' : 'Expand'}
-                        title={expanded ? "Collapse" : "Expand"}
-                      >
-                        <Maximize size={20} />
-                      </Button>
-                      <Button
                         onClick={() => saveAs(new Blob([`# Directory Structure\n\n\`\`\`\n${structure}\`\`\``], { type: 'text/markdown;charset=utf-8' }), 'README.md')}
                         className="p-2 text-white dark:text-gray-400 dark:hover:text-gray-900 bg-transparent border-none"
                         aria-label="Download as README.md"
@@ -260,6 +252,16 @@ export default function GitHubProjectStructure() {
                       >
                         <Download size={20} />
                       </Button>
+                    </div>
+                    <div className="absolute bottom-2 right-2 md:right-6">
+                      <Button
+                          onClick={toggleExpand}
+                          className="p-2 text-white dark:text-gray-400 dark:hover:text-gray-900 bg-transparent border-none"
+                          aria-label={expanded ? 'Collapse' : 'Expand'}
+                          title={expanded ? "Collapse" : "Expand"}
+                        >
+                          <Maximize size={20} />
+                        </Button>
                     </div>
                   </div>
                 </motion.div>
