@@ -38,7 +38,7 @@ const Hero = ({ onShowRepoTree }: HeroProps) => {
               Visualize Your <Highlight>GitHub Repos</Highlight>
             </h1>
             <p className="text-xl sm:text-2xl md:text-3xl text-gray-700 dark:text-gray-300 mb-8 sm:mb-10 max-w-3xl mx-auto">
-              Convert any GitHub repository into a clean ASCII tree format in seconds
+              Generate a clean ASCII tree format of any GitHub repository in seconds.
             </p>
             <Button
               size="lg"

@@ -15,7 +15,7 @@ const geistMono = localFont({
 })
 
 export const metadata: Metadata = {
-  title: "RepoTree",
+  title: "RepoTree - ASCII Tree Generator",
   description: "RepoTree is a web app for generating an ASCII tree from a GitHub URL.",
 }
 

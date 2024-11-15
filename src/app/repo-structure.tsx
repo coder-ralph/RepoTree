@@ -7,7 +7,7 @@ import { saveAs } from 'file-saver'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2, Download, Github, Copy, Check, CircleX, ListTree, Maximize } from 'lucide-react'
+import { Loader2, Download, Github, Copy, Check, CircleX, Maximize } from 'lucide-react'
 
 // Define types for TreeItem and ValidationError
 interface TreeItem {
@@ -159,8 +159,7 @@ export default function GitHubProjectStructure() {
       <Card className="w-full max-w-4xl mx-auto p-1 md:p-8 bg-gradient-to-br from-blue-50 to-white shadow-xl" id="generator">
         <CardHeader>
           <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900 flex items-center justify-center gap-2">
-            Generate a <span className="text-blue-600">Tree</span>
-            <ListTree className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-blue-600" />
+            Generate ASCII<span className="text-blue-600">Tree</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
