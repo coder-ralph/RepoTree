@@ -5,13 +5,15 @@ const Footer = () => {
   return (
     <footer className="w-full bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white py-12">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center mb-2">
-              <FolderTreeIcon className="h-6 w-6 text-blue-600 mr-2" />
-              <h4 className="text-xl sm:text-2xl md:text-3xl font-bold">
-                Repo<span className="text-blue-600">Tree</span>
-              </h4>
+              <Link href="/" className="flex items-center space-x-2">
+                <FolderTreeIcon className="h-6 w-6 text-blue-600" />
+                <h4 className="text-xl sm:text-2xl md:text-3xl font-bold">
+                  Repo<span className="text-blue-600">Tree</span>
+                </h4>
+              </Link>
             </div>
             <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300">
               Simplify your GitHub repository visualization.
@@ -35,9 +37,19 @@ const Footer = () => {
                   FAQs
                 </Link>
               </li>
+            </ul>
+          </div>
+          <div>
+            <h5 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Legal</h5>
+            <ul className="space-y-2">
               <li>
-                <Link href="/cookie-policy" className="hover:text-blue-400 transition-colors">
+                <Link href="/legal/cookie-policy" className="hover:text-blue-400 transition-colors">
                   Cookie Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/legal/privacy-policy" className="hover:text-blue-400 transition-colors">
+                  Privacy Policy
                 </Link>
               </li>
             </ul>

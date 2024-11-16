@@ -1,0 +1,29 @@
+/* src/styles/TreeView.css */
+.tree-node {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .tree-node-expanded-0 {
+    padding-left: 0px;
+  }
+  
+  .tree-node-expanded-1 {
+    padding-left: 20px;
+  }
+  
+  .tree-node-expanded-2 {
+    padding-left: 40px;
+  }
+  
+  /* More dynamic depth levels can be added if necessary */
+  
+  .tree-node-file {
+    padding-left: 20px;
+  }
+  
+  .tree-node-name {
+    margin-left: 0.25rem; /* equivalent to 'ml-1' in Tailwind */
+  }
+  
