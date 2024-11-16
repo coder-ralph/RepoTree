@@ -10,9 +10,9 @@ const Footer = () => {
             <div className="flex items-center mb-2">
               <Link href="/" className="flex items-center space-x-2">
                 <FolderTreeIcon className="h-6 w-6 text-blue-600" />
-                <h4 className="text-xl sm:text-2xl md:text-3xl font-bold">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">
                   Repo<span className="text-blue-600">Tree</span>
-                </h4>
+                </h2>
               </Link>
             </div>
             <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300">
@@ -20,7 +20,7 @@ const Footer = () => {
             </p>
           </div>
           <div>
-            <h5 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Quick Links</h5>
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/" className="hover:text-blue-400 transition-colors">
@@ -40,7 +40,7 @@ const Footer = () => {
             </ul>
           </div>
           <div>
-            <h5 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Legal</h5>
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Legal</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/legal/cookie-policy" className="hover:text-blue-400 transition-colors">
@@ -55,7 +55,7 @@ const Footer = () => {
             </ul>
           </div>
           <div>
-            <h5 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Social Links</h5>
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Social Links</h3>
             <div className="flex space-x-4">
               <a
                 href="https://github.com/coder-ralph"

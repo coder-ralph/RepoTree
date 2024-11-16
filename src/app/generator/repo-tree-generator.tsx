@@ -326,8 +326,8 @@ export default function GitHubProjectStructure() {
                   </div>
                 </div>
                 <div className="mt-4 flex justify-end space-x-2">
-                  <Select onValueChange={(value: 'md' | 'txt' | 'json' | 'html') => setDownloadFormat(value)}>
-                    <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800 text-black dark:text-white">
+                  <Select onValueChange={(value: 'md' | 'txt' | 'json' | 'html') => setDownloadFormat(value)} aria-label="Download Format">
+                    <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800 text-black dark:text-white" aria-label="Select download format">
                       <SelectValue placeholder="Select format" />
                     </SelectTrigger>
                     <SelectContent>
@@ -337,8 +337,8 @@ export default function GitHubProjectStructure() {
                       <SelectItem value="html">.html</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button onClick={handleDownload} className="bg-blue-600 hover:bg-blue-700 text-white">
-                    <Download /> Download
+                  <Button onClick={handleDownload} className="bg-blue-600 hover:bg-blue-700 text-white" aria-label="Download file">
+                    <Download aria-hidden="true" /> Download
                   </Button>
                 </div>
               </motion.div>
