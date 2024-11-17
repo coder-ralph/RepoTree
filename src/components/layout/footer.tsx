@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Github, Twitter, Linkedin, FolderTreeIcon } from 'lucide-react';
+import { FolderTreeIcon } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -20,7 +20,7 @@ const Footer = () => {
             </p>
           </div>
           <div>
-            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/docs" className="hover:text-blue-400 transition-colors">
@@ -50,36 +50,18 @@ const Footer = () => {
             </ul>
           </div>
           <div>
-            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Social Links</h3>
-            <div className="flex space-x-4">
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Contribute</h3>
+            <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300">
+              Have a suggestion?{' '}
               <a
-                href="https://github.com/coder-ralph"
+                href="https://github.com/coder-ralph/RepoTree"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="hover:text-blue-400 transition-colors"
+                className="text-blue-600 hover:text-blue-400 transition-colors"
               >
-                <Github className="h-6 w-6" />
+                Contribute to the project!
               </a>
-              <a
-                href="https://x.com/coderralph"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Twitter"
-                className="hover:text-blue-400 transition-colors"
-              >
-                <Twitter className="h-6 w-6" />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/ralphrosael/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="hover:text-blue-400 transition-colors"
-              >
-                <Linkedin className="h-6 w-6" />
-              </a>
-            </div>
+            </p>
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300">
