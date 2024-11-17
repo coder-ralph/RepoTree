@@ -1,18 +1,26 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import LazyVideo from '@/components/lazy-video'
 
 const ProductShowcase = () => {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   return (
     <section className="py-20 bg-white dark:bg-gray-900 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row items-center">
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
             className="lg:w-1/2 mb-10 lg:mb-0"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
@@ -26,7 +34,6 @@ const ProductShowcase = () => {
               Perfect for documentation and easy sharing with your team.
             </p>
 
-            {/* "Try it now" Button */}
             <Link href="/generator">
               <Button
                 size="lg"
@@ -38,16 +45,18 @@ const ProductShowcase = () => {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="lg:w-1/2"
           >
             <div className="rounded-lg shadow-2xl overflow-hidden">
-              <video autoPlay loop muted playsInline className="w-full h-auto">
-                <source src="/video/demo.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              {isClient && (
+                <LazyVideo
+                  src="/video/demo.webm"
+                  className="w-full h-auto"
+                />
+              )}
             </div>
           </motion.div>
         </div>
