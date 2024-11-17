@@ -57,7 +57,7 @@ const Footer = () => {
                 href="https://github.com/coder-ralph/RepoTree"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-400 transition-colors"
+                className="text-blue-700 hover:text-blue-500 transition-colors"
               >
                 Contribute to the project!
               </a>
