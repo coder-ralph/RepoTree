@@ -62,12 +62,6 @@ export default function RepoProjectStructure() {
       return
     }
 
-    const token = repoType === 'github' ? process.env.NEXT_PUBLIC_GITHUB_TOKEN : process.env.NEXT_PUBLIC_GITLAB_TOKEN;
-    if (!token) {
-      setValidation({ message: `${repoType === 'github' ? 'GitHub' : 'GitLab'} token is not set. Please set the appropriate environment variable.`, isError: true })
-      return
-    }
-
     setLoading(true)
     try {
       const tree = await fetchProjectStructure(url, repoType)

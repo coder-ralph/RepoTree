@@ -13,6 +13,7 @@ interface GitLabTreeItem {
   type: 'tree' | 'blob';
 }
 
+// Validate GitHub and GitLab URLs
 export const validateGitHubUrl = (url: string): boolean => {
   const githubUrlPattern = /^https?:\/\/github\.com\/[\w-]+\/[\w.-]+\/?$/;
   return githubUrlPattern.test(url);
@@ -24,15 +25,14 @@ export const validateGitLabUrl = (url: string): boolean => {
 };
 
 const getOctokit = () => {
-  const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
   return new Octokit({
-    auth: token,
     request: {
       fetch: fetch,
     },
   });
 };
 
+// Fetch project structure from GitHub or GitLab
 export const fetchProjectStructure = async (repoUrl: string, repoType: 'github' | 'gitlab'): Promise<TreeItem[]> => {
   if (repoType === 'github') {
     return fetchGitHubProjectStructure(repoUrl);
@@ -81,16 +81,10 @@ const fetchGitHubProjectStructure = async (repoUrl: string): Promise<TreeItem[]>
 
 const fetchGitLabProjectStructure = async (repoUrl: string): Promise<TreeItem[]> => {
   const projectId = encodeURIComponent(repoUrl.split('gitlab.com/')[1]);
-  const token = process.env.NEXT_PUBLIC_GITLAB_TOKEN;
-
-  if (!token) {
-    throw new Error('Missing GitLab token.');
-  }
 
   try {
     const response = await axios.get<GitLabTreeItem[]>(`https://gitlab.com/api/v4/projects/${projectId}/repository/tree`, {
       params: { recursive: true, per_page: 100 },
-      headers: { 'PRIVATE-TOKEN': token },
     });
 
     return response.data.map((item: GitLabTreeItem) => ({
@@ -106,6 +100,7 @@ const fetchGitLabProjectStructure = async (repoUrl: string): Promise<TreeItem[]>
   }
 };
 
+// Generate and build project structure
 export const generateStructure = (tree: TreeItem[]): DirectoryMap => {
   const structureMap: DirectoryMap = new Map();
   tree.forEach((item: TreeItem) => {
