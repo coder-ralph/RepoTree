@@ -13,7 +13,7 @@ A simple tool to visualize GitHub repositories. It helps developers easily explo
 
 ## Usage
 
-1. Visit [RepoTree](https://repotree.vercel.app).
+1. Visit [RepoTree](https://ascii-repotree.vercel.app/).
 2. Enter the GitHub repository URL.
 3. Click on the `Generate` button.
 4. Explore the repository structure.
