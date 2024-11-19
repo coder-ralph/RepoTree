@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { FolderTreeIcon } from 'lucide-react';
 
 const Footer = () => {
@@ -62,6 +63,38 @@ const Footer = () => {
                 Contribute to the project!
               </a>
             </p>
+            <div className="flex space-x-4 mt-2">
+              <a 
+                href='https://hits.seeyoufarm.com'
+                aria-label="View page visit counter"
+                title="Page visit counter by Hits.seeyoufarm.com"
+                className="inline-block"
+              >
+                <Image
+                  src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fcoder-ralph%2FRepoTree&count_bg=%232563EB&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"
+                  alt="Page visit counter"
+                  width={90}
+                  height={20}
+                  unoptimized
+                  className="opacity-50 hover:opacity-100 transition-opacity"
+                />
+              </a>
+              <a 
+                href='https://github.com/coder-ralph/RepoTree/stargazers'
+                aria-label="GitHub Stars"
+                title="Stars on GitHub"
+                className="inline-block"
+              >
+                <Image
+                  src="https://img.shields.io/github/stars/coder-ralph/RepoTree?logo=Github"
+                  alt="GitHub Stars"
+                  width={80}
+                  height={20}
+                  unoptimized
+                  className="opacity-50 hover:opacity-100 transition-opacity"
+                />
+              </a>
+            </div>
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300">
