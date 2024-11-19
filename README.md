@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RepoTree
 
-## Getting Started
+A simple tool to visualize GitHub repositories. It helps developers easily explore and understand their project structures.
 
-First, run the development server:
+## Features
+
+- Clean ASCII view of GitHub repository structure.
+- Interactive tree view for easy navigation.
+- Download options in various formats.
+- Real-time search to find files or folders quickly.
+- Dark and Light themes for better readability.
+- Easy to use and no installation required.
+
+## Usage
+
+1. Visit [RepoTree](https://repotree.vercel.app).
+2. Enter the GitHub repository URL.
+3. Click on the `Generate` button.
+4. Explore the repository structure.
+5. Download the tree in various formats.
+
+### Download Options
+
+- **README**: Download the tree in README format.
+- **Text**: Download the tree in text format.
+- **JSON**: Download the tree in JSON format.
+- **HTML**: Download the tree in HTML format.
+
+## Development
+
+1. Clone the repository:
+
+```bash
+git clone
+```
+
+2. Install the dependencies:
+
+```bash
+npm install
+```
+
+3. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Contributing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Contributions are welcome! Report issues [here](https://github.com/coder-ralph/RepoTree/issues) or submit a pull request [here](https://github.com/coder-ralph/RepoTree/pulls).
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/coder-ralph/RepoTree/blob/main/LICENSE) file for details.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Acknowledgements
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project was inspired by Nathan Friend's [Tree Online](https://gitlab.com/nfriend/tree-online) and [ASCII Tree Generator](https://ascii-tree-generator.com/).
 
-## Deploy on Vercel
+## Support
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+⭐ If you find this project helpful, give it a star!
