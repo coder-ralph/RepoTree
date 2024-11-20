@@ -11,6 +11,7 @@ import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import InteractiveTreeView from '@/components/interactive-tree-view'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { validateGitHubUrl, validateGitLabUrl, fetchProjectStructure, generateStructure, buildStructureString } from '@/lib/repo-tree-utils'
+import AICodeDocumentation from '@/components/ai-code-documentation';
 
 interface ValidationError {
   message: string
@@ -228,6 +229,7 @@ export default function RepoProjectStructure() {
                 onClick={() => handleFetchStructure()}
                 disabled={loading || validation.isError}
                 className="w-full sm:w-auto flex items-center justify-center py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white text-base sm:text-lg transition-colors duration-300"
+                aria-label={`Generate ${repoType === 'github' ? 'GitHub' : 'GitLab'} structure`}
               >
                 {loading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
@@ -344,6 +346,7 @@ export default function RepoProjectStructure() {
                   <Download aria-hidden="true" /> Download
                 </Button>
               </div>
+              <AICodeDocumentation structureMap={structureMap} />
             </div>
           </div>
         </CardContent>
