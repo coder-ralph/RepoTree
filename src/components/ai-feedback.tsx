@@ -3,18 +3,14 @@
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Progress } from "@/components/ui/progress"
 import { Card } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Loader2, FileText } from 'lucide-react'
+import { Loader2, MessageSquare } from 'lucide-react'
 
 type StructureMap = Map<string, StructureMap | { type: 'file' }>
 
 export default function AICodeDocumentation({ structureMap }: { structureMap: StructureMap }) {
   const [isOpen, setIsOpen] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
-  const [progress, setProgress] = useState(0)
   const [generatedDocs, setGeneratedDocs] = useState<string | null>(null)
 
   const generateStructureDocs = (structure: StructureMap, depth: number = 0): string => {
@@ -35,17 +31,22 @@ export default function AICodeDocumentation({ structureMap }: { structureMap: St
 
   const generatePrompt = (structure: StructureMap): string => {
     const structureDocs = generateStructureDocs(structure)
-    return `Project Documentation\n\nFolder Structure:\n\n${structureDocs}`
+    return `Provide 2-3 sentences of feedback on the repository's structure.
+
+Project Structure:
+
+${structureDocs}
+
+Feedback:`
+  }
+
+  const extractFeedback = (response: string): string => {
+    const feedbackIndex = response.indexOf('Feedback:')
+    return feedbackIndex !== -1 ? response.slice(feedbackIndex + 9).trim() : response.trim()
   }
 
   const handleGenerate = async () => {
     setIsGenerating(true)
-    setProgress(0)
-
-    for (let i = 0; i <= 100; i += 10) {
-      setProgress(i)
-      await new Promise(resolve => setTimeout(resolve, 500))
-    }
 
     try {
       const prompt = generatePrompt(structureMap)
@@ -60,83 +61,75 @@ export default function AICodeDocumentation({ structureMap }: { structureMap: St
           parameters: {
             max_length: 8000,
             temperature: 0.9,
-            top_p: 0.8,
-          }
-        })
+            top_p: 0.95,
+          },
+        }),
       })
 
-      if (!response.ok) throw new Error('Failed to generate documentation')
+      if (!response.ok) {
+        throw new Error('Failed to generate feedback')
+      }
 
       const result = await response.json()
-      setGeneratedDocs(result[0].generated_text)
-    } catch (error) {
-      console.error('Error generating documentation:', error)
-      setGeneratedDocs('Error generating documentation. Please try again.')
-    }
 
-    setIsGenerating(false)
+      if (result && result[0]?.generated_text) {
+        const feedback = extractFeedback(result[0].generated_text)
+        setGeneratedDocs(feedback)
+      } else {
+        throw new Error('Invalid response format')
+      }
+    } catch (error) {
+      console.error('Error generating feedback:', error)
+      setGeneratedDocs('Error generating feedback. Please try again.')
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   return (
     <>
       <Button onClick={() => setIsOpen(true)} className="mt-4 w-full md:w-auto">
-        <FileText className="h-4 w-4" /> Generate Documentation
+        <MessageSquare className="h-4 w-4" /> Generate Feedback
       </Button>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[800px] h-[90vh] flex flex-col">
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle>Generate AI Documentation</DialogTitle>
+            <DialogTitle>Generate AI Feedback</DialogTitle>
             <DialogDescription>
-              Create documentation based on your repository structure.
+              Get feedback on your repository structure.
+              <em className="block mt-2">Instructions: First, generate your repository structure, then click Generate Feedback.</em>
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-              <Label htmlFor="documentation-level" className="text-right sm:text-left">
-                Documentation Level
-              </Label>
-              <Select>
-                <SelectTrigger id="documentation-level" className="col-span-3">
-                  <SelectValue placeholder="Select level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="basic">Basic</SelectItem>
-                  <SelectItem value="detailed">Detailed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="flex-grow overflow-hidden">
+          <div className="flex-grow overflow-hidden my-6">
             {isGenerating ? (
               <div className="flex flex-col items-center justify-center h-full space-y-4">
-                <Progress value={progress} className="w-full" />
-                <p className="text-sm text-gray-500">Generating documentation...</p>
+                <Loader2 className="h-6 w-6 animate-spin" />
+                <p className="text-sm text-gray-500">Generating feedback...</p>
               </div>
             ) : generatedDocs ? (
               <div className="h-full overflow-y-auto">
                 <Card>
                   <div className="p-4 h-full overflow-y-auto">
-                    <pre className="text-sm font-mono break-words whitespace-pre-wrap">{generatedDocs}</pre>
+                    <p className="text-sm whitespace-pre-wrap">{generatedDocs}</p>
                   </div>
                 </Card>
               </div>
             ) : null}
           </div>
 
-          <DialogFooter className="mt-4">
+          <DialogFooter>
             <Button onClick={handleGenerate} disabled={isGenerating} className="w-full sm:w-auto">
               {isGenerating ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Generating...
                 </>
-              ) : 'Generate Documentation'}
+              ) : 'Generate'}
             </Button>
           </DialogFooter>
           <p className="mt-4 text-sm text-gray-600">
-            <em>Note: The AI model can make mistakes or miss details. It may also struggle to document large repository structures.</em>
+            <em>Note: This feedback is generated by an AI model and may not always be accurate. Use it as a general guideline.</em>
           </p>
         </DialogContent>
       </Dialog>

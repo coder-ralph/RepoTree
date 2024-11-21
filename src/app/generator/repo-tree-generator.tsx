@@ -11,7 +11,7 @@ import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import InteractiveTreeView from '@/components/interactive-tree-view'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { validateGitHubUrl, validateGitLabUrl, fetchProjectStructure, generateStructure, buildStructureString } from '@/lib/repo-tree-utils'
-import AICodeDocumentation from '@/components/ai-code-documentation';
+import AICodeDocumentation from '@/components/ai-feedback';
 
 interface ValidationError {
   message: string
@@ -199,7 +199,7 @@ export default function RepoProjectStructure() {
           <div className="space-y-6">
             <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
               <Select value={repoType} onValueChange={(value: RepoType) => setRepoType(value)}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-[180px]" aria-label="Repository Type">
                   <SelectValue placeholder="Select repo type" />
                 </SelectTrigger>
                 <SelectContent>
