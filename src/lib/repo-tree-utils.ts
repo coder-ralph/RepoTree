@@ -24,8 +24,11 @@ export const validateGitLabUrl = (url: string): boolean => {
   return gitlabUrlPattern.test(url);
 };
 
+// Initialize Octokit instance
 const getOctokit = () => {
+  const githubToken = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
   return new Octokit({
+    auth: githubToken,
     request: {
       fetch: fetch,
     },
