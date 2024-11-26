@@ -1,33 +1,56 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronDown, File } from 'lucide-react';
+
 import { DirectoryMap } from '@/lib/repo-tree-utils';
+import { TreeCustomizationOptions } from '@/types/tree-customization';
+import { ChevronDown, ChevronRight, File, Folder } from 'lucide-react';
+
 import '@/styles/treeview.css';
 
 interface TreeNodeProps {
   name: string;
   content: DirectoryMap | { type: 'file' };
   depth: number;
+  customizationOptions: TreeCustomizationOptions;
 }
 
-const TreeNode: React.FC<TreeNodeProps> = ({ name, content, depth }) => {
+const TreeNode: React.FC<TreeNodeProps> = ({
+  name,
+  content,
+  depth,
+  customizationOptions,
+}) => {
   const [isExpanded, setIsExpanded] = useState(depth < 2);
 
-  const paddingClass = `tree-node-expanded-${depth}`;
+  const getIndentationClass = () => {
+    return `tree-node-expanded-${depth * 2}`;
+  };
+
+  const getIconComponent = () => {
+    if (!customizationOptions.useIcons) return null;
+    return content instanceof Map ? <Folder size={16} /> : <File size={16} />;
+  };
 
   if (content instanceof Map) {
     return (
       <div>
         <div
-          className={`tree-node ${paddingClass}`}
+          className={`tree-node ${getIndentationClass()}`}
           onClick={() => setIsExpanded(!isExpanded)}
         >
           {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          {getIconComponent()}
           <span className="tree-node-name">{name}</span>
         </div>
         {isExpanded && (
           <div>
             {Array.from(content.entries()).map(([key, value]) => (
-              <TreeNode key={key} name={key} content={value} depth={depth + 1} />
+              <TreeNode
+                key={key}
+                name={key}
+                content={value}
+                depth={depth + 1}
+                customizationOptions={customizationOptions}
+              />
             ))}
           </div>
         )}
@@ -35,8 +58,8 @@ const TreeNode: React.FC<TreeNodeProps> = ({ name, content, depth }) => {
     );
   } else {
     return (
-      <div className={`tree-node tree-node-file ${paddingClass}`}>
-        <File size={16} />
+      <div className={`tree-node tree-node-file ${getIndentationClass()}`}>
+        {getIconComponent()}
         <span className="tree-node-name">{name}</span>
       </div>
     );
@@ -45,13 +68,23 @@ const TreeNode: React.FC<TreeNodeProps> = ({ name, content, depth }) => {
 
 interface InteractiveTreeViewProps {
   structure: DirectoryMap;
+  customizationOptions: TreeCustomizationOptions;
 }
 
-const InteractiveTreeView: React.FC<InteractiveTreeViewProps> = ({ structure }) => {
+const InteractiveTreeView: React.FC<InteractiveTreeViewProps> = ({
+  structure,
+  customizationOptions,
+}) => {
   return (
     <div className="bg-gray-800 text-green-400 p-6 rounded-lg overflow-x-auto mt-6">
       {Array.from(structure.entries()).map(([key, value]) => (
-        <TreeNode key={key} name={key} content={value} depth={0} />
+        <TreeNode
+          key={key}
+          name={key}
+          content={value}
+          depth={0}
+          customizationOptions={customizationOptions}
+        />
       ))}
     </div>
   );

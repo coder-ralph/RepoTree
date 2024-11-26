@@ -1,6 +1,8 @@
-import { Github, FolderTreeIcon } from 'lucide-react'
+import Link from 'next/link';
+
+import { FolderTreeIcon, Github } from 'lucide-react';
+
 import ThemeToggle from '../theme-toggle';
-import Link from 'next/link'
 
 const Header = () => {
   return (
@@ -28,7 +30,7 @@ const Header = () => {
         </div>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

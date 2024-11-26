@@ -1,5 +1,6 @@
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
+
 import { FolderTreeIcon } from 'lucide-react';
 
 const Footer = () => {
@@ -21,37 +22,55 @@ const Footer = () => {
             </p>
           </div>
           <div>
-            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Resources</h3>
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">
+              Quick Links
+            </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/docs" className="hover:text-blue-400 transition-colors">
-                  Docs
+                <Link
+                  href="/about"
+                  className="hover:text-blue-400 transition-colors"
+                >
+                  About
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="hover:text-blue-400 transition-colors">
-                  About
+                <Link
+                  href="/docs"
+                  className="hover:text-blue-400 transition-colors"
+                >
+                  Docs
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Legal</h3>
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">
+              Legal
+            </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/legal/cookie-policy" className="hover:text-blue-400 transition-colors">
+                <Link
+                  href="/legal/cookie-policy"
+                  className="hover:text-blue-400 transition-colors"
+                >
                   Cookie Policy
                 </Link>
               </li>
               <li>
-                <Link href="/legal/privacy-policy" className="hover:text-blue-400 transition-colors">
+                <Link
+                  href="/legal/privacy-policy"
+                  className="hover:text-blue-400 transition-colors"
+                >
                   Privacy Policy
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">Contribute</h3>
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">
+              Contribute
+            </h3>
             <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300">
               Have a suggestion?{' '}
               <a
@@ -64,8 +83,8 @@ const Footer = () => {
               </a>
             </p>
             <div className="flex space-x-4 mt-2">
-              <a 
-                href='https://hits.seeyoufarm.com'
+              <a
+                href="https://hits.seeyoufarm.com"
                 aria-label="View page visit counter"
                 title="Page visit counter by Hits.seeyoufarm.com"
                 className="inline-block"
@@ -79,8 +98,8 @@ const Footer = () => {
                   className="opacity-50 hover:opacity-100 transition-opacity"
                 />
               </a>
-              <a 
-                href='https://github.com/coder-ralph/RepoTree/stargazers'
+              <a
+                href="https://github.com/coder-ralph/RepoTree/stargazers"
                 aria-label="GitHub Stars"
                 title="Stars on GitHub"
                 className="inline-block"
@@ -98,7 +117,9 @@ const Footer = () => {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300">
-          <p>&copy; {new Date().getFullYear()} RepoTree. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} RepoTree. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

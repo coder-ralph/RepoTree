@@ -1,17 +1,19 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import LazyVideo from '@/components/lazy-video'
+import { useEffect, useState } from 'react';
+
+import Link from 'next/link';
+
+import LazyVideo from '@/components/lazy-video';
+import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 
 const ProductShowcase = () => {
-  const [isClient, setIsClient] = useState(false)
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+  }, []);
 
   return (
     <section className="py-20 bg-white dark:bg-gray-900 overflow-hidden">
@@ -30,8 +32,9 @@ const ProductShowcase = () => {
               </span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-              RepoTree provides a clean and intuitive way to visualize your GitHub repository structure.
-              Perfect for documentation and easy sharing with your team.
+              RepoTree provides a clean and intuitive way to visualize your
+              GitHub repository structure. Perfect for documentation and easy
+              sharing with your team.
             </p>
 
             <Link href="/generator">
@@ -52,17 +55,14 @@ const ProductShowcase = () => {
           >
             <div className="rounded-lg shadow-2xl overflow-hidden">
               {isClient && (
-                <LazyVideo
-                  src="/video/demo.webm"
-                  className="w-full h-auto"
-                />
+                <LazyVideo src="/video/demo.webm" className="w-full h-auto" />
               )}
             </div>
           </motion.div>
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default ProductShowcase
+export default ProductShowcase;

@@ -6,7 +6,7 @@ export async function GET() {
     version: 1,
     routes: [
       // microfrontend routes
-      { src: '/microfrontend', dest: 'https://ascii-repotree.vercel.app' }
+      { src: '/microfrontend', dest: 'https://ascii-repotree.vercel.app' },
     ],
   };
 

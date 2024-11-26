@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import Header from '@/components/layout/header'
-import Footer from '@/components/layout/footer'
-import RepoTree from '@/app/generator/repo-tree-generator'
+import RepoTree from '@/app/generator/repo-tree-generator';
+import Footer from '@/components/layout/footer';
+import Header from '@/components/layout/header';
 
 export default function RepoStructurePage() {
   return (
@@ -15,5 +15,5 @@ export default function RepoStructurePage() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }

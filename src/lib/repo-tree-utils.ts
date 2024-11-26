@@ -1,3 +1,4 @@
+import { TreeCustomizationOptions } from '@/types/tree-customization';
 import { Octokit } from '@octokit/rest';
 import axios from 'axios';
 
@@ -36,7 +37,10 @@ const getOctokit = () => {
 };
 
 // Fetch project structure from GitHub or GitLab
-export const fetchProjectStructure = async (repoUrl: string, repoType: 'github' | 'gitlab'): Promise<TreeItem[]> => {
+export const fetchProjectStructure = async (
+  repoUrl: string,
+  repoType: 'github' | 'gitlab',
+): Promise<TreeItem[]> => {
   if (repoType === 'github') {
     return fetchGitHubProjectStructure(repoUrl);
   } else {
@@ -44,7 +48,9 @@ export const fetchProjectStructure = async (repoUrl: string, repoType: 'github' 
   }
 };
 
-const fetchGitHubProjectStructure = async (repoUrl: string): Promise<TreeItem[]> => {
+const fetchGitHubProjectStructure = async (
+  repoUrl: string,
+): Promise<TreeItem[]> => {
   const [owner, repo] = repoUrl.split('/').slice(-2);
   const octokit = getOctokit();
 
@@ -76,19 +82,28 @@ const fetchGitHubProjectStructure = async (repoUrl: string): Promise<TreeItem[]>
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error('Error fetching GitHub project structure:', error);
-      throw new Error(`Failed to fetch GitHub repository structure: ${error.message}`);
+      throw new Error(
+        `Failed to fetch GitHub repository structure: ${error.message}`,
+      );
     }
-    throw new Error('An unknown error occurred while fetching GitHub project structure');
+    throw new Error(
+      'An unknown error occurred while fetching GitHub project structure',
+    );
   }
 };
 
-const fetchGitLabProjectStructure = async (repoUrl: string): Promise<TreeItem[]> => {
+const fetchGitLabProjectStructure = async (
+  repoUrl: string,
+): Promise<TreeItem[]> => {
   const projectId = encodeURIComponent(repoUrl.split('gitlab.com/')[1]);
 
   try {
-    const response = await axios.get<GitLabTreeItem[]>(`https://gitlab.com/api/v4/projects/${projectId}/repository/tree`, {
-      params: { recursive: true, per_page: 100 },
-    });
+    const response = await axios.get<GitLabTreeItem[]>(
+      `https://gitlab.com/api/v4/projects/${projectId}/repository/tree`,
+      {
+        params: { recursive: true, per_page: 100 },
+      },
+    );
 
     return response.data.map((item: GitLabTreeItem) => ({
       path: item.path,
@@ -97,9 +112,13 @@ const fetchGitLabProjectStructure = async (repoUrl: string): Promise<TreeItem[]>
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       console.error('Error fetching GitLab project structure:', error);
-      throw new Error(`Failed to fetch GitLab repository structure: ${error.message}`);
+      throw new Error(
+        `Failed to fetch GitLab repository structure: ${error.message}`,
+      );
     }
-    throw new Error('An unknown error occurred while fetching GitLab project structure');
+    throw new Error(
+      'An unknown error occurred while fetching GitLab project structure',
+    );
   }
 };
 
@@ -122,7 +141,11 @@ export const generateStructure = (tree: TreeItem[]): DirectoryMap => {
   return structureMap;
 };
 
-export const buildStructureString = (map: DirectoryMap, prefix = ''): string => {
+export const buildStructureString = (
+  map: DirectoryMap,
+  prefix = '',
+  options: TreeCustomizationOptions,
+): string => {
   let result = '';
   const entries = Array.from(map.entries());
   const lastIndex = entries.length - 1;
@@ -130,14 +153,44 @@ export const buildStructureString = (map: DirectoryMap, prefix = ''): string => 
   entries.forEach(([key, value], index) => {
     if (key === 'type') return;
     const isLast = index === lastIndex;
-    const connector = isLast ? '└── ' : '├── ';
-    const childPrefix = isLast ? '    ' : '│   ';
-    
-    result += `${prefix}${connector}${key}\n`;
+    const connector = getConnector(isLast, options.asciiStyle);
+    const childPrefix = getChildPrefix(isLast, options.asciiStyle);
+    const icon = options.useIcons ? getIcon(value instanceof Map) : '';
+
+    result += `${prefix}${connector}${icon}${key}\n`;
     if (value instanceof Map) {
-      result += buildStructureString(value, `${prefix}${childPrefix}`);
+      result += buildStructureString(value, `${prefix}${childPrefix}`, options);
     }
   });
-  
+
   return result;
+};
+
+const getConnector = (isLast: boolean, asciiStyle: string): string => {
+  switch (asciiStyle) {
+    case 'basic':
+      return isLast ? '└── ' : '├── ';
+    case 'detailed':
+      return isLast ? '└─── ' : '├─── ';
+    case 'minimal':
+      return '  ';
+    default:
+      return isLast ? '└── ' : '├── ';
+  }
+};
+
+const getChildPrefix = (isLast: boolean, asciiStyle: string): string => {
+  switch (asciiStyle) {
+    case 'basic':
+    case 'detailed':
+      return isLast ? '    ' : '│   ';
+    case 'minimal':
+      return '  ';
+    default:
+      return isLast ? '    ' : '│   ';
+  }
+};
+
+const getIcon = (isDirectory: boolean): string => {
+  return isDirectory ? '📂 ' : '📄 ';
 };

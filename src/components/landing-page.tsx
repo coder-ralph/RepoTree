@@ -1,24 +1,25 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
-import { useAnimation } from 'framer-motion'
-import { useInView } from 'react-intersection-observer'
-import Header from '@/components/layout/header'
-import Hero from '@/components/hero'
-import About from '@/components/about'
-import ProductShowcase from '@/components/product-showcase'
-import FAQ from '@/components/faq'
-import Footer from '@/components/layout/footer'
+import { useEffect } from 'react';
+
+import About from '@/components/about';
+import FAQ from '@/components/faq';
+import Hero from '@/components/hero';
+import Footer from '@/components/layout/footer';
+import Header from '@/components/layout/header';
+import ProductShowcase from '@/components/product-showcase';
+import { useAnimation } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 
 export default function LandingPage() {
-  const controls = useAnimation()
-  const [, inView] = useInView()
+  const controls = useAnimation();
+  const [, inView] = useInView();
 
   useEffect(() => {
     if (inView) {
-      controls.start('visible')
+      controls.start('visible');
     }
-  }, [controls, inView])
+  }, [controls, inView]);
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
@@ -31,5 +32,5 @@ export default function LandingPage() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }

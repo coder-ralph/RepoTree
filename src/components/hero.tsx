@@ -1,14 +1,16 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { HeroHighlight, Highlight } from './hero-highlight'
-import Link from 'next/link'
+import Link from 'next/link';
+
+import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+
+import { HeroHighlight, Highlight } from './hero-highlight';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
-}
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+};
 
 const Hero = () => {
   return (
@@ -25,7 +27,8 @@ const Hero = () => {
               Visualize Your <Highlight>GitHub Repos</Highlight>
             </h1>
             <p className="text-xl sm:text-2xl md:text-3xl text-gray-700 dark:text-gray-300 mb-8 sm:mb-10 max-w-3xl mx-auto">
-              Generate a clean ASCII tree format of any GitHub repository in seconds.
+              Generate a clean ASCII tree format of any GitHub repository in
+              seconds.
             </p>
             <Link href="/generator">
               <Button
@@ -39,7 +42,7 @@ const Hero = () => {
         </div>
       </section>
     </HeroHighlight>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;

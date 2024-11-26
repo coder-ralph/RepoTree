@@ -1,163 +1,240 @@
-'use client'
+'use client';
 
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { saveAs } from 'file-saver'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2, Download, Github, Copy, Check, CircleX, Maximize, Search, GitlabIcon as GitLab } from 'lucide-react'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import InteractiveTreeView from '@/components/interactive-tree-view'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { validateGitHubUrl, validateGitLabUrl, fetchProjectStructure, generateStructure, buildStructureString } from '@/lib/repo-tree-utils'
-import AICodeDocumentation from '@/components/ai-feedback';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import AIFeedback from '@/components/ai-feedback';
+import InteractiveTreeView from '@/components/interactive-tree-view';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  buildStructureString,
+  fetchProjectStructure,
+  generateStructure,
+  validateGitHubUrl,
+  validateGitLabUrl,
+} from '@/lib/repo-tree-utils';
+import { TreeCustomizationOptions } from '@/types/tree-customization';
+import { saveAs } from 'file-saver';
+import {
+  Check,
+  CircleX,
+  Copy,
+  Download,
+  Github,
+  GitlabIcon as GitLab,
+  Loader2,
+  Maximize,
+  Minimize,
+  Search,
+  Settings,
+} from 'lucide-react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+import CustomizationOptions from './customization-options';
 
 interface ValidationError {
-  message: string
-  isError: boolean
+  message: string;
+  isError: boolean;
 }
 
-type DirectoryMap = Map<string, DirectoryMap | { type: "file" }>
+type DirectoryMap = Map<string, DirectoryMap | { type: 'file' }>;
 
-type RepoType = 'github' | 'gitlab'
+type RepoType = 'github' | 'gitlab';
 
 export default function RepoProjectStructure() {
-  const [repoUrl, setRepoUrl] = useState('')
-  const [repoType, setRepoType] = useState<RepoType>('github')
-  const [structureMap, setStructureMap] = useState<DirectoryMap>(new Map())
-  const [loading, setLoading] = useState(false)
-  const [validation, setValidation] = useState<ValidationError>({ message: '', isError: false })
-  const [copied, setCopied] = useState(false)
-  const [expanded, setExpanded] = useState(false)
-  const [viewMode, setViewMode] = useState<'ascii' | 'interactive'>('ascii')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [downloadFormat, setDownloadFormat] = useState<'md' | 'txt' | 'json' | 'html'>('md')
-  const inputRef = useRef<HTMLInputElement>(null)
-  const treeRef = useRef<HTMLDivElement>(null)
+  const [repoUrl, setRepoUrl] = useState('');
+  const [repoType, setRepoType] = useState<RepoType>('github');
+  const [structureMap, setStructureMap] = useState<DirectoryMap>(new Map());
+  const [loading, setLoading] = useState(false);
+  const [validation, setValidation] = useState<ValidationError>({
+    message: '',
+    isError: false,
+  });
+  const [copied, setCopied] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [viewMode, setViewMode] = useState<'ascii' | 'interactive'>('ascii');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [downloadFormat, setDownloadFormat] = useState<
+    'md' | 'txt' | 'json' | 'html'
+  >('md');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const treeRef = useRef<HTMLDivElement>(null);
 
-  const handleUrlChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const url = e.target.value
-    setRepoUrl(url)
-    localStorage.setItem('lastRepoUrl', url)
+  const [customizationOptions, setCustomizationOptions] =
+    useState<TreeCustomizationOptions>({
+      asciiStyle: 'basic',
+      useIcons: false,
+      showLineNumbers: false,
+    });
 
-    if (!url) {
-      setValidation({ message: 'Repository URL is required', isError: true })
-    } else if (repoType === 'github' && !validateGitHubUrl(url)) {
-      setValidation({ message: 'Enter a valid GitHub URL', isError: true })
-    } else if (repoType === 'gitlab' && !validateGitLabUrl(url)) {
-      setValidation({ message: 'Enter a valid GitLab URL', isError: true })
-    } else {
-      setValidation({ message: '', isError: false })
-    }
-  }, [repoType])
+  const handleUrlChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const url = e.target.value;
+      setRepoUrl(url);
+      localStorage.setItem('lastRepoUrl', url);
 
-  const handleFetchStructure = useCallback(async (url: string = repoUrl) => {
-    if (!url) {
-      setValidation({ message: 'Repository URL is required', isError: true })
-      return
-    }
-
-    if ((repoType === 'github' && !validateGitHubUrl(url)) || (repoType === 'gitlab' && !validateGitLabUrl(url))) {
-      setValidation({ message: `Enter a valid ${repoType === 'github' ? 'GitHub' : 'GitLab'} URL`, isError: true })
-      return
-    }
-
-    setLoading(true)
-    try {
-      const tree = await fetchProjectStructure(url, repoType)
-      const map = generateStructure(tree)
-      setStructureMap(map)
-      setValidation({ message: '', isError: false })
-      localStorage.setItem('lastRepoUrl', url)
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        console.error(err)
-        setValidation({ 
-          message: `Failed to fetch structure: ${err.message}`, 
-          isError: true 
-        })
+      if (!url) {
+        setValidation({ message: 'Repository URL is required', isError: true });
+      } else if (repoType === 'github' && !validateGitHubUrl(url)) {
+        setValidation({ message: 'Enter a valid GitHub URL', isError: true });
+      } else if (repoType === 'gitlab' && !validateGitLabUrl(url)) {
+        setValidation({ message: 'Enter a valid GitLab URL', isError: true });
       } else {
-        console.error('An unknown error occurred:', err)
-        setValidation({ 
-          message: 'Failed to fetch structure', 
-          isError: true 
-        })
+        setValidation({ message: '', isError: false });
       }
-    }
-    setLoading(false)
-  }, [repoUrl, repoType])
+    },
+    [repoType],
+  );
+
+  const handleFetchStructure = useCallback(
+    async (url: string = repoUrl) => {
+      if (!url) {
+        setValidation({ message: 'Repository URL is required', isError: true });
+        return;
+      }
+
+      if (
+        (repoType === 'github' && !validateGitHubUrl(url)) ||
+        (repoType === 'gitlab' && !validateGitLabUrl(url))
+      ) {
+        setValidation({
+          message: `Enter a valid ${repoType === 'github' ? 'GitHub' : 'GitLab'} URL`,
+          isError: true,
+        });
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const tree = await fetchProjectStructure(url, repoType);
+        const map = generateStructure(tree);
+        setStructureMap(map);
+        setValidation({ message: '', isError: false });
+        localStorage.setItem('lastRepoUrl', url);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.error(err);
+          setValidation({
+            message: `Failed to fetch structure: ${err.message}`,
+            isError: true,
+          });
+        } else {
+          console.error('An unknown error occurred:', err);
+          setValidation({
+            message: 'Failed to fetch structure',
+            isError: true,
+          });
+        }
+      }
+      setLoading(false);
+    },
+    [repoUrl, repoType],
+  );
 
   useEffect(() => {
-    const savedUrl = localStorage.getItem('lastRepoUrl')
+    const savedUrl = localStorage.getItem('lastRepoUrl');
     if (savedUrl) {
-      setRepoUrl(savedUrl)
+      setRepoUrl(savedUrl);
     }
-  }, [])
+  }, []);
 
-  const filterStructure = useCallback((map: DirectoryMap, term: string): DirectoryMap => {
-    const filteredMap: DirectoryMap = new Map()
-    
-    for (const [key, value] of map.entries()) {
-      if (value && typeof value === 'object' && 'type' in value && value.type === 'file') {
-        if (key.toLowerCase().includes(term.toLowerCase())) {
-          filteredMap.set(key, value)
-        }
-      } else if (value instanceof Map) {
-        const filteredSubMap = filterStructure(value, term)
-        if (filteredSubMap.size > 0 || key.toLowerCase().includes(term.toLowerCase())) {
-          filteredMap.set(key, filteredSubMap)
+  const filterStructure = useCallback(
+    (map: DirectoryMap, term: string): DirectoryMap => {
+      const filteredMap: DirectoryMap = new Map();
+
+      for (const [key, value] of map.entries()) {
+        if (
+          value &&
+          typeof value === 'object' &&
+          'type' in value &&
+          value.type === 'file'
+        ) {
+          if (key.toLowerCase().includes(term.toLowerCase())) {
+            filteredMap.set(key, value);
+          }
+        } else if (value instanceof Map) {
+          const filteredSubMap = filterStructure(value, term);
+          if (
+            filteredSubMap.size > 0 ||
+            key.toLowerCase().includes(term.toLowerCase())
+          ) {
+            filteredMap.set(key, filteredSubMap);
+          }
         }
       }
-    }
-    
-    return filteredMap
-  }, [])
 
-  const filteredStructureMap = useMemo(() => filterStructure(structureMap, searchTerm), [filterStructure, structureMap, searchTerm])
-  const filteredStructure = useMemo(() => buildStructureString(filteredStructureMap), [filteredStructureMap])
+      return filteredMap;
+    },
+    [],
+  );
+
+  const filteredStructureMap = useMemo(
+    () => filterStructure(structureMap, searchTerm),
+    [filterStructure, structureMap, searchTerm],
+  );
+
+  const customizedStructure = useMemo(
+    () => buildStructureString(filteredStructureMap, '', customizationOptions),
+    [filteredStructureMap, customizationOptions],
+  );
 
   const copyToClipboard = useCallback(() => {
-    navigator.clipboard.writeText(filteredStructure).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    })
-  }, [filteredStructure])
+    navigator.clipboard.writeText(customizedStructure).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }, [customizedStructure]);
 
   const handleClearInput = useCallback(() => {
-    setRepoUrl('')
-    localStorage.removeItem('lastRepoUrl')
-    setStructureMap(new Map())
+    setRepoUrl('');
+    localStorage.removeItem('lastRepoUrl');
+    setStructureMap(new Map());
     if (inputRef.current) {
-      inputRef.current.focus()
+      inputRef.current.focus();
     }
-  }, [])
+  }, []);
 
   const toggleExpand = useCallback(() => {
-    setExpanded(prev => !prev)
-  }, [])
+    setExpanded((prev) => !prev);
+  }, []);
 
   const handleDownload = useCallback(() => {
-    let content: string
-    let mimeType: string
-    let fileName: string
+    let content: string;
+    let mimeType: string;
+    let fileName: string;
 
     switch (downloadFormat) {
       case 'md':
-        content = `# Directory Structure\n\n\`\`\`\n${filteredStructure}\`\`\``
-        mimeType = 'text/markdown;charset=utf-8'
-        fileName = 'README.md'
-        break
+        content = `# Directory Structure\n\n\`\`\`\n${customizedStructure}\`\`\``;
+        mimeType = 'text/markdown;charset=utf-8';
+        fileName = 'README.md';
+        break;
       case 'txt':
-        content = filteredStructure
-        mimeType = 'text/plain;charset=utf-8'
-        fileName = 'directory-structure.txt'
-        break
+        content = customizedStructure;
+        mimeType = 'text/plain;charset=utf-8';
+        fileName = 'directory-structure.txt';
+        break;
       case 'json':
-        content = JSON.stringify(Array.from(filteredStructureMap), null, 2)
-        mimeType = 'application/json;charset=utf-8'
-        fileName = 'directory-structure.json'
-        break
+        content = JSON.stringify(Array.from(filteredStructureMap), null, 2);
+        mimeType = 'application/json;charset=utf-8';
+        fileName = 'directory-structure.json';
+        break;
       case 'html':
         content = `
           <!DOCTYPE html>
@@ -170,26 +247,39 @@ export default function RepoProjectStructure() {
               body { font-family: monospace; white-space: pre; }
             </style>
           </head>
-          <body>${filteredStructure}</body>
+          <body>${customizedStructure}</body>
           </html>
-        `
-        mimeType = 'text/html;charset=utf-8'
-        fileName = 'directory-structure.html'
-        break
+        `;
+        mimeType = 'text/html;charset=utf-8';
+        fileName = 'directory-structure.html';
+        break;
     }
 
-    saveAs(new Blob([content], { type: mimeType }), fileName)
-  }, [downloadFormat, filteredStructure, filteredStructureMap])
+    saveAs(new Blob([content], { type: mimeType }), fileName);
+  }, [downloadFormat, customizedStructure, filteredStructureMap]);
 
-  const noStructureMessage = `No structure generated yet. Enter a ${repoType === 'github' ? 'GitHub' : 'GitLab'} URL and click Generate.`
-  const noResultsMessage = useCallback((searchTerm: string) => 
-    `No files or folders found matching "${searchTerm}".\n\nTips:\n- Check the spelling\n- Try searching for partial names\n- Include file extensions (.js, .ts, .json)`,
-    []
-  )
+  const handleCustomizationChange = (
+    newOptions: Partial<TreeCustomizationOptions>,
+  ) => {
+    setCustomizationOptions((prevOptions: TreeCustomizationOptions) => ({
+      ...prevOptions,
+      ...newOptions,
+    }));
+  };
+
+  const noStructureMessage = `No structure generated yet. Enter a ${repoType === 'github' ? 'GitHub' : 'GitLab'} URL and click Generate.`;
+  const noResultsMessage = useCallback(
+    (searchTerm: string) =>
+      `No files or folders found matching "${searchTerm}".\n\nTips:\n- Check the spelling\n- Try searching for partial names\n- Include file extensions (.js, .ts, .json)`,
+    [],
+  );
 
   return (
     <div>
-      <Card className="w-full max-w-4xl mx-auto p-2 md:p-8 bg-gradient-to-br from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-xl" id="generator">
+      <Card
+        className="w-full max-w-4xl mx-auto p-2 md:p-8 bg-gradient-to-br from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-xl"
+        id="generator"
+      >
         <CardHeader>
           <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-semibold text-black dark:text-white flex items-center justify-center gap-2">
             Generate <span className="text-blue-600">Structure</span>
@@ -198,8 +288,14 @@ export default function RepoProjectStructure() {
         <CardContent>
           <div className="space-y-6">
             <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
-              <Select value={repoType} onValueChange={(value: RepoType) => setRepoType(value)}>
-                <SelectTrigger className="w-[180px]" aria-label="Repository Type">
+              <Select
+                value={repoType}
+                onValueChange={(value: RepoType) => setRepoType(value)}
+              >
+                <SelectTrigger
+                  className="w-[180px]"
+                  aria-label="Repository Type"
+                >
                   <SelectValue placeholder="Select repo type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -232,7 +328,10 @@ export default function RepoProjectStructure() {
                 aria-label={`Generate ${repoType === 'github' ? 'GitHub' : 'GitLab'} structure`}
               >
                 {loading ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <Loader2
+                    className="h-5 w-5 
+animate-spin"
+                  />
                 ) : repoType === 'github' ? (
                   <Github className="h-5 w-5" />
                 ) : (
@@ -243,14 +342,12 @@ export default function RepoProjectStructure() {
             </div>
 
             {validation.isError && (
-              <p className="text-red-500 text-sm mt-2">
-                {validation.message}
-              </p>
+              <p className="text-red-500 text-sm mt-2">{validation.message}</p>
             )}
 
             <div>
               <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:justify-between mb-4">
-                <div className="flex space-x-2">
+                <div className="flex space-x-2 items-center">
                   <Button
                     onClick={() => setViewMode('ascii')}
                     className={`${viewMode === 'ascii' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200'}`}
@@ -263,6 +360,26 @@ export default function RepoProjectStructure() {
                   >
                     Interactive
                   </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="icon">
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>ASCII Themes</DialogTitle>
+                        <p className="text-sm text-muted-foreground">
+                          Customize your ASCII theme preferences to match your
+                          style.
+                        </p>
+                      </DialogHeader>
+                      <CustomizationOptions
+                        options={customizationOptions}
+                        onChange={handleCustomizationChange}
+                      />
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 <div className="relative w-full sm:w-auto">
                   <Input
@@ -272,7 +389,10 @@ export default function RepoProjectStructure() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-8 w-full"
                   />
-                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                  <Search
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={16}
+                  />
                 </div>
               </div>
               <div className="relative" ref={treeRef}>
@@ -281,27 +401,32 @@ export default function RepoProjectStructure() {
                     language="plaintext"
                     style={atomDark}
                     className={`rounded-lg overflow-x-auto mt-6 ${expanded ? 'max-h-[none]' : 'max-h-96'} overflow-y-auto min-h-[200px]`}
+                    showLineNumbers={customizationOptions.showLineNumbers}
+                    wrapLines={true}
                   >
-                    {filteredStructure
-                      ? filteredStructure
+                    {customizedStructure
+                      ? customizedStructure
                       : searchTerm
+                        ? noResultsMessage(searchTerm)
+                        : noStructureMessage}
+                  </SyntaxHighlighter>
+                ) : filteredStructureMap.size > 0 ? (
+                  <InteractiveTreeView
+                    structure={filteredStructureMap}
+                    customizationOptions={customizationOptions}
+                  />
+                ) : (
+                  <SyntaxHighlighter
+                    language="plaintext"
+                    style={atomDark}
+                    className="rounded-lg overflow-x-auto mt-6 max-h-96 overflow-y-auto min-h-[200px]"
+                  >
+                    {searchTerm
                       ? noResultsMessage(searchTerm)
                       : noStructureMessage}
                   </SyntaxHighlighter>
-                ) : (
-                  filteredStructureMap.size > 0 ? (
-                    <InteractiveTreeView structure={filteredStructureMap} />
-                  ) : (
-                    <SyntaxHighlighter
-                      language="plaintext"
-                      style={atomDark}
-                      className="rounded-lg overflow-x-auto mt-6 max-h-96 overflow-y-auto min-h-[200px]"
-                    >
-                      {searchTerm ? noResultsMessage(searchTerm) : noStructureMessage}
-                    </SyntaxHighlighter>
-                  )
                 )}
-                
+
                 <div className="absolute top-2 right-2 md:right-6 flex items-center gap-2">
                   {copied ? (
                     <Button
@@ -324,15 +449,23 @@ export default function RepoProjectStructure() {
                     onClick={toggleExpand}
                     className="p-2 text-white dark:text-gray-400 dark:hover:text-gray-900 bg-transparent border-none"
                     aria-label={expanded ? 'Collapse' : 'Expand'}
-                    title={expanded ? "Collapse" : "Expand"}
+                    title={expanded ? 'Collapse' : 'Expand'}
                   >
-                    <Maximize size={20} />
+                    {expanded ? <Minimize size={20} /> : <Maximize size={20} />}
                   </Button>
                 </div>
               </div>
               <div className="mt-4 flex justify-end space-x-2">
-                <Select onValueChange={(value: 'md' | 'txt' | 'json' | 'html') => setDownloadFormat(value)} aria-label="Download Format">
-                  <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800 text-black dark:text-white" aria-label="Select download format">
+                <Select
+                  onValueChange={(value: 'md' | 'txt' | 'json' | 'html') =>
+                    setDownloadFormat(value)
+                  }
+                  aria-label="Download Format"
+                >
+                  <SelectTrigger
+                    className="w-[180px] bg-white dark:bg-gray-800 text-black dark:text-white"
+                    aria-label="Select download format"
+                  >
                     <SelectValue placeholder="Select format" />
                   </SelectTrigger>
                   <SelectContent>
@@ -342,15 +475,19 @@ export default function RepoProjectStructure() {
                     <SelectItem value="html">.html</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button onClick={handleDownload} className="bg-blue-600 hover:bg-blue-700 text-white" aria-label="Download file">
+                <Button
+                  onClick={handleDownload}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  aria-label="Download file"
+                >
                   <Download aria-hidden="true" /> Download
                 </Button>
               </div>
-              <AICodeDocumentation structureMap={structureMap} />
+              <AIFeedback structureMap={structureMap} />
             </div>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
