@@ -24,6 +24,7 @@ export default function AIFeedback({
   const [isOpen, setIsOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedDocs, setGeneratedDocs] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const generateStructureDocs = (
     structure: StructureMap,
@@ -46,61 +47,50 @@ export default function AIFeedback({
 
   const generatePrompt = (structure: StructureMap): string => {
     const structureDocs = generateStructureDocs(structure);
-    return `As an expert software architect, provide a 2-3 sentence feedback on the repository structure. 
+    return `You are an expert software architect. Analyze this repository structure and provide concise, actionable feedback on:
+1. Code organization and modularity.
+2. Best practices or areas for improvement.
+3. Architectural concerns, if any.
     
 Project Structure:
-
+    
 ${structureDocs}
-
-Feedback:`;
-  };
-
-  const extractFeedback = (response: string): string => {
-    const feedbackIndex = response.indexOf('Feedback:');
-    return feedbackIndex !== -1
-      ? response.slice(feedbackIndex + 9).trim()
-      : response.trim();
+    
+Provide your feedback in a structured format, using bullet points or numbered lists. Keep your response practical and to the point, limited to 2-3 sentences.`;  
   };
 
   const handleGenerate = async () => {
+    // Reset previous states
     setIsGenerating(true);
+    setGeneratedDocs(null);
+    setError(null);
 
     try {
       const prompt = generatePrompt(structureMap);
-      const response = await fetch(
-        'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-1.5B-Instruct',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_HUGGINGFACE_API_KEY}`,
-          },
-          body: JSON.stringify({
-            inputs: prompt,
-            parameters: {
-              max_length: 12000,
-              temperature: 0.9,
-              top_p: 0.95,
-            },
-          }),
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify({ prompt }),
+      });
+
+      const responseData = await response.json();
 
       if (!response.ok) {
-        throw new Error('Failed to generate feedback');
+        throw new Error(responseData.error || 'Failed to generate feedback');
       }
 
-      const result = await response.json();
-
-      if (result && result[0]?.generated_text) {
-        const feedback = extractFeedback(result[0].generated_text);
-        setGeneratedDocs(feedback);
-      } else {
-        throw new Error('Invalid response format');
-      }
+      setGeneratedDocs(responseData.feedback);
     } catch (error) {
       console.error('Error generating feedback:', error);
-      setGeneratedDocs('Error generating feedback. Please try again.');
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'An unexpected error occurred';
+      
+      setError(errorMessage);
+      setGeneratedDocs(null);
     } finally {
       setIsGenerating(false);
     }
@@ -109,18 +99,14 @@ Feedback:`;
   return (
     <>
       <Button onClick={() => setIsOpen(true)} className="mt-4 w-full md:w-auto">
-        <MessageSquare className="h-4 w-4" /> Generate Feedback
+        <MessageSquare className="h-4 w-4 mr-2" /> Generate Feedback
       </Button>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[800px] max-h-[90vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle>Generate AI Feedback</DialogTitle>
+            <DialogTitle>AI Repository Analysis</DialogTitle>
             <DialogDescription>
-              Get feedback on your repository structure.
-              <em className="block mt-2">
-                Instructions: First, generate your repository structure, then
-                click Generate Feedback.
-              </em>
+              Get expert feedback on your repository structure and organization using Gemini AI.
             </DialogDescription>
           </DialogHeader>
 
@@ -128,19 +114,26 @@ Feedback:`;
             {isGenerating ? (
               <div className="flex flex-col items-center justify-center h-full space-y-4">
                 <Loader2 className="h-6 w-6 animate-spin" />
-                <p className="text-sm text-gray-500">Generating feedback...</p>
+                <p className="text-sm text-gray-500">Analyzing repository structure...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center text-red-500">
+                <p>Error: {error}</p>
+                <p className="text-sm text-gray-500 mt-2">Please try again or check your API setup.</p>
               </div>
             ) : generatedDocs ? (
               <div className="h-full overflow-y-auto">
                 <Card>
                   <div className="p-4 h-full overflow-y-auto">
-                    <p className="text-sm whitespace-pre-wrap">
-                      {generatedDocs}
-                    </p>
+                    <p className="text-sm whitespace-pre-wrap">{generatedDocs}</p>
                   </div>
                 </Card>
               </div>
-            ) : null}
+            ) : (
+              <div className="text-center text-gray-500">
+                Click Generate to analyze your repository structure
+              </div>
+            )}
           </div>
 
           <DialogFooter>
@@ -151,18 +144,17 @@ Feedback:`;
             >
               {isGenerating ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Generating...
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Analyzing...
                 </>
               ) : (
-                'Generate'
+                'Generate Analysis'
               )}
             </Button>
           </DialogFooter>
           <p className="mt-4 text-sm text-gray-600">
             <em>
-              Note: This feedback is generated by an AI model and may not always
-              be accurate. Use it as a general guideline.
+              Note: This feedback is AI-generated and meant as a general guide.
             </em>
           </p>
         </DialogContent>

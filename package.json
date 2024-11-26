@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@octokit/rest": "^21.0.2",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-form": "^0.1.0",
