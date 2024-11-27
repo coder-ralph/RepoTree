@@ -76,12 +76,20 @@ export default function RepoProjectStructure() {
   const inputRef = useRef<HTMLInputElement>(null);
   const treeRef = useRef<HTMLDivElement>(null);
 
-  const [customizationOptions, setCustomizationOptions] =
-    useState<TreeCustomizationOptions>({
-      asciiStyle: 'basic',
-      useIcons: false,
-      showLineNumbers: false,
-    });
+  const [customizationOptions, setCustomizationOptions] = useState<TreeCustomizationOptions>(() => {
+    const savedOptions = localStorage.getItem('customizationOptions');
+    return savedOptions
+      ? JSON.parse(savedOptions)
+      : {
+          asciiStyle: 'basic',
+          useIcons: false,
+          showLineNumbers: false,
+        };
+  });
+
+  useEffect(() => {
+    localStorage.setItem('customizationOptions', JSON.stringify(customizationOptions));
+  }, [customizationOptions]);
 
   const handleUrlChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -258,14 +266,13 @@ export default function RepoProjectStructure() {
     saveAs(new Blob([content], { type: mimeType }), fileName);
   }, [downloadFormat, customizedStructure, filteredStructureMap]);
 
-  const handleCustomizationChange = (
-    newOptions: Partial<TreeCustomizationOptions>,
-  ) => {
-    setCustomizationOptions((prevOptions: TreeCustomizationOptions) => ({
-      ...prevOptions,
-      ...newOptions,
-    }));
-  };
+  const handleCustomizationChange = useCallback((newOptions: Partial<TreeCustomizationOptions>) => {
+    setCustomizationOptions((prevOptions) => {
+      const updatedOptions = { ...prevOptions, ...newOptions };
+      localStorage.setItem('customizationOptions', JSON.stringify(updatedOptions));
+      return updatedOptions;
+    });
+  }, []);
 
   const noStructureMessage = `No structure generated yet. Enter a ${repoType === 'github' ? 'GitHub' : 'GitLab'} URL and click Generate.`;
   const noResultsMessage = useCallback(
