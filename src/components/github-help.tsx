@@ -11,8 +11,13 @@ export default function GitHubHelp() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="flex items-center gap-2 bg-transparent">
-          <HelpCircle className="h-4 w-4" />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center gap-2 px-3 py-2 rounded-full bg-blue-900 text-white hover:bg-blue-700 transition-colors duration-200 ease-in-out"
+          aria-label="Help"
+        >
+          <HelpCircle className="h-5 w-5" />
           Help
         </Button>
       </DialogTrigger>

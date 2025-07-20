@@ -5,7 +5,6 @@ import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import AIFeedback from "@/components/ai-feedback"
-import GitHubHelp from "@/components/github-help"
 import InteractiveTreeView from "@/components/interactive-tree-view"
 import PrivateReposDialog from "@/components/private-repos-dialog"
 import { RepoGraphs } from "@/components/repo-graphs"
@@ -315,7 +314,6 @@ export default function RepoProjectStructure() {
               {repoType === "github" && (
                 <div className="flex items-center gap-2">
                   <PrivateReposDialog />
-                  <GitHubHelp />
                   {hasPrivateToken && (
                     <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded">
                       <Unlock className="h-3 w-3" />
