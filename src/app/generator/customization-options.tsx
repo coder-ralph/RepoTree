@@ -1,34 +1,25 @@
-import React from 'react';
+"use client"
 
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { TreeCustomizationOptions } from '@/types/tree-customization';
+import type React from "react"
+
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
+import type { TreeCustomizationOptions } from "@/types/tree-customization"
 
 interface CustomizationOptionsProps {
-  options: TreeCustomizationOptions;
-  onChange: (newOptions: Partial<TreeCustomizationOptions>) => void;
+  options: TreeCustomizationOptions
+  onChange: (newOptions: Partial<TreeCustomizationOptions>) => void
 }
 
-const CustomizationOptions: React.FC<CustomizationOptionsProps> = ({
-  options,
-  onChange,
-}) => {
+const CustomizationOptions: React.FC<CustomizationOptionsProps> = ({ options, onChange }) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Label htmlFor="ascii-style">ASCII Style</Label>
         <Select
           value={options.asciiStyle}
-          onValueChange={(value) =>
-            onChange({ asciiStyle: value as 'basic' | 'detailed' | 'minimal' })
-          }
+          onValueChange={(value) => onChange({ asciiStyle: value as "basic" | "detailed" | "minimal" })}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select ASCII style" />
@@ -46,7 +37,7 @@ const CustomizationOptions: React.FC<CustomizationOptionsProps> = ({
         <Switch
           id="use-icons"
           checked={options.useIcons}
-          onCheckedChange={(checked) => onChange({ useIcons: checked })}
+          onCheckedChange={(checked: boolean) => onChange({ useIcons: checked })}
         />
       </div>
 
@@ -55,11 +46,11 @@ const CustomizationOptions: React.FC<CustomizationOptionsProps> = ({
         <Switch
           id="show-line-numbers"
           checked={options.showLineNumbers}
-          onCheckedChange={(checked) => onChange({ showLineNumbers: checked })}
+          onCheckedChange={(checked: boolean) => onChange({ showLineNumbers: checked })}
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CustomizationOptions;
+export default CustomizationOptions
