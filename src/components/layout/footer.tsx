@@ -90,7 +90,7 @@ const Footer = () => {
                 className="inline-block"
               >
                 <Image
-                  src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fcoder-ralph%2FRepoTree&count_bg=%232563EB&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"
+                  src="https://hitscounter.dev/api/hit?url=https%3A%2F%2Fascii-repotree.vercel.app%2Fgenerator&label=Visitors&icon=emoji-sunglasses-fill&color=%230d6efd&message=&style=plastic&tz=UTC"
                   alt="Page visit counter"
                   width={90}
                   height={20}
