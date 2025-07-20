@@ -92,7 +92,7 @@ const Footer = () => {
                 <Image
                   src="https://hitscounter.dev/api/hit?url=https%3A%2F%2Fascii-repotree.vercel.app%2Fgenerator&label=Visitors&icon=emoji-sunglasses-fill&color=%230d6efd&message=&style=plastic&tz=UTC"
                   alt="Page visit counter"
-                  width={90}
+                  width={130}
                   height={20}
                   unoptimized
                   className="opacity-50 hover:opacity-100 transition-opacity"
