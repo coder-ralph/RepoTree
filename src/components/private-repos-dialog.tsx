@@ -46,7 +46,7 @@ export default function PrivateReposDialog() {
           {hasToken ? (
             <>
               <Unlock className="h-4 w-4 text-green-600" />
-              Private Repos
+              Private Repos enabled
             </>
           ) : (
             <>
@@ -56,7 +56,7 @@ export default function PrivateReposDialog() {
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Enter GitHub Personal Access Token</DialogTitle>
         </DialogHeader>

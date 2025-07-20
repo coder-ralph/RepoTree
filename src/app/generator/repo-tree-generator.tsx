@@ -37,7 +37,6 @@ import {
   Minimize,
   Search,
   Settings,
-  Unlock,
 } from "lucide-react"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism"
@@ -314,12 +313,6 @@ export default function RepoProjectStructure() {
               {repoType === "github" && (
                 <div className="flex items-center gap-2">
                   <PrivateReposDialog />
-                  {hasPrivateToken && (
-                    <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded">
-                      <Unlock className="h-3 w-3" />
-                      Private repos enabled
-                    </div>
-                  )}
                 </div>
               )}
               <div className="relative flex-grow">
