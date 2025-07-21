@@ -23,36 +23,26 @@ const PrivacyPolicy = () => {
 
         <div className="p-6 space-y-4 transition-colors duration-300">
           <p>
-            This Privacy Policy explains how RepoTree (&quot;we&quot;,
-            &quot;us&quot;, and &quot;our&quot;) collects, uses, and protects
-            your personal data when you visit our website https://repotree.com
-            (&quot;Website&quot;). It also explains your rights regarding your
-            data.
+            This Privacy Policy outlines RepoTree&apos;s approach to your privacy when using our website (https://ascii-repotree.vercel.app).
           </p>
 
-          <h2 className="text-xl font-semibold">Information We Collect</h2>
+          <h2 className="text-xl font-semibold">No Data Collection</h2>
           <p>
-            We collect information that you provide directly to us, such as when
-            you fill out forms or communicate with us. This may include your
-            name, email address, and any other information you provide.
+            RepoTree does <strong>not collect, store, or share</strong> any personal data. We do not require account creation or authentication, and we do not use cookies or tracking technologies.
           </p>
 
-          <h2 className="text-xl font-semibold">How We Use Your Information</h2>
+          <h2 className="text-xl font-semibold">Third-Party Services</h2>
           <p>
-            We use your information to improve the functionality of our Website
-            and provide a better user experience. We do not sell your personal
-            information to third parties.
+            We may use GitHub&apos;s public APIs to fetch repository data, but this interaction is read-only and does not involve your personal data.
           </p>
 
-          <h2 className="text-xl font-semibold">Data Security</h2>
+          <h2 className="text-xl font-semibold">Security and Transparency</h2>
           <p>
-            We take appropriate security measures to protect your personal
-            information from unauthorized access, alteration, or destruction.
+            Since we do not collect any data, there is no personal information to secure. RepoTree is designed with simplicity and user privacy as a core principle.
           </p>
 
           <p>
-            For any questions regarding your data or this Privacy Policy, please
-            contact us at privacy@repotree.com.
+            If you have any questions about this Privacy Policy, feel free to reach out to us at <a href="mailto:privacy@repotree.com" className="text-blue-500 hover:underline">privacy@repotree.com</a>.
           </p>
         </div>
       </div>
