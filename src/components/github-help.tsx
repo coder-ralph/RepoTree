@@ -17,8 +17,8 @@ export default function GitHubHelp() {
           className="flex items-center gap-2 px-3 py-2 rounded-full bg-blue-900 text-white hover:bg-blue-700 transition-colors duration-200 ease-in-out"
           aria-label="Help"
         >
-          <HelpCircle className="h-5 w-5" />
-          Help
+          <HelpCircle className="h-5 w-5 text-white" />
+          <span className="text-white">Help</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">

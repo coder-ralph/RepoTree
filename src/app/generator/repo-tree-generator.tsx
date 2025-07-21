@@ -32,9 +32,9 @@ import {
   Download,
   Github,
   GitlabIcon as GitLab,
-  Loader2,
   Maximize,
   Minimize,
+  RefreshCw,
   Search,
   Settings,
 } from "lucide-react"
@@ -302,7 +302,7 @@ export default function RepoProjectStructure() {
 
             <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
               <Select value={repoType} onValueChange={(value: RepoType) => setRepoType(value)}>
-                <SelectTrigger className="w-[180px]" aria-label="Repository Type">
+                <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800 text-black dark:text-white border-blue-500" aria-label="Repository Type">
                   <SelectValue placeholder="Select repo type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -320,7 +320,7 @@ export default function RepoProjectStructure() {
                   placeholder={`Enter ${repoType === "github" ? "GitHub" : "GitLab"} repository URL`}
                   value={repoUrl}
                   onChange={handleUrlChange}
-                  className={`p-3 pr-10 text-base sm:text-lg text-black dark:text-white ${validation.isError ? "border-red-500" : ""}`}
+                  className={`p-3 pr-10 text-base sm:text-lg text-black dark:text-white border-blue-500 ${validation.isError ? "border-red-500" : ""}`}
                   ref={inputRef}
                 />
                 {repoUrl && (
@@ -336,17 +336,17 @@ export default function RepoProjectStructure() {
               <Button
                 onClick={() => handleFetchStructure()}
                 disabled={loading || validation.isError}
-                className="w-full sm:w-auto flex items-center justify-center py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white text-base sm:text-lg transition-colors duration-300"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white text-base sm:text-lg transition-colors duration-300"
                 aria-label={`Generate ${repoType === "github" ? "GitHub" : "GitLab"} structure`}
               >
                 {loading ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <RefreshCw className="h-5 w-5 animate-spin" />
                 ) : repoType === "github" ? (
                   <Github className="h-5 w-5" />
                 ) : (
                   <GitLab className="h-5 w-5" />
                 )}
-                Generate
+                {loading ? "Generating..." : "Generate"}
               </Button>
             </div>
 
@@ -390,7 +390,7 @@ export default function RepoProjectStructure() {
                     placeholder="Search files/folders"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-8 w-full"
+                    className="pl-8 w-full border-blue-500"
                   />
                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                 </div>
@@ -453,7 +453,7 @@ export default function RepoProjectStructure() {
                   aria-label="Download Format"
                 >
                   <SelectTrigger
-                    className="w-[180px] bg-white dark:bg-gray-800 text-black dark:text-white"
+                    className="w-[180px] bg-white dark:bg-gray-800 text-black dark:text-white border-blue-500"
                     aria-label="Select download format"
                   >
                     <SelectValue placeholder="Select format" />

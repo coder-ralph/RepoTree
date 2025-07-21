@@ -42,7 +42,7 @@ export default function PrivateReposDialog() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="flex items-center gap-2 bg-transparent">
+        <Button variant="outline" size="sm" className="flex items-center gap-2 bg-white dark:bg-gray-800 text-black dark:text-white border-blue-500">
           {hasToken ? (
             <>
               <Unlock className="h-4 w-4 text-green-600" />
