@@ -157,6 +157,12 @@ export const generateStructure = (tree: TreeItem[]): DirectoryMap => {
 
 export const buildStructureString = (map: DirectoryMap, prefix = "", options: TreeCustomizationOptions): string => {
   let result = ""
+  
+  // Add root directory indicator if enabled
+  if (prefix === "" && options.showRootDirectory) {
+    result += "./\n"
+  }
+
   const entries = Array.from(map.entries())
   const lastIndex = entries.length - 1
 
@@ -165,8 +171,11 @@ export const buildStructureString = (map: DirectoryMap, prefix = "", options: Tr
     const connector = getConnector(isLast, options.asciiStyle)
     const childPrefix = getChildPrefix(isLast, options.asciiStyle)
     const icon = options.useIcons ? getIcon(value instanceof Map) : ""
+    
+    // Add trailing slash for directories if enabled
+    const displayName = (value instanceof Map && options.showTrailingSlash) ? `${key}/` : key
 
-    result += `${prefix}${connector}${icon}${key}\n`
+    result += `${prefix}${connector}${icon}${displayName}\n`
     if (value instanceof Map) {
       result += buildStructureString(value, `${prefix}${childPrefix}`, options)
     }

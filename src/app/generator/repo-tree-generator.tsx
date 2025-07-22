@@ -60,6 +60,44 @@ interface LanguageData {
   percentage: number
 }
 
+// Default customization options
+const DEFAULT_CUSTOMIZATION_OPTIONS: TreeCustomizationOptions = {
+  asciiStyle: "basic",
+  useIcons: false,
+  showLineNumbers: false,
+  showRootDirectory: false,
+  showTrailingSlash: false,
+}
+
+// Load customization options from localStorage
+const loadCustomizationOptions = (): TreeCustomizationOptions => {
+  if (typeof window === "undefined") return DEFAULT_CUSTOMIZATION_OPTIONS
+  
+  try {
+    const saved = localStorage.getItem("treeCustomizationOptions")
+    if (saved) {
+      const parsed = JSON.parse(saved)
+      // Merge with defaults to ensure all properties exist
+      return { ...DEFAULT_CUSTOMIZATION_OPTIONS, ...parsed }
+    }
+  } catch (error) {
+    console.warn("Failed to load customization options from localStorage:", error)
+  }
+  
+  return DEFAULT_CUSTOMIZATION_OPTIONS
+}
+
+// Save customization options to localStorage
+const saveCustomizationOptions = (options: TreeCustomizationOptions): void => {
+  if (typeof window === "undefined") return
+  
+  try {
+    localStorage.setItem("treeCustomizationOptions", JSON.stringify(options))
+  } catch (error) {
+    console.warn("Failed to save customization options to localStorage:", error)
+  }
+}
+
 export default function RepoProjectStructure() {
   const [repoUrl, setRepoUrl] = useState("")
   const [repoType, setRepoType] = useState<RepoType>("github")
@@ -77,11 +115,7 @@ export default function RepoProjectStructure() {
   const inputRef = useRef<HTMLInputElement>(null)
   const treeRef = useRef<HTMLDivElement>(null)
 
-  const [customizationOptions, setCustomizationOptions] = useState<TreeCustomizationOptions>({
-    asciiStyle: "basic",
-    useIcons: false,
-    showLineNumbers: false,
-  })
+  const [customizationOptions, setCustomizationOptions] = useState<TreeCustomizationOptions>(loadCustomizationOptions())
 
   const [fileTypeData, setFileTypeData] = useState<FileTypeData[]>([])
   const [languageData, setLanguageData] = useState<LanguageData[]>([])
@@ -271,10 +305,15 @@ export default function RepoProjectStructure() {
   }, [downloadFormat, customizedStructure, filteredStructureMap])
 
   const handleCustomizationChange = (newOptions: Partial<TreeCustomizationOptions>) => {
-    setCustomizationOptions((prevOptions: TreeCustomizationOptions) => ({
-      ...prevOptions,
-      ...newOptions,
-    }))
+    setCustomizationOptions((prevOptions: TreeCustomizationOptions) => {
+      const updatedOptions = {
+        ...prevOptions,
+        ...newOptions,
+      }
+      // Save to localStorage whenever options change
+      saveCustomizationOptions(updatedOptions)
+      return updatedOptions
+    })
   }
 
   const noStructureMessage = `No structure generated yet. Enter a ${repoType === "github" ? "GitHub" : "GitLab"} URL and click Generate.`
@@ -292,7 +331,7 @@ export default function RepoProjectStructure() {
       >
         <CardHeader>
           <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-semibold text-black dark:text-white flex items-center justify-center gap-2">
-            Generate <span className="text-blue-600">Structure</span>
+            Generate ASCII<span className="text-emerald-600">Tree</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -306,7 +345,7 @@ export default function RepoProjectStructure() {
                   <SelectValue placeholder="Select repo type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="github">GitHub {hasPrivateToken && "(Private Access)"}</SelectItem>
+                  <SelectItem value="github">GitHub {hasPrivateToken && "(Private)"}</SelectItem>
                   <SelectItem value="gitlab">GitLab</SelectItem>
                 </SelectContent>
               </Select>
