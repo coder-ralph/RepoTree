@@ -331,7 +331,7 @@ export default function RepoProjectStructure() {
       >
         <CardHeader>
           <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-semibold text-black dark:text-white flex items-center justify-center gap-2">
-            Generate ASCII<span className="text-emerald-600">Tree</span>
+            Generate ASCII<span className="text-blue-600">Tree</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
