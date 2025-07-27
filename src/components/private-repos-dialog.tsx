@@ -22,11 +22,10 @@ const validateGitHubToken = (token: string): boolean => {
 }
 
 const validateGitLabToken = (token: string): boolean => {
-  // GitLab personal access tokens: glpat- followed by 20 characters
-  // GitLab project access tokens: glpat- followed by 20 characters
-  // GitLab group access tokens: glpat- followed by 20 characters
-  const personalTokenPattern = /^glpat-[A-Za-z0-9_-]{20}$/
-  return personalTokenPattern.test(token)
+  // GitLab personal access tokens: glpat- followed by at least 20 characters
+  // GitLab tokens can be longer than 20 characters (up to 50+ characters)
+  const tokenPattern = /^glpat-[A-Za-z0-9_.-]{20,}$/
+  return tokenPattern.test(token)
 }
 
 export default function PrivateReposDialog({ repoType }: PrivateReposDialogProps) {
@@ -100,9 +99,9 @@ export default function PrivateReposDialog({ repoType }: PrivateReposDialogProps
       return (
         <ul className="list-disc list-inside space-y-1">
           <li>Must have &quot;read_repository&quot; scope for repository access</li>
-          <li>Personal access token format: glpat- followed by 20 characters</li>
+          <li>Personal access token format: glpat- followed by 20+ characters</li>
           <li>Should not expire soon (or set no expiration)</li>
-          <li>Must be exactly 26 characters total (glpat- + 20 chars)</li>
+          <li>Token length varies (typically 26-55+ characters total)</li>
         </ul>
       )
     }
