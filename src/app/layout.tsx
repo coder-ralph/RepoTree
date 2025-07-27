@@ -8,8 +8,12 @@ import '../styles/globals.css';
 
 export const metadata: Metadata = {
   title: 'RepoTree - ASCII Tree Generator',
-  description: 'RepoTree is a web app for generating an ASCII tree from a GitHub URL.',
+  description: 'RepoTree is a web app for generating an ASCII tree from a GitHub or GitLab URL.',
   authors: [{ name: 'Ralph Rosael' }],
+  verification: {
+    // Google Search Console
+    google: 'T1eSo0As2QM6eFiFVR-rfDwCxNa_oMVNVgoSDqZNk4U',
+  },
 };
 
 export default function RootLayout({
