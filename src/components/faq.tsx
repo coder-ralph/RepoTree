@@ -59,17 +59,17 @@ const FAQ = () => {
     {
       question: 'How does RepoTree work?',
       answer:
-        'RepoTree fetches the structure of your GitHub repository and generates it into a clean ASCII tree format, making it easy to visualize and share.',
+        'RepoTree fetches the structure of your GitHub & GitLab repository and generates it into a clean ASCII tree format, making it easy to visualize and share.',
     },
     {
       question: 'Is RepoTree free to use?',
       answer:
-        'Yes, RepoTree is completely free to use for public GitHub repositories.',
+        'Yes, RepoTree is completely free to use for public GitHub & GitLab repositories.',
     },
     {
       question: 'Can I use RepoTree for private repositories?',
       answer:
-        "Yes, RepoTree now supports private GitHub repositories! You can access them by providing a GitHub Personal Access Token (PAT). Your token is securely stored locally in your browser and never sent to any server.",
+        "Yes, RepoTree now supports private GitHub & GitLab repositories! You can access them by providing a GitHub Personal Access Token (PAT). Your token is securely stored locally in your browser and never sent to any server.",
     },
   ];
 

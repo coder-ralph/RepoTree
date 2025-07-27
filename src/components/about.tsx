@@ -43,12 +43,12 @@ const About = () => {
     {
       icon: FolderTreeIcon,
       title: 'Preview Structure',
-      description: 'Enter GitHub repo URL to preview structure instantly.',
+      description: 'Enter a GitHub or GitLab repo URL to instantly preview its structure.',
     },
     {
       icon: DownloadIcon,
       title: 'Quick Download',
-      description: 'Download as README.md with just one click.',
+      description: 'Download in your chosen format with one click.',
     },
     {
       icon: BookOpenIcon,

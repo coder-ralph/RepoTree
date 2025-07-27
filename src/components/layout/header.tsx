@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import { FolderTreeIcon, Github } from 'lucide-react';
 
-import GitHubHelp from "@/components/github-help"
+import RepoHelp from "@/components/repo-help"
 import ThemeToggle from '../theme-toggle';
 
 const Header = () => {
@@ -17,7 +17,7 @@ const Header = () => {
             </h1>
           </Link>
           <nav className="flex items-center space-x-4">
-            <GitHubHelp />
+            <RepoHelp />
             <ThemeToggle />
             <a
               href="https://github.com/coder-ralph/RepoTree"

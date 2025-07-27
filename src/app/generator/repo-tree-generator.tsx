@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import AIFeedback from "@/components/ai-feedback"
+// import AIFeedback from "@/components/ai-feedback"
 import InteractiveTreeView from "@/components/interactive-tree-view"
 import PrivateReposDialog from "@/components/private-repos-dialog"
 import { RepoGraphs } from "@/components/repo-graphs"
@@ -119,7 +119,8 @@ export default function RepoProjectStructure() {
 
   const [fileTypeData, setFileTypeData] = useState<FileTypeData[]>([])
   const [languageData, setLanguageData] = useState<LanguageData[]>([])
-  const [hasPrivateToken, setHasPrivateToken] = useState(false)
+  const [hasGitHubToken, setHasGitHubToken] = useState(false)
+  const [hasGitLabToken, setHasGitLabToken] = useState(false)
 
   const handleUrlChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -194,20 +195,24 @@ export default function RepoProjectStructure() {
   }, [])
 
   useEffect(() => {
-    const checkToken = () => {
-      const token = localStorage.getItem("github_personal_token")
-      setHasPrivateToken(!!token)
+    const checkTokens = () => {
+      const githubToken = localStorage.getItem("github_personal_token")
+      const gitlabToken = localStorage.getItem("gitlab_personal_token")
+      setHasGitHubToken(!!githubToken)
+      setHasGitLabToken(!!gitlabToken)
     }
 
-    checkToken()
+    checkTokens()
 
     const handleTokenUpdate = () => {
-      checkToken()
+      checkTokens()
     }
 
     window.addEventListener("github-token-updated", handleTokenUpdate)
+    window.addEventListener("gitlab-token-updated", handleTokenUpdate)
     return () => {
       window.removeEventListener("github-token-updated", handleTokenUpdate)
+      window.removeEventListener("gitlab-token-updated", handleTokenUpdate)
     }
   }, [])
 
@@ -345,15 +350,13 @@ export default function RepoProjectStructure() {
                   <SelectValue placeholder="Select repo type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="github">GitHub {hasPrivateToken && "(Private)"}</SelectItem>
-                  <SelectItem value="gitlab">GitLab</SelectItem>
+                  <SelectItem value="github">GitHub {hasGitHubToken && "(Private)"}</SelectItem>
+                  <SelectItem value="gitlab">GitLab {hasGitLabToken && "(Private)"}</SelectItem>
                 </SelectContent>
               </Select>
-              {repoType === "github" && (
-                <div className="flex items-center gap-2">
-                  <PrivateReposDialog />
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                <PrivateReposDialog repoType={repoType} />
+              </div>
               <div className="relative flex-grow">
                 <Input
                   placeholder={`Enter ${repoType === "github" ? "GitHub" : "GitLab"} repository URL`}
@@ -518,7 +521,7 @@ export default function RepoProjectStructure() {
                   <RepoGraphs fileTypeData={fileTypeData} languageData={languageData} />
                 </div>
               )}
-              <AIFeedback structureMap={structureMap} />
+              {/* <AIFeedback structureMap={structureMap} /> */}
             </div>
           </div>
         </CardContent>

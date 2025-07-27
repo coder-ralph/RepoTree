@@ -18,7 +18,7 @@ const Footer = () => {
               </Link>
             </div>
             <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300">
-              Simplify your GitHub repository visualization.
+              Simplify visualization of your GitHub or GitLab repos.
             </p>
           </div>
           <div>

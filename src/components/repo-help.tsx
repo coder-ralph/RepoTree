@@ -2,7 +2,13 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { HelpCircle, ExternalLink } from "lucide-react"
 
 export default function GitHubHelp() {
@@ -29,25 +35,36 @@ export default function GitHubHelp() {
           <div>
             <h3 className="font-semibold mb-2">🔓 Public Repositories</h3>
             <p className="text-sm text-muted-foreground mb-2">
-              You can generate structure for any public GitHub repository without authentication:
+              You can generate structure for any public GitHub & GitLab repository without authentication:
             </p>
             <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
-              <li>Simply paste the GitHub repository URL</li>
+              <li>Simply paste the GitHub or GitLab repository URL</li>
               <li>Click &quot;Generate&quot; to fetch the structure</li>
               <li>No token required for public repos</li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-2">🔒 Private Repositories</h3>
+            <h3 className="font-semibold mb-2">🔒 GitHub Private Repositories</h3>
             <p className="text-sm text-muted-foreground mb-2">
-              To access your private repositories, you need a Personal Access Token:
+              To access your private GitHub repositories, you need a GitHub Personal Access Token:
             </p>
             <ol className="text-sm text-muted-foreground list-decimal list-inside space-y-1">
               <li>Go to GitHub Settings → Developer settings → Personal access tokens</li>
               <li>Generate a new token with &quot;repo&quot; scope</li>
-              <li>Click &quot;Private Repos&quot; button and paste your token</li>
-              <li>Your token is stored locally and never shared</li>
+              <li>Click the &quot;Private Repos&quot; button and paste your token</li>
+            </ol>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-2">🔒 GitLab Private Repositories</h3>
+            <p className="text-sm text-muted-foreground mb-2">
+              To access your private GitLab repositories, you need a GitLab Personal Access Token:
+            </p>
+            <ol className="text-sm text-muted-foreground list-decimal list-inside space-y-1">
+              <li>Go to GitLab → Edit Profile → Access Tokens</li>
+              <li>Generate a token with the &quot;read_repository&quot; scope</li>
+              <li>Click the &quot;Private Repos&quot; button and paste your token</li>
             </ol>
           </div>
 
@@ -56,7 +73,7 @@ export default function GitHubHelp() {
             <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
               <li>Your token is stored only in your browser&apos;s localStorage</li>
               <li>Tokens are never sent to our servers</li>
-              <li>All API calls go directly from your browser to GitHub</li>
+              <li>All API calls go directly from your browser to GitHub or GitLab</li>
               <li>You can clear your token anytime</li>
             </ul>
           </div>
@@ -76,9 +93,9 @@ export default function GitHubHelp() {
             </ul>
           </div>
 
-          <div className="pt-4 border-t">
+          <div className="pt-4 border-t space-y-2">
             <p className="text-sm text-muted-foreground">
-              Need help creating a token?{" "}
+              Need help creating a GitHub token?{" "}
               <a
                 href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
                 target="_blank"
@@ -86,6 +103,18 @@ export default function GitHubHelp() {
                 className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1"
               >
                 Follow GitHub&apos;s guide
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Need help creating a GitLab token?{" "}
+              <a
+                href="https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1"
+              >
+                Follow GitLab&apos;s guide
                 <ExternalLink className="h-3 w-3" />
               </a>
             </p>

@@ -33,7 +33,7 @@ const ProductShowcase = () => {
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
               RepoTree provides a clean and intuitive way to visualize your
-              GitHub repository structure. Perfect for documentation and easy
+              GitHub & GitLab repository structure. Perfect for documentation and easy
               sharing with your team.
             </p>
 

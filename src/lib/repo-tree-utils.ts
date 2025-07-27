@@ -46,6 +46,20 @@ const getOctokit = () => {
   })
 }
 
+// Get GitLab token with proper token handling
+const getGitLabToken = (): string | undefined => {
+  // Check for environment variable first
+  let gitlabToken = process.env.NEXT_PUBLIC_GITLAB_TOKEN
+
+  // If no environment token and we're on the client side, check localStorage
+  if (!gitlabToken && typeof window !== "undefined") {
+    const storedToken = localStorage.getItem("gitlab_personal_token")
+    gitlabToken = storedToken || undefined
+  }
+
+  return gitlabToken
+}
+
 // Fetch project structure from GitHub or GitLab
 export const fetchProjectStructure = async (repoUrl: string, repoType: "github" | "gitlab"): Promise<TreeItem[]> => {
   if (repoType === "github") {
@@ -110,12 +124,22 @@ const fetchGitHubProjectStructure = async (repoUrl: string): Promise<TreeItem[]>
 
 const fetchGitLabProjectStructure = async (repoUrl: string): Promise<TreeItem[]> => {
   const projectId = encodeURIComponent(repoUrl.split("gitlab.com/")[1])
+  const gitlabToken = getGitLabToken()
 
   try {
+    const headers: { [key: string]: string } = {}
+    if (gitlabToken) {
+      headers['PRIVATE-TOKEN'] = gitlabToken
+    }
+
     const response = await axios.get<GitLabTreeItem[]>(
       `https://gitlab.com/api/v4/projects/${projectId}/repository/tree`,
       {
-        params: { recursive: true, per_page: 100 },
+        params: { 
+          recursive: true, 
+          per_page: 100 
+        },
+        headers
       },
     )
 
@@ -127,7 +151,17 @@ const fetchGitLabProjectStructure = async (repoUrl: string): Promise<TreeItem[]>
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       console.error("Error fetching GitLab project structure:", error)
-      throw new Error(`Failed to fetch GitLab repository structure: ${error.message}`)
+      
+      // Enhanced error handling for GitLab
+      if (error.response?.status === 404) {
+        throw new Error("Repository not found. Please check the URL and ensure you have access to this repository.")
+      } else if (error.response?.status === 403) {
+        throw new Error("Access denied. You may need a personal access token to access this repository.")
+      } else if (error.response?.status === 401) {
+        throw new Error("Invalid or expired personal access token. Please check your token and try again.")
+      } else {
+        throw new Error(`Failed to fetch GitLab repository structure: ${error.message}`)
+      }
     }
     throw new Error("An unknown error occurred while fetching GitLab project structure")
   }

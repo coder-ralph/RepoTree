@@ -24,25 +24,20 @@ const AboutPage = () => {
 
         <div className="p-6 space-y-4 transition-colors duration-300">
           <p>
-            RepoTree is a simple tool to visualize GitHub repositories. It helps
+            RepoTree is a simple tool to visualize GitHub & GitLab repositories. It helps
             developers and teams easily explore and understand their project
             structures.
           </p>
 
-          <h2 className="text-xl font-semibold">Our Vision</h2>
-          <p>
-            We want every developer to quickly see the structure of any project,
-            making it easier to collaborate and build efficiently.
-          </p>
-
           <h2 className="text-xl font-semibold">Features</h2>
           <ul className="list-disc pl-6 space-y-2">
-            <li>Clean ASCII view of GitHub repository structure</li>
+            <li>Clean ASCII view of GitHub & GitLab repository structure</li>
             <li>Interactive tree view for easy navigation</li>
             <li>Download options in various formats</li>
             <li>Real-time search to find files or folders quickly</li>
+            <li>Easy to use and no installation required</li>
           </ul>
-
+          
           <p>
             Whether documenting a project or getting a quick overview, RepoTree
             makes it simple to understand your codebase.
