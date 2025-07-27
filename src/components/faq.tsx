@@ -69,7 +69,7 @@ const FAQ = () => {
     {
       question: 'Can I use RepoTree for private repositories?',
       answer:
-        "Yes, RepoTree now supports private GitHub & GitLab repositories! You can access them by providing a GitHub Personal Access Token (PAT). Your token is securely stored locally in your browser and never sent to any server.",
+        "Yes, RepoTree now supports private GitHub & GitLab repositories! You can access them by providing a Personal Access Token (PAT). Your token is securely stored locally in your browser and never sent to any server.",
     },
   ];
 
