@@ -23,6 +23,7 @@ import {
   validateGitHubUrl,
   validateGitLabUrl,
 } from "@/lib/repo-tree-utils"
+import { convertMapToJson } from "@/lib/utils"
 import type { TreeCustomizationOptions } from "@/types/tree-customization"
 import { saveAs } from "file-saver"
 import {
@@ -282,7 +283,7 @@ export default function RepoProjectStructure() {
         fileName = "directory-structure.txt"
         break
       case "json":
-        content = JSON.stringify(Array.from(filteredStructureMap), null, 2)
+        content = JSON.stringify(convertMapToJson(filteredStructureMap), null, 2)
         mimeType = "application/json;charset=utf-8"
         fileName = "directory-structure.json"
         break
@@ -336,8 +337,11 @@ export default function RepoProjectStructure() {
       >
         <CardHeader>
           <CardTitle className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black dark:text-white flex items-center justify-center gap-2">
-            ASCII<span className="text-blue-600">Tree</span>Generator
+            Repo<span className="text-blue-600">Tree</span>Generator
           </CardTitle>
+          <p className="text-center text-muted-foreground text-base">
+            Generate and share clean ASCII trees of your GitHub & GitLab repositories.
+          </p>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
@@ -471,8 +475,10 @@ export default function RepoProjectStructure() {
                     </Button>
                   ) : (
                     <Button
-                      onClick={copyToClipboard}
-                      className="p-2 text-white dark:text-gray-400 dark:hover:text-gray-900 bg-transparent border-none"
+                      onClick={structureMap.size === 0 ? () => {} : copyToClipboard}
+                      className={`p-2 text-white dark:text-gray-400 dark:hover:text-gray-900 bg-transparent border-none ${
+                        structureMap.size === 0 ? "cursor-not-allowed opacity-50" : ""
+                      }`}
                       aria-label="Copy to clipboard"
                       title="Copy to clipboard"
                     >
@@ -508,8 +514,10 @@ export default function RepoProjectStructure() {
                   </SelectContent>
                 </Select>
                 <Button
-                  onClick={handleDownload}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={structureMap.size === 0 ? () => {} : handleDownload}
+                  className={`bg-blue-600 hover:bg-blue-700 text-white ${
+                    structureMap.size === 0 ? "cursor-not-allowed opacity-50" : ""
+                  }`}
                   aria-label="Download file"
                 >
                   <Download aria-hidden="true" /> Download

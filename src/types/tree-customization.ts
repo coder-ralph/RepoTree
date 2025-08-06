@@ -5,3 +5,6 @@ export interface TreeCustomizationOptions {
   showRootDirectory: boolean;
   showTrailingSlash: boolean;
 }
+
+export type DirectoryEntry = { type: "file" } | DirectoryMap
+export type DirectoryMap = Map<string, DirectoryEntry>
