@@ -110,19 +110,19 @@ export default function PrivateReposDialog({ repoType }: PrivateReposDialogProps
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="flex items-center gap-2 bg-white dark:bg-gray-800 text-black dark:text-white border-blue-500">
+        <button className="inline-flex items-center gap-1 px-2 py-0.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors cursor-pointer border border-transparent hover:border-blue-200 dark:hover:border-blue-700">
           {hasToken ? (
             <>
-              <Unlock className="h-4 w-4 text-green-600" />
-              Private Repos enabled
+              <Unlock className="h-3 w-3 text-green-600" />
+              <span>Private Access Enabled</span>
             </>
           ) : (
             <>
-              <Lock className="h-4 w-4" />
-              Private Repos
+              <Lock className="h-3 w-3" />
+              <span>Enable Private Repos</span>
             </>
           )}
-        </Button>
+        </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-w-[95vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
