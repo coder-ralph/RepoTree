@@ -339,7 +339,7 @@ export default function RepoProjectStructure() {
           <CardTitle className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black dark:text-white flex items-center justify-center gap-2">
             Repo<span className="text-blue-600">Tree</span>Generator
           </CardTitle>
-          <p className="text-center text-muted-foreground text-base">
+          <p className="text-center text-sm md:text-base text-gray-600 dark:text-gray-300">
             Generate and share clean ASCII trees of your GitHub & GitLab repositories.
           </p>
         </CardHeader>
