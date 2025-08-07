@@ -388,7 +388,12 @@ export default function RepoProjectStructure() {
                 </div>
                 <div className="relative">
                   <Input
-                    placeholder={`Enter ${repoType === "github" ? "GitHub" : "GitLab"} repository URL`}
+                    // placeholder={`Enter ${repoType === "github" ? "GitHub" : "GitLab"} repository URL`}
+                    placeholder={
+                      repoType === "github"
+                        ? "https://github.com/username/repo"
+                        : "https://gitlab.com/username/repo"
+                    }
                     value={repoUrl}
                     onChange={handleUrlChange}
                     className={`h-11 pl-4 pr-10 text-base bg-white dark:bg-gray-800 text-black dark:text-white border-2 rounded-lg shadow-sm transition-colors duration-200 ${

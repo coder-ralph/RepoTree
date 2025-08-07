@@ -1,28 +1,375 @@
-/* src/styles/TreeView.css */
+/* interactive tree-view styling */
+
 .tree-node {
   display: flex;
   align-items: center;
-  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 4px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1rem;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
+  line-height: 1.2;
+  min-height: 20px;
+  position: relative;
+  margin: 0;
 }
 
-.tree-node-expanded-0 {
-  padding-left: 0px;
+.tree-node:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  transform: translateX(1px);
 }
 
-.tree-node-expanded-1 {
-  padding-left: 20px;
+.tree-node:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: -2px;
+  background-color: rgba(59, 130, 246, 0.1);
 }
 
-.tree-node-expanded-2 {
-  padding-left: 40px;
+.tree-expand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* More dynamic depth levels can be added if necessary */
+.tree-expand-icon svg {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-.tree-node-file {
-  padding-left: 20px;
+.tree-node-icon {
+  display: flex;
+  align-items: center;
+  margin-right: 6px;
+  flex-shrink: 0;
+  transition: all 0.2s ease-in-out;
 }
 
 .tree-node-name {
-  margin-left: 0.25rem; /* equivalent to 'ml-1' in Tailwind */
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+  transition: color 0.2s ease-in-out;
 }
+
+.tree-node:hover .tree-node-name {
+  color: #f8fafc;
+}
+
+/* Animated expand/collapse */
+.tree-children {
+  overflow: hidden;
+  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Remove extra spacing */
+.tree-children > div {
+  margin: 0;
+  padding: 0;
+}
+
+/* Padding by depth level with smooth indentation */
+.tree-node-depth-0 { margin-left: 0px; }
+.tree-node-depth-1 { margin-left: 16px; }
+.tree-node-depth-2 { margin-left: 32px; }
+.tree-node-depth-3 { margin-left: 48px; }
+.tree-node-depth-4 { margin-left: 64px; }
+.tree-node-depth-5 { margin-left: 80px; }
+.tree-node-depth-6 { margin-left: 96px; }
+.tree-node-depth-7 { margin-left: 112px; }
+.tree-node-depth-8 { margin-left: 128px; }
+
+/* Container styling - VS Code dark theme */
+.tree-container {
+  background-color: #1e293b; /* VS Code dark theme background */
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  max-height: 600px;
+  overflow-y: auto;
+  border: 1px solid #374151;
+}
+
+/* Custom scrollbar styling */
+.tree-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.tree-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.tree-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.tree-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* File type specific icon colors - enhanced VS Code style */
+.tree-file-icon {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Web Technologies */
+.tree-file-js { color: #f7df1e; } /* JavaScript yellow */
+.tree-file-ts { color: #3178c6; } /* TypeScript blue */
+.tree-file-tsx { color: #61dafb; } /* React cyan */
+.tree-file-jsx { color: #61dafb; } /* React cyan */
+.tree-file-html { color: #e34c26; } /* HTML orange */
+.tree-file-htm { color: #e34c26; } /* HTML orange */
+.tree-file-css { color: #1572b6; } /* CSS blue */
+.tree-file-scss { color: #cf649a; } /* Sass pink */
+.tree-file-sass { color: #cf649a; } /* Sass pink */
+.tree-file-less { color: #1d365d; } /* Less blue */
+.tree-file-vue { color: #4fc08d; } /* Vue green */
+.tree-file-svelte { color: #ff3e00; } /* Svelte orange */
+
+/* Backend Languages */
+.tree-file-py { color: #3776ab; } /* Python blue */
+.tree-file-java { color: #ed8b00; } /* Java orange */
+.tree-file-class { color: #ed8b00; } /* Java class orange */
+.tree-file-jar { color: #ed8b00; } /* Java jar orange */
+.tree-file-php { color: #777bb4; } /* PHP purple */
+.tree-file-rb { color: #cc342d; } /* Ruby red */
+.tree-file-go { color: #00add8; } /* Go cyan */
+.tree-file-rs { color: #ce422b; } /* Rust orange */
+.tree-file-kt { color: #7f52ff; } /* Kotlin purple */
+.tree-file-scala { color: #dc322f; } /* Scala red */
+.tree-file-clj { color: #5881d8; } /* Clojure blue */
+.tree-file-ex { color: #6e4a7e; } /* Elixir purple */
+.tree-file-exs { color: #6e4a7e; } /* Elixir purple */
+
+/* C Family */
+.tree-file-c { color: #555555; } /* C gray */
+.tree-file-cpp { color: #00599c; } /* C++ blue */
+.tree-file-cc { color: #00599c; } /* C++ blue */
+.tree-file-cxx { color: #00599c; } /* C++ blue */
+.tree-file-h { color: #a074c4; } /* Header purple */
+.tree-file-hpp { color: #a074c4; } /* Header purple */
+.tree-file-cs { color: #239120; } /* C# green */
+
+/* Mobile Development */
+.tree-file-swift { color: #fa7343; } /* Swift orange */
+.tree-file-dart { color: #0175c2; } /* Dart blue */
+.tree-file-m { color: #438eff; } /* Objective-C blue */
+.tree-file-mm { color: #438eff; } /* Objective-C++ blue */
+
+/* Functional Languages */
+.tree-file-hs { color: #5e5086; } /* Haskell purple */
+.tree-file-ml { color: #ec6813; } /* ML orange */
+.tree-file-elm { color: #60b5cc; } /* Elm cyan */
+.tree-file-fs { color: #378bba; } /* F# blue */
+.tree-file-fsx { color: #378bba; } /* F# blue */
+
+/* Scripting Languages */
+.tree-file-sh { color: #89e051; } /* Shell green */
+.tree-file-bash { color: #89e051; } /* Bash green */
+.tree-file-zsh { color: #89e051; } /* Zsh green */
+.tree-file-fish { color: #89e051; } /* Fish green */
+.tree-file-ps1 { color: #012456; } /* PowerShell blue */
+.tree-file-bat { color: #c1f12e; } /* Batch yellow */
+.tree-file-cmd { color: #c1f12e; } /* Command yellow */
+
+/* Data & Config */
+.tree-file-json { color: #ffd700; } /* JSON gold */
+.tree-file-xml { color: #ff6600; } /* XML orange */
+.tree-file-yaml { color: #cb171e; } /* YAML red */
+.tree-file-yml { color: #cb171e; } /* YAML red */
+.tree-file-toml { color: #9c4221; } /* TOML brown */
+.tree-file-ini { color: #6d8086; } /* INI gray */
+.tree-file-conf { color: #6d8086; } /* Config gray */
+.tree-file-env { color: #ecd53f; } /* Environment yellow */
+
+/* Database */
+.tree-file-sql { color: #fb923c; } /* SQL orange */
+.tree-file-db { color: #003b57; } /* Database blue */
+.tree-file-sqlite { color: #003b57; } /* SQLite blue */
+.tree-file-mdb { color: #a41e22; } /* Access red */
+
+/* Documentation */
+.tree-file-md { color: #7c7c7c; } /* Markdown gray */
+.tree-file-rst { color: #7c7c7c; } /* reStructuredText gray */
+.tree-file-tex { color: #3d6117; } /* LaTeX green */
+.tree-file-pdf { color: #d93025; } /* PDF red */
+.tree-file-doc { color: #2b579a; } /* Word blue */
+.tree-file-docx { color: #2b579a; } /* Word blue */
+.tree-file-ppt { color: #d24726; } /* PowerPoint orange */
+.tree-file-pptx { color: #d24726; } /* PowerPoint orange */
+.tree-file-xls { color: #217346; } /* Excel green */
+.tree-file-xlsx { color: #217346; } /* Excel green */
+
+/* Images */
+.tree-file-png { color: #a855f7; } /* PNG purple */
+.tree-file-jpg { color: #a855f7; } /* JPG purple */
+.tree-file-jpeg { color: #a855f7; } /* JPEG purple */
+.tree-file-gif { color: #a855f7; } /* GIF purple */
+.tree-file-svg { color: #ffb13b; } /* SVG orange */
+.tree-file-webp { color: #a855f7; } /* WebP purple */
+.tree-file-ico { color: #a855f7; } /* Icon purple */
+.tree-file-bmp { color: #a855f7; } /* Bitmap purple */
+.tree-file-tiff { color: #a855f7; } /* TIFF purple */
+
+/* Audio */
+.tree-file-mp3 { color: #10b981; } /* MP3 green */
+.tree-file-wav { color: #10b981; } /* WAV green */
+.tree-file-flac { color: #10b981; } /* FLAC green */
+.tree-file-ogg { color: #10b981; } /* OGG green */
+.tree-file-m4a { color: #10b981; } /* M4A green */
+.tree-file-aac { color: #10b981; } /* AAC green */
+
+/* Video */
+.tree-file-mp4 { color: #ef4444; } /* MP4 red */
+.tree-file-avi { color: #ef4444; } /* AVI red */
+.tree-file-mov { color: #ef4444; } /* MOV red */
+.tree-file-wmv { color: #ef4444; } /* WMV red */
+.tree-file-webm { color: #ef4444; } /* WebM red */
+.tree-file-mkv { color: #ef4444; } /* MKV red */
+.tree-file-flv { color: #ef4444; } /* FLV red */
+
+/* Archives */
+.tree-file-zip { color: #f59e0b; } /* ZIP yellow */
+.tree-file-rar { color: #f59e0b; } /* RAR yellow */
+.tree-file-7z { color: #f59e0b; } /* 7Z yellow */
+.tree-file-tar { color: #f59e0b; } /* TAR yellow */
+.tree-file-gz { color: #f59e0b; } /* GZ yellow */
+.tree-file-bz2 { color: #f59e0b; } /* BZ2 yellow */
+.tree-file-xz { color: #f59e0b; } /* XZ yellow */
+
+/* Build & Package */
+.tree-file-dockerfile { color: #2496ed; } /* Docker blue */
+.tree-file-makefile { color: #427819; } /* Makefile green */
+.tree-file-cmake { color: #064f8c; } /* CMake blue */
+.tree-file-gradle { color: #02303a; } /* Gradle dark blue */
+.tree-file-maven { color: #c71a36; } /* Maven red */
+.tree-file-npm { color: #cb3837; } /* NPM red */
+.tree-file-yarn { color: #2c8ebb; } /* Yarn blue */
+
+/* Text Files */
+.tree-file-txt { color: #9ca3af; } /* Text gray */
+.tree-file-log { color: #9ca3af; } /* Log gray */
+.tree-file-rtf { color: #9ca3af; } /* RTF gray */
+
+/* Special Files */
+.tree-file-license { color: #f1c232; } /* License yellow */
+.tree-file-readme { color: #4285f4; } /* Readme blue */
+.tree-file-changelog { color: #34a853; } /* Changelog green */
+.tree-file-gitignore { color: #f34f29; } /* Git orange */
+.tree-file-gitattributes { color: #f34f29; } /* Git orange */
+
+/* Default */
+.tree-file-default { color: #9ca3af; } /* Default gray */
+
+.tree-folder-icon { 
+  color: #3b82f6; /* Folder blue */
+  transition: all 0.2s ease-in-out;
+}
+
+.tree-folder-open-icon { 
+  color: #60a5fa; /* Open folder lighter blue */
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover animations */
+.tree-node:hover .tree-file-icon,
+.tree-node:hover .tree-folder-icon,
+.tree-node:hover .tree-folder-open-icon {
+  transform: scale(1.1);
+}
+
+/* Selection state */
+.tree-node-selected {
+  background-color: rgba(59, 130, 246, 0.2);
+  border-left: 3px solid #3b82f6;
+}
+
+.tree-node-selected .tree-node-name {
+  color: #f8fafc;
+  font-weight: 500;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.tree-node-loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Accessibility improvements */
+.tree-node:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: -2px;
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.tree-node[aria-expanded="true"] .tree-expand-icon svg {
+  transform: rotate(90deg);
+}
+
+.tree-node[aria-expanded="false"] .tree-expand-icon svg {
+  transform: rotate(0deg);
+}
+
+/* Dark mode enhancements */
+@media (prefers-color-scheme: dark) {
+  .tree-container {
+    background-color: #0f172a;
+    border-color: #1e293b;
+  }
+  
+  .tree-node:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .tree-container {
+    padding: 12px;
+    max-height: 400px;
+  }
+  
+  .tree-node {
+    padding: 4px 6px;
+    font-size: 0.8rem;
+  }
+  
+  .tree-node-depth-1 { margin-left: 12px; }
+  .tree-node-depth-2 { margin-left: 24px; }
+  .tree-node-depth-3 { margin-left: 36px; }
+  .tree-node-depth-4 { margin-left: 48px; }
+  .tree-node-depth-5 { margin-left: 60px; }
+  .tree-node-depth-6 { margin-left: 72px; }
+}
+
+/* Performance optimization for large trees */
+.tree-node {
+  contain: layout style paint;
+}
+
+.tree-children {
+  contain: layout;
+}
+
+/* Legacy class names for backward compatibility */
+.tree-node-expanded-0 { margin-left: 0px; }
+.tree-node-expanded-1 { margin-left: 8px; }
+.tree-node-expanded-2 { margin-left: 16px; }
+.tree-node-expanded-3 { margin-left: 24px; }
+.tree-node-expanded-4 { margin-left: 32px; }
+.tree-node-expanded-5 { margin-left: 40px; }
+.tree-node-expanded-6 { margin-left: 48px; }
