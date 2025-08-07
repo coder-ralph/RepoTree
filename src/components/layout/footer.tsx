@@ -28,18 +28,18 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/about"
-                  className="hover:text-blue-400 transition-colors"
-                >
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/docs"
                   className="hover:text-blue-400 transition-colors"
                 >
                   Docs
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/guide"
+                  className="hover:text-blue-400 transition-colors"
+                >
+                  Guide
                 </Link>
               </li>
             </ul>
@@ -119,6 +119,17 @@ const Footer = () => {
         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300">
           <p>
             &copy; {new Date().getFullYear()} RepoTree. All rights reserved.
+          </p>
+          <p className="mt-2">
+            Made with ☕ by{' '}
+            <a
+              href="https://github.com/coder-ralph"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline hover:underline-offset-4 transition-all"
+            >
+              Ralph Rosael
+            </a>
           </p>
         </div>
       </div>
