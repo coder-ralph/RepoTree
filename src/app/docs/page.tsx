@@ -3,13 +3,193 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Volume2, VolumeX, Maximize } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+
+const MinimalistVideoPlayer = ({ src }: { src: string }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [showControls, setShowControls] = useState(true);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const updateTime = () => {
+      setCurrentTime(video.currentTime);
+      setProgress((video.currentTime / video.duration) * 100);
+    };
+
+    const updateDuration = () => {
+      setDuration(video.duration);
+    };
+
+    video.addEventListener('timeupdate', updateTime);
+    video.addEventListener('loadedmetadata', updateDuration);
+
+    return () => {
+      video.removeEventListener('timeupdate', updateTime);
+      video.removeEventListener('loadedmetadata', updateDuration);
+    };
+  }, []);
+
+  const togglePlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isPlaying) {
+      video.pause();
+    } else {
+      video.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const toggleMute = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = !isMuted;
+    setIsMuted(!isMuted);
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const width = rect.width;
+    const newTime = (clickX / width) * duration;
+    
+    video.currentTime = newTime;
+  };
+
+  const toggleFullscreen = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      video.requestFullscreen();
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div 
+      className="relative w-full bg-black rounded-lg overflow-hidden group"
+      onMouseEnter={() => setShowControls(true)}
+      onMouseLeave={() => setShowControls(false)}
+    >
+      <video
+        ref={videoRef}
+        className="w-full h-auto"
+        src={src}
+        onClick={togglePlay}
+      />
+      
+      {/* Controls Overlay */}
+      <div className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
+        {/* Play/Pause Button in Center */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <button
+            onClick={togglePlay}
+            className="bg-black/50 hover:bg-black/70 text-white p-4 rounded-full transition-all duration-200 hover:scale-110"
+            aria-label={isPlaying ? "Pause video" : "Play video"}
+            title={isPlaying ? "Pause video" : "Play video"}
+          >
+            {isPlaying ? (
+              <Pause className="w-8 h-8" />
+            ) : (
+              <Play className="w-8 h-8 ml-1" />
+            )}
+          </button>
+        </div>
+
+        {/* Bottom Controls */}
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          {/* Progress Bar */}
+          <div 
+            className="w-full h-1 bg-white/30 rounded-full cursor-pointer mb-3 hover:h-2 transition-all duration-200"
+            onClick={handleProgressClick}
+            role="progressbar"
+            aria-label="Video progress"
+            aria-valuenow={progress}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            title={`Video progress: ${Math.round(progress)}%`}
+          >
+            <div 
+              className="h-full bg-blue-500 rounded-full transition-all duration-200"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+
+          {/* Control Buttons */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={togglePlay}
+                className="text-white hover:text-blue-400 transition-colors duration-200"
+                aria-label={isPlaying ? "Pause video" : "Play video"}
+                title={isPlaying ? "Pause video" : "Play video"}
+              >
+                {isPlaying ? (
+                  <Pause className="w-5 h-5" />
+                ) : (
+                  <Play className="w-5 h-5" />
+                )}
+              </button>
+
+              <button
+                onClick={toggleMute}
+                className="text-white hover:text-blue-400 transition-colors duration-200"
+                aria-label={isMuted ? "Unmute video" : "Mute video"}
+                title={isMuted ? "Unmute video" : "Mute video"}
+              >
+                {isMuted ? (
+                  <VolumeX className="w-5 h-5" />
+                ) : (
+                  <Volume2 className="w-5 h-5" />
+                )}
+              </button>
+
+              <span className="text-white text-sm">
+                {formatTime(currentTime)} / {formatTime(duration)}
+              </span>
+            </div>
+
+            <button
+              onClick={toggleFullscreen}
+              className="text-white hover:text-blue-400 transition-colors duration-200"
+              aria-label="Toggle fullscreen"
+              title="Toggle fullscreen"
+            >
+              <Maximize className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const DocsPage = () => {
   const router = useRouter();
@@ -96,16 +276,8 @@ const DocsPage = () => {
 
           <section id="demo" className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Demo</h2>
-            <div className="relative w-full overflow-hidden rounded-lg" style={{ paddingTop: '56.25%' }}>
-              <iframe
-                className="absolute top-0 left-0 w-full h-full"
-                src="https://www.youtube.com/embed/49qcrWgHT9M?si=2BnYxyBXXmh1EQd5"
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-              ></iframe>
+            <div className="w-full">
+              <MinimalistVideoPlayer src="/video/demo2.webm" />
             </div>
           </section>
 
