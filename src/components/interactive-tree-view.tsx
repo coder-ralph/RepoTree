@@ -9,7 +9,7 @@ import {
   Folder, 
   FolderOpen,
   FileText,
-  Image,
+  Image as ImageIcon,
   Code,
   Settings,
   Database,
@@ -203,9 +203,9 @@ const getFileIcon = (filename: string) => {
     case 'tiff':
     case 'webp':
     case 'ico':
-      return <Image {...iconProps} className="text-purple-400" />;
+      return <ImageIcon {...iconProps} className="text-purple-400" />;
     case 'svg':
-      return <Image {...iconProps} className="text-yellow-600" />;
+      return <ImageIcon {...iconProps} className="text-yellow-600" />;
 
     // Audio
     case 'mp3':
