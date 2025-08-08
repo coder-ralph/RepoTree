@@ -123,10 +123,10 @@ const Footer = () => {
           <p className="mt-2">
             Made with ☕ by{' '}
             <a
-              href="https://github.com/coder-ralph"
+              href="https://app.daily.dev/coderralph"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline hover:underline-offset-4 transition-all"
+              className="text-blue-700 hover:underline hover:underline-offset-4 transition-all"
             >
               Ralph Rosael
             </a>
