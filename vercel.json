@@ -1,4 +1,5 @@
 {
+  "name": "ascii-repotree",
   "routes": [
     {
       "src": "/.well-known/vercel/microfrontend-routing",
