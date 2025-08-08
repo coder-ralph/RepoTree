@@ -21,19 +21,21 @@ const GuidePage = () => {
 
         <h1 className="text-3xl font-bold mb-6">How to Use RepoTree Generator?</h1>
 
-        <div className="space-y-6">
-          <ol className="list-decimal pl-6 space-y-2">
-            <li>Select your repository type and enter the GitHub or GitLab repository URL.</li>
-            <li>Click the <strong>Generate</strong> button.</li>
-            <li>Explore the structure with ASCII or interactive mode for easy navigation.</li>
-            <li>Customize your ASCII theme to match your style.</li>
-            <li>Use the real-time search to quickly find files or folders.</li>
-            <li>Copy or download the tree structure in multiple formats.</li>
-          </ol>
+        <div className="p-6 space-y-6 transition-colors duration-300">
+          <section className="mb-8">
+            <ol className="list-decimal pl-6 space-y-2">
+              <li>Select your repository type and enter the GitHub or GitLab repository URL.</li>
+              <li>Click the <strong>Generate</strong> button.</li>
+              <li>Explore the structure with ASCII or interactive mode for easy navigation.</li>
+              <li>Customize your ASCII theme to match your style.</li>
+              <li>Use the real-time search to quickly find files or folders.</li>
+              <li>Copy or download the tree structure in multiple formats.</li>
+            </ol>
+          </section>
 
-          <div>
-            <h2 className="text-xl font-semibold">For Public Repositories</h2>
-            <p className="mt-2">
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">For Public Repositories</h2>
+            <p>
               <strong>GitHub API Rate Limit:</strong> 60 requests per hour for unauthenticated users.
               <br />
               See the official GitHub rate limit documentation{' '}
@@ -64,9 +66,9 @@ const GuidePage = () => {
               <br />
               To avoid rate limiting and access private repositories, it&apos;s recommended to use a Personal Access Token (PAT) for both platforms.
             </p>
-          </div>
+          </section>
 
-          <div className="pt-4">
+          <div className="mt-8">
             <Link
               href="/generator"
               className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300"
