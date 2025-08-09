@@ -275,19 +275,19 @@ export default function RepoProjectStructure() {
 
     switch (format) {
       case "md":
-        content = `# Directory Structure\n\n\`\`\`\n${customizedStructure}\`\`\``
+        content = `# Repository Structure\n\n\`\`\`\n${customizedStructure}\`\`\``
         mimeType = "text/markdown;charset=utf-8"
         fileName = "README.md"
         break
       case "txt":
         content = customizedStructure
         mimeType = "text/plain;charset=utf-8"
-        fileName = "directory-structure.txt"
+        fileName = "repository-structure.txt"
         break
       case "json":
         content = JSON.stringify(convertMapToJson(filteredStructureMap), null, 2)
         mimeType = "application/json;charset=utf-8"
-        fileName = "directory-structure.json"
+        fileName = "repository-structure.json"
         break
       case "html":
         content = `
@@ -305,7 +305,7 @@ export default function RepoProjectStructure() {
           </html>
         `
         mimeType = "text/html;charset=utf-8"
-        fileName = "directory-structure.html"
+        fileName = "repository-structure.html"
         break
     }
 
