@@ -189,7 +189,233 @@ export const generateStructure = (tree: TreeItem[]): DirectoryMap => {
   return structureMap
 }
 
-export const buildStructureString = (map: DirectoryMap, prefix = "", options: TreeCustomizationOptions): string => {
+// Get description for files and directories
+const getDescription = (name: string, isDirectory: boolean, path?: string): string => {
+  if (isDirectory) {
+    return getDirectoryDescription(name, path || "")
+  } else {
+    return getFileDescription(name)
+  }
+}
+
+// Directory descriptions based on common patterns
+const getDirectoryDescription = (dirName: string, fullPath: string): string => {
+  const lowerName = dirName.toLowerCase()
+  const lowerPath = fullPath.toLowerCase()
+
+  // Common directory patterns
+  const directoryDescriptions: { [key: string]: string } = {
+    // Build/Config directories
+    ".github": "GitHub workflows and templates",
+    ".vscode": "VS Code workspace settings",
+    ".next": "Next.js build output",
+    "dist": "Distribution/build files",
+    "build": "Compiled application files",
+    "out": "Output directory",
+    "public": "Static assets and public files",
+    "static": "Static assets",
+    "assets": "Project assets and resources",
+    
+    // Source directories
+    "src": "Source code",
+    "app": "Application pages and routing",
+    "pages": "Application pages",
+    "components": "React components",
+    "lib": "Utility functions and libraries",
+    "utils": "Utility functions",
+    "helpers": "Helper functions",
+    "hooks": "Custom React hooks",
+    "context": "React context providers",
+    "store": "State management",
+    "styles": "CSS and styling files",
+    "css": "Stylesheets",
+    "scss": "Sass stylesheets",
+    "images": "Image assets",
+    "fonts": "Font files",
+    "icons": "Icon assets",
+    
+    // API and backend
+    "api": "API routes and endpoints",
+    "server": "Server-side code",
+    "backend": "Backend application code",
+    "routes": "Application routes",
+    "controllers": "Route controllers",
+    "models": "Data models",
+    "middleware": "Express middleware",
+    "database": "Database files and migrations",
+    "migrations": "Database migrations",
+    "seeds": "Database seed files",
+    
+    // Testing
+    "test": "Test files",
+    "tests": "Test files",
+    "__tests__": "Jest test files",
+    "spec": "Test specifications",
+    "e2e": "End-to-end tests",
+    "cypress": "Cypress test files",
+    
+    // Documentation
+    "docs": "Documentation files",
+    "documentation": "Project documentation",
+    
+    // Configuration
+    "config": "Configuration files",
+    "configs": "Configuration files",
+    
+    // Dependencies
+    "node_modules": "NPM dependencies",
+    "vendor": "Third-party libraries",
+    
+    // UI specific
+    "ui": "UI components",
+    "layout": "Layout components",
+    "layouts": "Page layouts",
+    "templates": "Component templates",
+    
+    // Types
+    "types": "TypeScript type definitions",
+    "@types": "TypeScript declarations",
+    
+    // Workflows
+    "workflows": "CI/CD workflow files"
+  }
+
+  // Check exact matches first
+  if (directoryDescriptions[lowerName]) {
+    return directoryDescriptions[lowerName]
+  }
+
+  // Check for patterns in the full path
+  if (lowerPath.includes("workflow") || lowerPath.includes(".github")) {
+    return "CI/CD workflows"
+  }
+  if (lowerPath.includes("component")) {
+    return "Component files"
+  }
+  if (lowerPath.includes("page")) {
+    return "Page components"
+  }
+  if (lowerPath.includes("api")) {
+    return "API endpoints"
+  }
+
+  return "Directory"
+}
+
+// File descriptions based on extensions and names
+const getFileDescription = (fileName: string): string => {
+  const lowerName = fileName.toLowerCase()
+  const extension = fileName.split(".").pop()?.toLowerCase() || ""
+
+  // Specific file names
+  const specificFiles: { [key: string]: string } = {
+    "readme.md": "Project documentation",
+    "license": "Project license",
+    "license.txt": "Project license",
+    "license.md": "Project license",
+    "changelog.md": "Version history",
+    "contributing.md": "Contribution guidelines",
+    "package.json": "NPM package configuration",
+    "package-lock.json": "Dependency lock file",
+    "yarn.lock": "Yarn dependency lock file",
+    "tsconfig.json": "TypeScript configuration",
+    "next.config.js": "Next.js configuration",
+    "next.config.ts": "Next.js configuration",
+    "tailwind.config.js": "Tailwind CSS configuration",
+    "tailwind.config.ts": "Tailwind CSS configuration",
+    "postcss.config.js": "PostCSS configuration",
+    "eslint.config.js": "ESLint configuration",
+    ".eslintrc.json": "ESLint rules",
+    ".gitignore": "Git ignore rules",
+    ".env": "Environment variables",
+    ".env.example": "Environment variables template",
+    ".env.local": "Local environment variables",
+    "vercel.json": "Vercel deployment config",
+    "dockerfile": "Docker container config",
+    "docker-compose.yml": "Docker compose config",
+    "makefile": "Build automation",
+    "components.json": "Component configuration",
+    "prettier.config.js": "Code formatting rules"
+  }
+
+  // Check specific file names first
+  if (specificFiles[lowerName]) {
+    return specificFiles[lowerName]
+  }
+
+  // Extension-based descriptions
+  const extensionDescriptions: { [key: string]: string } = {
+    // Web technologies
+    "js": "JavaScript file",
+    "jsx": "React component",
+    "ts": "TypeScript file",
+    "tsx": "React TypeScript component",
+    "html": "HTML page",
+    "css": "Stylesheet",
+    "scss": "Sass stylesheet",
+    "sass": "Sass stylesheet",
+    "less": "Less stylesheet",
+    
+    // Configuration
+    "json": "JSON configuration",
+    "yaml": "YAML configuration",
+    "yml": "YAML configuration",
+    "toml": "TOML configuration",
+    "xml": "XML file",
+    
+    // Documentation
+    "md": "Markdown documentation",
+    "txt": "Text file",
+    "pdf": "PDF document",
+    
+    // Images
+    "png": "PNG image",
+    "jpg": "JPEG image",
+    "jpeg": "JPEG image",
+    "gif": "GIF image",
+    "svg": "SVG vector image",
+    "webp": "WebP image",
+    "ico": "Icon file",
+    
+    // Video/Audio
+    "mp4": "MP4 video",
+    "webm": "WebM video",
+    "avi": "AVI video",
+    "mov": "QuickTime video",
+    "mp3": "MP3 audio",
+    "wav": "WAV audio",
+    
+    // Other programming languages
+    "py": "Python script",
+    "java": "Java source file",
+    "cpp": "C++ source file",
+    "c": "C source file",
+    "php": "PHP script",
+    "rb": "Ruby script",
+    "go": "Go source file",
+    "rs": "Rust source file",
+    "swift": "Swift source file",
+    "kt": "Kotlin source file",
+    
+    // Database
+    "sql": "SQL script",
+    "db": "Database file",
+    
+    // Archives
+    "zip": "ZIP archive",
+    "tar": "TAR archive",
+    "gz": "Gzip archive",
+    
+    // Others
+    "sh": "Shell script",
+    "bat": "Batch script",
+    "ps1": "PowerShell script"
+  }
+
+  return extensionDescriptions[extension] || "File"
+}
+
+export const buildStructureString = (map: DirectoryMap, prefix = "", options: TreeCustomizationOptions, currentPath = ""): string => {
   let result = ""
   
   // Add root directory indicator if enabled
@@ -198,20 +424,43 @@ export const buildStructureString = (map: DirectoryMap, prefix = "", options: Tr
   }
 
   const entries = Array.from(map.entries())
-  const lastIndex = entries.length - 1
+  
+  // Sort entries: directories first, then files
+  // Within each group, sort alphabetically
+  const sortedEntries = entries.sort(([keyA, valueA], [keyB, valueB]) => {
+    const isDirectoryA = valueA instanceof Map
+    const isDirectoryB = valueB instanceof Map
+    
+    // If one is directory and other is file, directory comes first
+    if (isDirectoryA && !isDirectoryB) return -1
+    if (!isDirectoryA && isDirectoryB) return 1
+    
+    // If both are same type (both directories or both files), sort alphabetically
+    return keyA.localeCompare(keyB)
+  })
+  
+  const lastIndex = sortedEntries.length - 1
 
-  entries.forEach(([key, value], index) => {
+  sortedEntries.forEach(([key, value], index) => {
     const isLast = index === lastIndex
     const connector = getConnector(isLast, options.asciiStyle)
     const childPrefix = getChildPrefix(isLast, options.asciiStyle)
     const icon = options.useIcons ? getIcon(value instanceof Map) : ""
+    const isDirectory = value instanceof Map
+    
+    // Build current file/directory path
+    const itemPath = currentPath ? `${currentPath}/${key}` : key
     
     // Add trailing slash for directories if enabled
-    const displayName = (value instanceof Map && options.showTrailingSlash) ? `${key}/` : key
+    const displayName = (isDirectory && options.showTrailingSlash) ? `${key}/` : key
+    
+    // Get description for this item
+    const description = getDescription(key, isDirectory, itemPath)
+    const descriptionText = options.showDescriptions && description ? `                     # ${description}` : ""
 
-    result += `${prefix}${connector}${icon}${displayName}\n`
-    if (value instanceof Map) {
-      result += buildStructureString(value, `${prefix}${childPrefix}`, options)
+    result += `${prefix}${connector}${icon}${displayName}${descriptionText}\n`
+    if (isDirectory) {
+      result += buildStructureString(value, `${prefix}${childPrefix}`, options, itemPath)
     }
   })
 

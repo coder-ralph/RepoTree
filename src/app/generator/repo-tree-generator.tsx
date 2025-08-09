@@ -67,6 +67,7 @@ const DEFAULT_CUSTOMIZATION_OPTIONS: TreeCustomizationOptions = {
   asciiStyle: "basic",
   useIcons: false,
   showLineNumbers: false,
+  showDescriptions: false,
   showRootDirectory: false,
   showTrailingSlash: false,
 }

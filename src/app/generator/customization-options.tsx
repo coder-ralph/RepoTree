@@ -49,6 +49,15 @@ const CustomizationOptions: React.FC<CustomizationOptionsProps> = ({ options, on
           onCheckedChange={(checked: boolean) => onChange({ showLineNumbers: checked })}
         />
       </div>
+      {/* Show Descriptions */}
+      <div className="flex items-center justify-between">
+        <Label htmlFor="show-descriptions">Show Descriptions</Label>
+        <Switch
+          id="show-descriptions"
+          checked={options.showDescriptions}
+          onCheckedChange={(checked: boolean) => onChange({ showDescriptions: checked })}
+        />
+      </div>
       {/* Root Directory */}
       <div className="flex items-center justify-between">
         <Label htmlFor="show-root-directory">Root Directory</Label>
