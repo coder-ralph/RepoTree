@@ -1,6 +1,6 @@
 # RepoTree 🌳
 
-> A tool to visualize GitHub and GitLab repositories with clean ASCII trees. Perfect for documentation, sharing, and understanding project structures.
+A web tool that visualizes GitHub and GitLab repositories with clean ASCII trees. Perfect for documentation, sharing, and understanding project structures. It runs entirely in the browser and fetches live data using GitHub’s official [REST API (Git/Trees API)](https://docs.github.com/en/rest/git/trees?apiVersion=2022-11-28#get-a-tree) to ensure accuracy.
 
 [![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-RepoTree-blue?style=for-the-badge)](https://ascii-repotree.vercel.app/)
 [![MIT License](https://img.shields.io/badge/📄_License-MIT-green?style=for-the-badge)](LICENSE)
@@ -126,14 +126,12 @@ This project was inspired by Nathan Friend's [Tree Online](https://gitlab.com/nf
 
 If RepoTree has helped you, please consider:
 - ⭐ **Starring this repository** to show your support
-- 🐦 **Sharing it** with other developers
+- 💛 **Sharing it** with other developers
 
 ---
 
 <div align="center">
-  
-**[🌐 Try RepoTree Now](https://ascii-repotree.vercel.app/)** • **[📖 Documentation](https://ascii-repotree.vercel.app/docs)**
 
-Made with ☕ by [coder-ralph](https://github.com/coder-ralph)
+Made with ☕ by [Ralph Rosael](https://app.daily.dev/coderralph)
 
 </div>
