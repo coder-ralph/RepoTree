@@ -1,65 +1,139 @@
-# RepoTree
+# RepoTree 🌳
 
-A simple tool to visualize GitHub repositories. It helps developers easily explore and understand their project structures.
+> A tool to visualize GitHub and GitLab repositories with clean ASCII trees. Perfect for documentation, sharing, and understanding project structures.
 
-## Features
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-RepoTree-blue?style=for-the-badge)](https://ascii-repotree.vercel.app/)
+[![MIT License](https://img.shields.io/badge/📄_License-MIT-green?style=for-the-badge)](LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/coder-ralph/RepoTree?style=for-the-badge)](https://github.com/coder-ralph/RepoTree)
 
-- Clean ASCII view of GitHub repository structure.
-- Interactive tree view for easy navigation.
-- Download options in various formats.
-- Real-time search to find files or folders quickly.
-- Dark and Light themes for better readability.
-- Easy to use and no installation required.
+## 🚀 Features
 
-## Usage
+* 👀 **Instant Visualization**: Convert any GitHub & GitLab repository structure into a clean ASCII tree
+* 🎯 **Interactive Tree View**: Expand or collapse folders for better navigation and exploration
+* 📊 **Repository Analysis**: Visualize file type distribution and language breakdown with interactive graphs
+* 🤖 **AI-Powered Feedback** *(Currently Disabled)*: Get intelligent suggestions and analysis for your repository structure
+* 💾 **Multiple Export Formats**: Download trees as README.md, .txt, .json, or .html files
+* 🔍 **Real-time Search**: Quickly filter and highlight specific files or directories
+* 🎨 **Dual View Modes**: Switch between ASCII and Interactive views for enhanced user experience
+* 🌙 **Dark & Light Themes**: Comfortable viewing in any lighting condition
+* ✨ **Syntax Highlighting**: Enhanced readability with beautiful code highlighting
+* 📋 **One-Click Copy**: Copy directory structure to clipboard
+* 💾 **Persistent State**: Remembers your last repository URL between sessions
+* 🔒 **Private Repository Support**: Access private repos with personal access tokens
+* 🚀 **Zero Installation**: Works directly in your browser - no setup required
 
-1. Visit [RepoTree](https://ascii-repotree.vercel.app/).
-2. Enter the GitHub repository URL.
-3. Click on the `Generate` button.
-4. Explore the repository structure.
-5. Download the tree in various formats.
+## 🖥 Viewing Modes
 
-### Download Options
+![ASCII Mode](ascii-view.png)
 
-- **README**: Download the tree in README format.
-- **Text**: Download the tree in text format.
-- **JSON**: Download the tree in JSON format.
-- **HTML**: Download the tree in HTML format.
+![Interactive Mode](interactive-view.png)
 
-## Development
+## ⚙️ Tech Stack
 
-1. Clone the repository:
+RepoTree is built with modern technologies for optimal performance and user experience:
+
+| Technology | Purpose | 
+|------------|---------|
+| **Next.js** | React framework for server-side rendering and routing |
+| **TypeScript** | Type-safe development and better code quality |
+| **Tailwind CSS** | Utility-first CSS framework for rapid UI development |
+| **Shadcn UI** | Beautiful, accessible component library |
+| **Octokit** | Official GitHub API client for repository data |
+| **Recharts** | Composable charting library for data visualization |
+| **Framer Motion** | Smooth animations and transitions |
+| **Radix UI** | Low-level UI primitives for accessibility |
+| **Lucide React** | Beautiful, customizable icon set |
+
+## 🚦 Quick Start
+
+### 1. **Online Usage** (Recommended)
+Simply visit [RepoTree](https://ascii-repotree.vercel.app/) and start generating trees instantly!
+
+### 2. **Self-hosting / Local Development**
 
 ```bash
-git clone
-```
+# Clone the repository
+git clone https://github.com/coder-ralph/RepoTree.git
 
-2. Install the dependencies:
+# Navigate to project directory
+cd RepoTree
 
-```bash
+# Install dependencies
 npm install
-```
 
-3. Run the development server:
-
-```bash
+# Start development server
 npm run dev
+
+# Open your browser
+open http://localhost:3000
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+## 📖 Usage Guide
 
-## Contributing
+### Basic Usage
+1. 🌐 Visit [RepoTree](https://ascii-repotree.vercel.app/)
+2. 📝 Paste your GitHub or GitLab repository URL
+3. 🔘 Click the **Generate** button
+4. 🎉 Explore your repository structure!
+5. 💾 Download in your preferred format
 
-Contributions are welcome! Report issues [here](https://github.com/coder-ralph/RepoTree/issues) or submit a pull request [here](https://github.com/coder-ralph/RepoTree/pulls).
+### 🔒 Accessing Private Repositories
 
-## License
+For private repositories, you'll need to enable private access:
 
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/coder-ralph/RepoTree/blob/main/LICENSE) file for details.
+1. **Click "Enable Private Repos"** at the top of the input field
+2. **Follow the setup instructions**:
+   - **GitHub**: Create a personal access token with `repo` scope
+   - **GitLab**: Create a token with `read_repository` scope
+3. **Enter your token** - it's stored locally and never shared
+4. **Generate trees** from your private repositories securely!
 
-## Acknowledgements
+### 📊 Understanding Repository Analysis
 
-This project was inspired by Nathan Friend's [Tree Online](https://gitlab.com/nfriend/tree-online) and [ASCII Tree Generator](https://ascii-tree-generator.com/).
+RepoTree provides insightful visualizations:
+- **File Type Distribution**: See what types of files make up your project
+- **Language Breakdown**: Understand the programming languages used
 
-## Support
+![Repository Analysis](repository-analysis.png)
 
-⭐ If you find this project helpful, give it a star!
+- **Repository Structure** *(Currently Disabled)*: Get AI-powered feedback on your project organization
+
+## 🎯 Use Cases
+
+- 📝 **Documentation**: Include clean directory trees in your README files
+- 🎓 **Education**: Help students understand project structures
+- 💼 **Code Reviews**: Quickly grasp repository organization
+- 🔄 **Migration Planning**: Visualize before restructuring projects
+- 📊 **Project Analysis**: Get insights into codebase composition
+
+## 🤔 About
+
+I created RepoTree to help developers easily visualize and share repository structures.
+
+A year ago, I saw a Stack Overflow question about generating directory trees from GitHub repositories, which inspired me to build this tool.
+
+**[Original Stack Overflow Question](https://stackoverflow.com/questions/75522166/how-do-i-get-the-directory-tree-structure-from-a-github-repository-link)** 📚
+
+## 🤝 Contributing
+
+Contributions are welcome! Report issues [here](https://github.com/coder-ralph/RepoTree/issues) or submit a Pull Request [here](https://github.com/coder-ralph/RepoTree/pulls).
+
+## 🫡 Acknowledgements
+
+This project was inspired by Nathan Friend's [Tree Online](https://gitlab.com/nfriend/tree-online) and [ASCII Tree Generator](https://ascii-tree-generator.com/). I used these tools to create documentation for my project before.
+
+## ⭐ Support
+
+If RepoTree has helped you, please consider:
+- ⭐ **Starring this repository** to show your support
+- 🐦 **Sharing it** with other developers
+
+---
+
+<div align="center">
+  
+**[🌐 Try RepoTree Now](https://ascii-repotree.vercel.app/)** • **[📖 Documentation](https://ascii-repotree.vercel.app/docs)**
+
+Made with ☕ by [coder-ralph](https://github.com/coder-ralph)
+
+</div>
