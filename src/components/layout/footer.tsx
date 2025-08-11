@@ -74,7 +74,7 @@ const Footer = () => {
             <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300">
               Have a suggestion?{' '}
               <a
-                href="https://github.com/coder-ralph/RepoTree"
+                href="https://github.com/coder-ralph/RepoTree/issues"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-700 hover:text-blue-500 transition-colors"
@@ -120,17 +120,27 @@ const Footer = () => {
           <p>
             &copy; {new Date().getFullYear()} RepoTree. All rights reserved.
           </p>
-          <p className="mt-2">
-            Made with ☕ by{' '}
+          <div className="mt-2 flex items-center justify-center">
             <a
               href="https://app.daily.dev/coderralph"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-700 hover:underline hover:underline-offset-4 transition-all"
+              title="coderralph"
+              className="group flex items-center space-x-2 transition-colors hover:text-black dark:hover:text-white"
             >
-              Ralph Rosael
+              <span className="text-gray-600 dark:text-gray-300">Made with ☕ by</span>
+              <Image
+                className="group-hover:ring-blue-500 h-6 w-6 rounded-full transition-shadow group-hover:ring-2"
+                src="/images/avatar.png"
+                alt="Ralph Rosael"
+                width={24}
+                height={24}
+              />
+              <span className="group-hover:decoration-blue-500 underline decoration-gray-500 dark:decoration-gray-400 decoration-wavy underline-offset-[4px]">
+                Ralph Rosael
+              </span>
             </a>
-          </p>
+          </div>
         </div>
       </div>
     </footer>
