@@ -131,7 +131,7 @@ const Footer = () => {
               <span className="text-gray-600 dark:text-gray-300">Made with ☕ by</span>
               <Image
                 className="group-hover:ring-blue-500 h-6 w-6 rounded-full transition-shadow group-hover:ring-2"
-                src="/images/avatar.png"
+                src="/image/avatar.png"
                 alt="Ralph Rosael"
                 width={24}
                 height={24}
