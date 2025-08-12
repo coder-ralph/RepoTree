@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   analyzeRepository,
   buildStructureString,
@@ -22,11 +23,14 @@ import {
   generateStructure,
   validateGitHubUrl,
   validateGitLabUrl,
+  type RepoValidationResult,
+  PERFORMANCE_THRESHOLDS,
 } from "@/lib/repo-tree-utils"
 import { convertMapToJson } from "@/lib/utils"
 import type { TreeCustomizationOptions } from "@/types/tree-customization"
 import { saveAs } from "file-saver"
 import {
+  AlertTriangle,
   Check,
   ChevronDown,
   CircleX,
@@ -34,6 +38,7 @@ import {
   Download,
   Github,
   GitlabIcon as GitLab,
+  Info,
   Maximize,
   Minimize,
   RefreshCw,
@@ -110,6 +115,9 @@ export default function RepoProjectStructure() {
     message: "",
     isError: false,
   })
+  const [repoValidation, setRepoValidation] = useState<RepoValidationResult | null>(null)
+  const [showValidationDialog, setShowValidationDialog] = useState(false)
+  const [proceedWithLargeRepo, setProceedWithLargeRepo] = useState(false)
   const [copied, setCopied] = useState(false)
   const [expanded, setExpanded] = useState(false)
   const [viewMode, setViewMode] = useState<"ascii" | "interactive">("ascii")
@@ -145,7 +153,7 @@ export default function RepoProjectStructure() {
   )
 
   const handleFetchStructure = useCallback(
-    async (url: string = repoUrl) => {
+    async (url: string = repoUrl, skipValidation: boolean = false) => {
       if (!url) {
         setValidation({ message: "Repository URL is required", isError: true })
         return
@@ -161,7 +169,22 @@ export default function RepoProjectStructure() {
 
       setLoading(true)
       try {
-        const tree = await fetchProjectStructure(url, repoType)
+        const { tree, validation: repoVal } = await fetchProjectStructure(url, repoType)
+        setRepoValidation(repoVal)
+
+        // Check if we should show validation warnings
+        if (!skipValidation && !repoVal.isValid) {
+          setShowValidationDialog(true)
+          setLoading(false)
+          return
+        }
+
+        if (!skipValidation && repoVal.warnings.length > 0 && !proceedWithLargeRepo) {
+          setShowValidationDialog(true)
+          setLoading(false)
+          return
+        }
+
         const map = generateStructure(tree)
         setStructureMap(map)
         setValidation({ message: "", isError: false })
@@ -170,6 +193,10 @@ export default function RepoProjectStructure() {
         const { fileTypes, languages } = analyzeRepository(map)
         setFileTypeData(fileTypes)
         setLanguageData(languages)
+        
+        // Reset validation dialog state
+        setShowValidationDialog(false)
+        setProceedWithLargeRepo(false)
       } catch (err: unknown) {
         if (err instanceof Error) {
           console.error(err)
@@ -184,11 +211,18 @@ export default function RepoProjectStructure() {
             isError: true,
           })
         }
+        setRepoValidation(null)
       }
       setLoading(false)
     },
-    [repoUrl, repoType],
+    [repoUrl, repoType, proceedWithLargeRepo],
   )
+
+  const handleProceedWithLargeRepo = useCallback(() => {
+    setProceedWithLargeRepo(true)
+    setShowValidationDialog(false)
+    handleFetchStructure(repoUrl, true)
+  }, [repoUrl, handleFetchStructure])
 
   useEffect(() => {
     const savedUrl = localStorage.getItem("lastRepoUrl")
@@ -219,17 +253,21 @@ export default function RepoProjectStructure() {
     }
   }, [])
 
+  // Memoized filtering with performance optimization
   const filterStructure = useCallback((map: DirectoryMap, term: string): DirectoryMap => {
+    if (!term.trim()) return map
+    
     const filteredMap: DirectoryMap = new Map()
+    const lowerTerm = term.toLowerCase()
 
     for (const [key, value] of map.entries()) {
       if (value && typeof value === "object" && "type" in value && value.type === "file") {
-        if (key.toLowerCase().includes(term.toLowerCase())) {
+        if (key.toLowerCase().includes(lowerTerm)) {
           filteredMap.set(key, value)
         }
       } else if (value instanceof Map) {
         const filteredSubMap = filterStructure(value, term)
-        if (filteredSubMap.size > 0 || key.toLowerCase().includes(term.toLowerCase())) {
+        if (filteredSubMap.size > 0 || key.toLowerCase().includes(lowerTerm)) {
           filteredMap.set(key, filteredSubMap)
         }
       }
@@ -243,10 +281,15 @@ export default function RepoProjectStructure() {
     [filterStructure, structureMap, searchTerm],
   )
 
-  const customizedStructure = useMemo(
-    () => buildStructureString(filteredStructureMap, "", customizationOptions),
-    [filteredStructureMap, customizationOptions],
-  )
+  // Memoized structure string with performance optimization
+  const customizedStructure = useMemo(() => {
+    // For very large structures, limit rendering to prevent performance issues
+    const mapSize = structureMap.size
+    if (mapSize > PERFORMANCE_THRESHOLDS.LARGE_REPO_ENTRIES) {
+      return buildStructureString(filteredStructureMap, "", customizationOptions, "", 20) // Limit depth
+    }
+    return buildStructureString(filteredStructureMap, "", customizationOptions)
+  }, [filteredStructureMap, customizationOptions, structureMap.size])
 
   const copyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(customizedStructure).then(() => {
@@ -259,6 +302,7 @@ export default function RepoProjectStructure() {
     setRepoUrl("")
     localStorage.removeItem("lastRepoUrl")
     setStructureMap(new Map())
+    setRepoValidation(null)
     if (inputRef.current) {
       inputRef.current.focus()
     }
@@ -275,19 +319,19 @@ export default function RepoProjectStructure() {
 
     switch (format) {
       case "md":
-        content = `# Repository Structure\n\n\`\`\`\n${customizedStructure}\`\`\``
+        content = `# Directory Structure\n\n\`\`\`\n${customizedStructure}\`\`\``
         mimeType = "text/markdown;charset=utf-8"
         fileName = "README.md"
         break
       case "txt":
         content = customizedStructure
         mimeType = "text/plain;charset=utf-8"
-        fileName = "repository-structure.txt"
+        fileName = "directory-structure.txt"
         break
       case "json":
         content = JSON.stringify(convertMapToJson(filteredStructureMap), null, 2)
         mimeType = "application/json;charset=utf-8"
-        fileName = "repository-structure.json"
+        fileName = "directory-structure.json"
         break
       case "html":
         content = `
@@ -305,7 +349,7 @@ export default function RepoProjectStructure() {
           </html>
         `
         mimeType = "text/html;charset=utf-8"
-        fileName = "repository-structure.html"
+        fileName = "directory-structure.html"
         break
     }
 
@@ -334,6 +378,79 @@ export default function RepoProjectStructure() {
 
   return (
     <div>
+      {/* Validation Dialog */}
+      <Dialog open={showValidationDialog} onOpenChange={setShowValidationDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {repoValidation?.isValid === false ? (
+                <AlertTriangle className="h-5 w-5 text-red-500" />
+              ) : (
+                <Info className="h-5 w-5 text-yellow-500" />
+              )}
+              Repository Size Warning
+            </DialogTitle>
+          </DialogHeader>
+          
+          {repoValidation && (
+            <div className="space-y-4">
+              <div className="text-sm text-gray-600 dark:text-gray-300">
+                <p className="font-medium mb-2">Repository Statistics:</p>
+                <ul className="space-y-1">
+                  <li>• Total entries: {repoValidation.totalEntries.toLocaleString()}</li>
+                  <li>• Estimated size: {(repoValidation.estimatedSize / (1024 * 1024)).toFixed(2)}MB</li>
+                </ul>
+              </div>
+
+              {repoValidation.errors.length > 0 && (
+                <Alert className="border-red-200 bg-red-50 dark:bg-red-950/20">
+                  <AlertTriangle className="h-4 w-4 text-red-500" />
+                  <AlertDescription className="text-red-700 dark:text-red-300">
+                    <ul className="space-y-1">
+                      {repoValidation.errors.map((error, index) => (
+                        <li key={index}>• {error}</li>
+                      ))}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {repoValidation.warnings.length > 0 && (
+                <Alert className="border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20">
+                  <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                  <AlertDescription className="text-yellow-700 dark:text-yellow-300">
+                    <ul className="space-y-1">
+                      {repoValidation.warnings.map((warning, index) => (
+                        <li key={index}>• {warning}</li>
+                      ))}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="flex gap-3 pt-4">
+                {repoValidation.isValid && (
+                  <Button 
+                    onClick={handleProceedWithLargeRepo}
+                    variant="default"
+                    className="flex-1"
+                  >
+                    Continue Anyway
+                  </Button>
+                )}
+                <Button 
+                  onClick={() => setShowValidationDialog(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Card
         className="w-full max-w-5xl mx-auto p-2 md:p-8 bg-gradient-to-br from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-xl"
         id="generator"
@@ -350,6 +467,20 @@ export default function RepoProjectStructure() {
           <div className="space-y-6">
             {/* Token Status */}
             <TokenStatus />
+
+            {/* Repository Validation Status */}
+            {repoValidation && structureMap.size > 0 && (
+              <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/20">
+                <Info className="h-4 w-4 text-blue-500" />
+                <AlertDescription className="text-blue-700 dark:text-blue-300">
+                  Repository processed: {repoValidation.totalEntries.toLocaleString()} entries, 
+                  estimated size: {(repoValidation.estimatedSize / (1024 * 1024)).toFixed(2)}MB
+                  {repoValidation.totalEntries > PERFORMANCE_THRESHOLDS.LARGE_REPO_ENTRIES && 
+                    " (Large repository - some features may be slower)"
+                  }
+                </AlertDescription>
+              </Alert>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end">
               {/* Repository Type Select */}
@@ -582,26 +713,28 @@ export default function RepoProjectStructure() {
               {/* Code Block */}
               <div className="relative border border-gray-300 dark:border-gray-600 border-t-0 rounded-b-lg overflow-hidden" ref={treeRef}>
                 {viewMode === "ascii" ? (
-                  <SyntaxHighlighter
-                    language="plaintext"
-                    style={atomDark}
-                    className={`${expanded ? "max-h-[none]" : "max-h-96"} overflow-y-auto min-h-[200px]`}
-                    showLineNumbers={customizationOptions.showLineNumbers}
-                    wrapLines={true}
-                    customStyle={{
-                      margin: 0,
-                      borderRadius: 0,
-                      border: 'none'
-                    }}
-                  >
-                    {customizedStructure
-                      ? customizedStructure
-                      : searchTerm
-                        ? noResultsMessage(searchTerm)
-                        : noStructureMessage}
-                  </SyntaxHighlighter>
+                  <div style={{ contain: "layout style paint" }}> {/* CSS containment for performance */}
+                    <SyntaxHighlighter
+                      language="plaintext"
+                      style={atomDark}
+                      className={`${expanded ? "max-h-[none]" : "max-h-96"} overflow-y-auto min-h-[200px]`}
+                      showLineNumbers={customizationOptions.showLineNumbers}
+                      wrapLines={true}
+                      customStyle={{
+                        margin: 0,
+                        borderRadius: 0,
+                        border: 'none'
+                      }}
+                    >
+                      {customizedStructure
+                        ? customizedStructure
+                        : searchTerm
+                          ? noResultsMessage(searchTerm)
+                          : noStructureMessage}
+                    </SyntaxHighlighter>
+                  </div>
                 ) : filteredStructureMap.size > 0 ? (
-                  <div className="bg-gray-900 min-h-[200px] p-4">
+                  <div className="bg-gray-900 min-h-[200px] p-4" style={{ contain: "layout style paint" }}>
                     <InteractiveTreeView structure={filteredStructureMap} customizationOptions={customizationOptions} />
                   </div>
                 ) : (

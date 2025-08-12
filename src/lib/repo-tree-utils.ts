@@ -6,6 +6,7 @@ export interface TreeItem {
   path: string
   type: "tree" | "blob"
   name: string
+  size?: number // size validation
 }
 
 export type DirectoryMap = Map<string, DirectoryMap | { type: "file"; name: string }>
@@ -14,6 +15,27 @@ interface GitLabTreeItem {
   path: string
   type: "tree" | "blob"
   name: string
+}
+
+// GitHub API limits
+export const GITHUB_LIMITS = {
+  MAX_ENTRIES: 100000,
+  MAX_SIZE_MB: 7,
+  MAX_SIZE_BYTES: 7 * 1024 * 1024
+}
+
+// Performance thresholds
+export const PERFORMANCE_THRESHOLDS = {
+  LARGE_REPO_ENTRIES: 10000, // Show warning for repos with >10k entries
+  MAX_RECOMMENDED_ENTRIES: 50000, // Recommend against processing >50k entries
+}
+
+export interface RepoValidationResult {
+  isValid: boolean
+  warnings: string[]
+  errors: string[]
+  totalEntries: number
+  estimatedSize: number
 }
 
 // Validate GitHub and GitLab URLs
@@ -25,6 +47,51 @@ export const validateGitHubUrl = (url: string): boolean => {
 export const validateGitLabUrl = (url: string): boolean => {
   const gitlabUrlPattern = /^https?:\/\/gitlab\.com\/[\w-]+\/[\w.-]+\/?$/
   return gitlabUrlPattern.test(url)
+}
+
+// Validate repository size and structure
+export const validateRepositoryStructure = (tree: TreeItem[]): RepoValidationResult => {
+  const result: RepoValidationResult = {
+    isValid: true,
+    warnings: [],
+    errors: [],
+    totalEntries: tree.length,
+    estimatedSize: 0
+  }
+
+  // Calculate estimated size (rough approximation based on path lengths)
+  result.estimatedSize = tree.reduce((total, item) => {
+    // Rough estimation: each item consumes ~200 bytes on average (path + metadata)
+    return total + (item.path.length * 2) + 200
+  }, 0)
+
+  // Check GitHub API limits
+  if (result.totalEntries > GITHUB_LIMITS.MAX_ENTRIES) {
+    result.isValid = false
+    result.errors.push(
+      `Repository exceeds GitHub API limit of ${GITHUB_LIMITS.MAX_ENTRIES.toLocaleString()} entries. Found ${result.totalEntries.toLocaleString()} entries.`
+    )
+  }
+
+  if (result.estimatedSize > GITHUB_LIMITS.MAX_SIZE_BYTES) {
+    result.isValid = false
+    result.errors.push(
+      `Repository exceeds GitHub API size limit of ${GITHUB_LIMITS.MAX_SIZE_MB}MB. Estimated size: ${(result.estimatedSize / (1024 * 1024)).toFixed(2)}MB.`
+    )
+  }
+
+  // Performance warnings
+  if (result.totalEntries > PERFORMANCE_THRESHOLDS.MAX_RECOMMENDED_ENTRIES) {
+    result.warnings.push(
+      `Large repository detected (${result.totalEntries.toLocaleString()} entries). This may cause performance issues.`
+    )
+  } else if (result.totalEntries > PERFORMANCE_THRESHOLDS.LARGE_REPO_ENTRIES) {
+    result.warnings.push(
+      `Medium-sized repository detected (${result.totalEntries.toLocaleString()} entries). Processing may take longer than usual.`
+    )
+  }
+
+  return result
 }
 
 // Initialize Octokit instance with proper token handling
@@ -60,13 +127,18 @@ const getGitLabToken = (): string | undefined => {
   return gitlabToken
 }
 
-// Fetch project structure from GitHub or GitLab
-export const fetchProjectStructure = async (repoUrl: string, repoType: "github" | "gitlab"): Promise<TreeItem[]> => {
-  if (repoType === "github") {
-    return fetchGitHubProjectStructure(repoUrl)
-  } else {
-    return fetchGitLabProjectStructure(repoUrl)
-  }
+// Enhanced fetch with validation
+export const fetchProjectStructure = async (
+  repoUrl: string, 
+  repoType: "github" | "gitlab"
+): Promise<{ tree: TreeItem[]; validation: RepoValidationResult }> => {
+  const tree = repoType === "github" 
+    ? await fetchGitHubProjectStructure(repoUrl)
+    : await fetchGitLabProjectStructure(repoUrl)
+  
+  const validation = validateRepositoryStructure(tree)
+  
+  return { tree, validation }
 }
 
 const fetchGitHubProjectStructure = async (repoUrl: string): Promise<TreeItem[]> => {
@@ -98,6 +170,7 @@ const fetchGitHubProjectStructure = async (repoUrl: string): Promise<TreeItem[]>
       path: item.path || "",
       type: item.type === "tree" ? "tree" : "blob",
       name: item.path ? item.path.split("/").pop() || "" : "",
+      size: item.size || 0
     })) as TreeItem[]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -167,35 +240,128 @@ const fetchGitLabProjectStructure = async (repoUrl: string): Promise<TreeItem[]>
   }
 }
 
-// Generate and build project structure
+// Optimized structure generation with early returns and better memory management
 export const generateStructure = (tree: TreeItem[]): DirectoryMap => {
   const structureMap: DirectoryMap = new Map()
-  tree.forEach((item: TreeItem) => {
+  
+  // Sort paths to ensure consistent ordering and better cache locality
+  const sortedTree = tree.sort((a, b) => a.path.localeCompare(b.path))
+  
+  for (const item of sortedTree) {
     const parts = item.path.split("/")
-    let currentLevel: DirectoryMap | { type: "file"; name: string } = structureMap
+    let currentLevel: DirectoryMap = structureMap
 
-    parts.forEach((part: string, index: number) => {
-      if (!(currentLevel instanceof Map)) return
-      if (!currentLevel.has(part)) {
-        if (index === parts.length - 1 && item.type === "blob") {
-          currentLevel.set(part, { type: "file", name: item.name })
-        } else {
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i]
+      if (!part) continue // Skip empty parts
+      
+      if (i === parts.length - 1 && item.type === "blob") {
+        // It's a file
+        currentLevel.set(part, { type: "file", name: item.name })
+      } else {
+        // It's a directory
+        if (!currentLevel.has(part)) {
           currentLevel.set(part, new Map() as DirectoryMap)
         }
+        const next = currentLevel.get(part)
+        if (next instanceof Map) {
+          currentLevel = next
+        }
       }
-      currentLevel = currentLevel.get(part)!
-    })
-  })
+    }
+  }
+  
   return structureMap
 }
 
+// Optimized structure building with chunking for large trees
+export const buildStructureString = (
+  map: DirectoryMap, 
+  prefix = "", 
+  options: TreeCustomizationOptions, 
+  currentPath = "",
+  maxDepth = 50 // Prevent infinite recursion
+): string => {
+  if (maxDepth <= 0) {
+    return `${prefix}... (max depth reached)\n`
+  }
+
+  let result = ""
+  
+  // Add root directory indicator if enabled
+  if (prefix === "" && options.showRootDirectory) {
+    result += "./\n"
+  }
+
+  const entries = Array.from(map.entries())
+  
+  // Early return for empty directories
+  if (entries.length === 0) {
+    return result
+  }
+
+  // Optimized sorting with single pass
+  const sortedEntries = entries.sort(([keyA, valueA], [keyB, valueB]) => {
+    const isDirectoryA = valueA instanceof Map
+    const isDirectoryB = valueB instanceof Map
+    
+    if (isDirectoryA !== isDirectoryB) {
+      return isDirectoryA ? -1 : 1 // Directories first
+    }
+    
+    return keyA.localeCompare(keyB) // Alphabetical within same type
+  })
+  
+  const lastIndex = sortedEntries.length - 1
+
+  for (let index = 0; index < sortedEntries.length; index++) {
+    const [key, value] = sortedEntries[index]
+    const isLast = index === lastIndex
+    const connector = getConnector(isLast, options.asciiStyle)
+    const childPrefix = getChildPrefix(isLast, options.asciiStyle)
+    const icon = options.useIcons ? getIcon(value instanceof Map) : ""
+    const isDirectory = value instanceof Map
+    
+    // Build current file/directory path
+    const itemPath = currentPath ? `${currentPath}/${key}` : key
+    
+    // Add trailing slash for directories if enabled
+    const displayName = (isDirectory && options.showTrailingSlash) ? `${key}/` : key
+    
+    // Get description for this item (cached for performance)
+    const description = getDescription(key, isDirectory, itemPath)
+    const descriptionText = options.showDescriptions && description ? `                     # ${description}` : ""
+
+    result += `${prefix}${connector}${icon}${displayName}${descriptionText}\n`
+    
+    if (isDirectory) {
+      result += buildStructureString(value, `${prefix}${childPrefix}`, options, itemPath, maxDepth - 1)
+    }
+  }
+
+  return result
+}
+
+// Cache for descriptions to improve performance
+const descriptionCache = new Map<string, string>()
+
 // Get description for files and directories
 const getDescription = (name: string, isDirectory: boolean, path?: string): string => {
-  if (isDirectory) {
-    return getDirectoryDescription(name, path || "")
-  } else {
-    return getFileDescription(name)
+  const cacheKey = `${name}:${isDirectory}:${path}`
+  if (descriptionCache.has(cacheKey)) {
+    return descriptionCache.get(cacheKey)!
   }
+
+  const description = isDirectory 
+    ? getDirectoryDescription(name, path || "")
+    : getFileDescription(name)
+  
+  // Cache the result (limit cache size to prevent memory leaks)
+  if (descriptionCache.size < 1000) {
+    descriptionCache.set(cacheKey, description)
+  }
+  
+  return description
 }
 
 // Directory descriptions based on common patterns
@@ -413,58 +579,6 @@ const getFileDescription = (fileName: string): string => {
   }
 
   return extensionDescriptions[extension] || "File"
-}
-
-export const buildStructureString = (map: DirectoryMap, prefix = "", options: TreeCustomizationOptions, currentPath = ""): string => {
-  let result = ""
-  
-  // Add root directory indicator if enabled
-  if (prefix === "" && options.showRootDirectory) {
-    result += "./\n"
-  }
-
-  const entries = Array.from(map.entries())
-  
-  // Sort entries: directories first, then files
-  // Within each group, sort alphabetically
-  const sortedEntries = entries.sort(([keyA, valueA], [keyB, valueB]) => {
-    const isDirectoryA = valueA instanceof Map
-    const isDirectoryB = valueB instanceof Map
-    
-    // If one is directory and other is file, directory comes first
-    if (isDirectoryA && !isDirectoryB) return -1
-    if (!isDirectoryA && isDirectoryB) return 1
-    
-    // If both are same type (both directories or both files), sort alphabetically
-    return keyA.localeCompare(keyB)
-  })
-  
-  const lastIndex = sortedEntries.length - 1
-
-  sortedEntries.forEach(([key, value], index) => {
-    const isLast = index === lastIndex
-    const connector = getConnector(isLast, options.asciiStyle)
-    const childPrefix = getChildPrefix(isLast, options.asciiStyle)
-    const icon = options.useIcons ? getIcon(value instanceof Map) : ""
-    const isDirectory = value instanceof Map
-    
-    // Build current file/directory path
-    const itemPath = currentPath ? `${currentPath}/${key}` : key
-    
-    // Add trailing slash for directories if enabled
-    const displayName = (isDirectory && options.showTrailingSlash) ? `${key}/` : key
-    
-    // Get description for this item
-    const description = getDescription(key, isDirectory, itemPath)
-    const descriptionText = options.showDescriptions && description ? `                     # ${description}` : ""
-
-    result += `${prefix}${connector}${icon}${displayName}${descriptionText}\n`
-    if (isDirectory) {
-      result += buildStructureString(value, `${prefix}${childPrefix}`, options, itemPath)
-    }
-  })
-
-  return result
 }
 
 const getConnector = (isLast: boolean, asciiStyle: string): string => {
