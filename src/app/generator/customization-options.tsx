@@ -33,7 +33,10 @@ const CustomizationOptions: React.FC<CustomizationOptionsProps> = ({ options, on
       </div>
       {/* Use Icons */}
       <div className="flex items-center justify-between">
-        <Label htmlFor="use-icons">Use Icons</Label>
+        <div className="flex flex-col">
+          <Label htmlFor="use-icons">Use Icons</Label>
+          <span className="text-xs text-muted-foreground italic">BOTH VIEW</span>
+        </div>
         <Switch
           id="use-icons"
           checked={options.useIcons}
@@ -42,7 +45,10 @@ const CustomizationOptions: React.FC<CustomizationOptionsProps> = ({ options, on
       </div>
       {/* Show Line Numbers */}
       <div className="flex items-center justify-between">
-        <Label htmlFor="show-line-numbers">Show Line Numbers</Label>
+        <div className="flex flex-col">
+          <Label htmlFor="show-line-numbers">Show Line Numbers</Label>
+          <span className="text-xs text-muted-foreground italic">ASCII VIEW ONLY</span>
+        </div>
         <Switch
           id="show-line-numbers"
           checked={options.showLineNumbers}
@@ -51,7 +57,10 @@ const CustomizationOptions: React.FC<CustomizationOptionsProps> = ({ options, on
       </div>
       {/* Show Descriptions */}
       <div className="flex items-center justify-between">
-        <Label htmlFor="show-descriptions">Show Descriptions</Label>
+        <div className="flex flex-col">
+          <Label htmlFor="show-descriptions">Show Descriptions</Label>
+          <span className="text-xs text-muted-foreground italic">ASCII VIEW ONLY</span>
+        </div>
         <Switch
           id="show-descriptions"
           checked={options.showDescriptions}
@@ -60,7 +69,10 @@ const CustomizationOptions: React.FC<CustomizationOptionsProps> = ({ options, on
       </div>
       {/* Root Directory */}
       <div className="flex items-center justify-between">
-        <Label htmlFor="show-root-directory">Root Directory</Label>
+        <div className="flex flex-col">
+          <Label htmlFor="show-root-directory">Root Directory</Label>
+          <span className="text-xs text-muted-foreground italic">ASCII VIEW ONLY</span>
+        </div>
         <Switch
           id="show-root-directory"
           checked={options.showRootDirectory}
@@ -69,7 +81,10 @@ const CustomizationOptions: React.FC<CustomizationOptionsProps> = ({ options, on
       </div>
       {/* Trailing Slash */}
       <div className="flex items-center justify-between">
-        <Label htmlFor="show-trailing-slash">Trailing Slash</Label>
+        <div className="flex flex-col">
+          <Label htmlFor="show-trailing-slash">Trailing Slash</Label>
+          <span className="text-xs text-muted-foreground italic">ASCII VIEW ONLY</span>
+        </div>
         <Switch
           id="show-trailing-slash"
           checked={options.showTrailingSlash}
