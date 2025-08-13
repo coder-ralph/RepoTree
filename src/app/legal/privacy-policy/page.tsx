@@ -1,29 +1,57 @@
-'use client';
+import type { Metadata } from 'next';
+import BackButton from '@/components/back-button';
 
-import { useRouter } from 'next/navigation';
-
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+export const metadata: Metadata = {
+  title: 'Privacy Policy - RepoTree',
+  description:
+    'RepoTree Privacy Policy: We do not collect personal data, use cookies, or track users. Read more about our privacy practices.',
+  robots: { index: true, follow: true },
+  alternates: {
+    canonical: 'https://ascii-repotree.vercel.app/legal/privacy-policy',
+  },
+};
 
 const PrivacyPolicy = () => {
-  const router = useRouter();
+  const lastUpdated = '2025-07-21';
+
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'PrivacyPolicy',
+    name: 'RepoTree Privacy Policy',
+    url: 'https://ascii-repotree.vercel.app/legal/privacy-policy',
+    dateModified: lastUpdated,
+    publisher: {
+      '@type': 'Organization',
+      name: 'RepoTree',
+      url: 'https://ascii-repotree.vercel.app',
+    },
+    description:
+      'RepoTree does not collect, store, or share any personal data. No cookies or tracking technologies are used.',
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white py-12 px-4 sm:px-6 lg:px-8">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
       <div className="max-w-3xl mx-auto">
-        <Button
-          onClick={() => router.back()}
-          className="mb-8 flex items-center text-white rounded-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-300"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Go back
-        </Button>
+        <BackButton />
 
-        <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
+        <h1 className="text-3xl font-bold mb-2">Privacy Policy</h1>
+        <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+          Last updated: July 21, 2025
+        </p>
 
-        <div className="p-6 space-y-4 transition-colors duration-300">
+        <div className="p-6 space-y-4">
           <p>
-            This Privacy Policy outlines RepoTree&apos;s approach to your privacy when using our website (https://ascii-repotree.vercel.app).
+            This Privacy Policy outlines RepoTree&apos;s approach to your privacy when using our website (
+            <a href="https://ascii-repotree.vercel.app" className="text-blue-500 hover:underline">
+              https://ascii-repotree.vercel.app
+            </a>
+            ).
           </p>
 
           <h2 className="text-xl font-semibold">No Data Collection</h2>
@@ -38,11 +66,26 @@ const PrivacyPolicy = () => {
 
           <h2 className="text-xl font-semibold">Security and Transparency</h2>
           <p>
-            Since we do not collect any data, there is no personal information to secure. RepoTree is designed with simplicity and user privacy as a core principle.
+            RepoTree was built with simplicity and privacy by design. Since we do not collect any data, there is no personal information to secure.
+          </p>
+
+          <h2 className="text-xl font-semibold">Policy Changes</h2>
+          <p>
+            If our privacy practices change in the future, we will update this policy and notify users accordingly.
           </p>
 
           <p>
-            If you have any questions about this Privacy Policy, feel free to reach out to us at <a href="mailto:privacy@repotree.com" className="text-blue-500 hover:underline">privacy@repotree.com</a>.
+            If you have any questions about this Privacy Policy, feel free to reach out to us at{' '}
+            <a href="mailto:privacy@repotree.com" className="text-blue-500 hover:underline">
+              privacy@repotree.com
+            </a>.
+          </p>
+
+          <p>
+            You can also read our{' '}
+            <a href="/legal/cookie-policy" className="text-blue-500 hover:underline">
+              Cookie Policy
+            </a>.
           </p>
         </div>
       </div>
