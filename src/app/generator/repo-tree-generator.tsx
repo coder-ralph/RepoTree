@@ -31,11 +31,13 @@ import type { TreeCustomizationOptions } from "@/types/tree-customization"
 import { saveAs } from "file-saver"
 import {
   AlertTriangle,
+  BarChart3,
   Check,
   ChevronDown,
   CircleX,
   Copy,
   Download,
+  FolderTree,
   Github,
   GitlabIcon as GitLab,
   Info,
@@ -44,6 +46,7 @@ import {
   RefreshCw,
   Search,
   Settings,
+  ListTree
 } from "lucide-react"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism"
@@ -56,6 +59,7 @@ interface ValidationError {
 }
 
 type RepoType = "github" | "gitlab"
+type ViewMode = "ascii" | "interactive" | "analysis"
 
 interface FileTypeData {
   name: string
@@ -120,7 +124,7 @@ export default function RepoProjectStructure() {
   const [proceedWithLargeRepo, setProceedWithLargeRepo] = useState(false)
   const [copied, setCopied] = useState(false)
   const [expanded, setExpanded] = useState(false)
-  const [viewMode, setViewMode] = useState<"ascii" | "interactive">("ascii")
+  const [viewMode, setViewMode] = useState<ViewMode>("ascii")
   const [searchTerm, setSearchTerm] = useState("")
   const [showDownloadMenu, setShowDownloadMenu] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -578,23 +582,39 @@ export default function RepoProjectStructure() {
                     {/* View Mode Tabs */}
                     <button
                       onClick={() => setViewMode("ascii")}
-                      className={`px-3 py-1.5 text-sm font-medium rounded transition-colors ${
+                      className={`px-3 py-1.5 text-sm font-medium rounded transition-colors flex items-center gap-1 ${
                         viewMode === "ascii"
                           ? "bg-blue-600 text-white"
                           : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
                       }`}
                     >
+                      <ListTree className="h-3 w-3" />
                       ASCII
                     </button>
                     <button
                       onClick={() => setViewMode("interactive")}
-                      className={`px-3 py-1.5 text-sm font-medium rounded transition-colors ${
+                      className={`px-3 py-1.5 text-sm font-medium rounded transition-colors flex items-center gap-1 ${
                         viewMode === "interactive"
                           ? "bg-blue-600 text-white"
                           : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
                       }`}
                     >
+                      <FolderTree className="h-3 w-3" />
                       Interactive
+                    </button>
+                    <button
+                      onClick={() => setViewMode("analysis")}
+                      disabled={structureMap.size === 0}
+                      className={`px-3 py-1.5 text-sm font-medium rounded transition-colors flex items-center gap-1 ${
+                        viewMode === "analysis"
+                          ? "bg-blue-600 text-white"
+                          : structureMap.size === 0
+                          ? "text-gray-400 dark:text-gray-600 cursor-not-allowed"
+                          : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      <BarChart3 className="h-3 w-3" />
+                      Analysis
                     </button>
 
                     {/* Settings Dialog */}
@@ -620,92 +640,96 @@ export default function RepoProjectStructure() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto order-1 sm:order-2">
-                    {/* Search Input */}
-                    <div className="relative w-full sm:w-auto">
-                      <Input
-                        type="text"
-                        placeholder="Search files/folders"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-8 w-full sm:w-48 h-8 text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-                      />
-                      <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                    </div>
-
-                    {/* Action Buttons Row */}
-                    <div className="flex items-center space-x-2 w-full sm:w-auto">
-                      {/* Download Dropdown */}
-                      <div className="relative">
-                        <button
-                          onClick={() => setShowDownloadMenu(!showDownloadMenu)}
-                          disabled={structureMap.size === 0}
-                          className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-gray-600 hover:bg-gray-700 text-white border border-gray-500 rounded transition-colors ${
-                            structureMap.size === 0 ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
-                          aria-label="Download"
-                        >
-                          <Download size={14} />
-                          <span className="hidden sm:inline">Download</span>
-                          <ChevronDown size={12} />
-                        </button>
-                        
-                        {showDownloadMenu && structureMap.size > 0 && (
-                          <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-lg min-w-[120px] z-10">
-                            <div className="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">
-                              File Format
-                            </div>
-                            <button 
-                              onClick={() => handleDownloadWithFormat("txt")}
-                              className="w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm"
-                            >
-                              .txt
-                            </button>
-                            <button 
-                              onClick={() => handleDownloadWithFormat("md")}
-                              className="w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm"
-                            >
-                              .md
-                            </button>
-                            <button 
-                              onClick={() => handleDownloadWithFormat("json")}
-                              className="w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm"
-                            >
-                              .json
-                            </button>
-                            <button 
-                              onClick={() => handleDownloadWithFormat("html")}
-                              className="w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm"
-                            >
-                              .html
-                            </button>
-                          </div>
-                        )}
+                    {/* Search Input - Only show for ASCII and Interactive modes */}
+                    {viewMode !== "analysis" && (
+                      <div className="relative w-full sm:w-auto">
+                        <Input
+                          type="text"
+                          placeholder="Search files/folders"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="pl-8 w-full sm:w-48 h-8 text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                        />
+                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                       </div>
+                    )}
 
-                      <button
-                        onClick={structureMap.size === 0 ? () => {} : copyToClipboard}
-                        className={`p-1.5 rounded transition-colors ${
-                          structureMap.size === 0
-                            ? "text-gray-400 dark:text-gray-600 cursor-not-allowed"
-                            : copied
-                            ? "text-green-600 dark:text-green-400"
-                            : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
-                        }`}
-                        aria-label="Copy to clipboard"
-                        title="Copy to clipboard"
-                      >
-                        {copied ? <Check size={16} /> : <Copy size={16} />}
-                      </button>
+                    {/* Action Buttons Row - Only show for ASCII and Interactive modes */}
+                    {viewMode !== "analysis" && (
+                      <div className="flex items-center space-x-2 w-full sm:w-auto">
+                        {/* Download Dropdown */}
+                        <div className="relative">
+                          <button
+                            onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+                            disabled={structureMap.size === 0}
+                            className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-gray-600 hover:bg-gray-700 text-white border border-gray-500 rounded transition-colors ${
+                              structureMap.size === 0 ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
+                            aria-label="Download"
+                          >
+                            <Download size={14} />
+                            <span className="hidden sm:inline">Download</span>
+                            <ChevronDown size={12} />
+                          </button>
+                          
+                          {showDownloadMenu && structureMap.size > 0 && (
+                            <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-lg min-w-[120px] z-10">
+                              <div className="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">
+                                File Format
+                              </div>
+                              <button 
+                                onClick={() => handleDownloadWithFormat("txt")}
+                                className="w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm"
+                              >
+                                .txt
+                              </button>
+                              <button 
+                                onClick={() => handleDownloadWithFormat("md")}
+                                className="w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm"
+                              >
+                                .md
+                              </button>
+                              <button 
+                                onClick={() => handleDownloadWithFormat("json")}
+                                className="w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm"
+                              >
+                                .json
+                              </button>
+                              <button 
+                                onClick={() => handleDownloadWithFormat("html")}
+                                className="w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm"
+                              >
+                                .html
+                              </button>
+                            </div>
+                          )}
+                        </div>
 
-                      <button
-                        onClick={toggleExpand}
-                        className="p-1.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-                        aria-label={expanded ? "Collapse" : "Expand"}
-                        title={expanded ? "Collapse" : "Expand"}
-                      >
-                        {expanded ? <Minimize size={16} /> : <Maximize size={16} />}
-                      </button>
-                    </div>
+                        <button
+                          onClick={structureMap.size === 0 ? () => {} : copyToClipboard}
+                          className={`p-1.5 rounded transition-colors ${
+                            structureMap.size === 0
+                              ? "text-gray-400 dark:text-gray-600 cursor-not-allowed"
+                              : copied
+                              ? "text-green-600 dark:text-green-400"
+                              : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
+                          }`}
+                          aria-label="Copy to clipboard"
+                          title="Copy to clipboard"
+                        >
+                          {copied ? <Check size={16} /> : <Copy size={16} />}
+                        </button>
+
+                        <button
+                          onClick={toggleExpand}
+                          className="p-1.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+                          aria-label={expanded ? "Collapse" : "Expand"}
+                          title={expanded ? "Collapse" : "Expand"}
+                        >
+                          {expanded ? <Minimize size={16} /> : <Maximize size={16} />}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -733,9 +757,32 @@ export default function RepoProjectStructure() {
                           : noStructureMessage}
                     </SyntaxHighlighter>
                   </div>
-                ) : filteredStructureMap.size > 0 ? (
-                  <div className="bg-gray-900 min-h-[200px] p-4" style={{ contain: "layout style paint" }}>
-                    <InteractiveTreeView structure={filteredStructureMap} customizationOptions={customizationOptions} />
+                ) : viewMode === "interactive" ? (
+                  filteredStructureMap.size > 0 ? (
+                    <div className="bg-gray-900 min-h-[200px] p-4" style={{ contain: "layout style paint" }}>
+                      <InteractiveTreeView structure={filteredStructureMap} customizationOptions={customizationOptions} />
+                    </div>
+                  ) : (
+                    <SyntaxHighlighter
+                      language="plaintext"
+                      style={atomDark}
+                      className="max-h-96 overflow-y-auto min-h-[200px]"
+                      customStyle={{
+                        margin: 0,
+                        borderRadius: 0,
+                        border: 'none'
+                      }}
+                    >
+                      {searchTerm ? noResultsMessage(searchTerm) : noStructureMessage}
+                    </SyntaxHighlighter>
+                  )
+                ) : viewMode === "analysis" && structureMap.size > 0 ? (
+                  <div className="bg-white dark:bg-gray-900 min-h-[400px] p-6">
+                    <div className="mb-6">
+                      <h2 className="text-center text-2xl font-bold text-gray-900 dark:text-white mb-2">Repository Analysis</h2>
+                      <p className="text-center text-gray-600 dark:text-gray-300">Visual breakdown of file types and programming languages in your repository.</p>
+                    </div>
+                    <RepoGraphs fileTypeData={fileTypeData} languageData={languageData} />
                   </div>
                 ) : (
                   <SyntaxHighlighter
@@ -748,17 +795,11 @@ export default function RepoProjectStructure() {
                       border: 'none'
                     }}
                   >
-                    {searchTerm ? noResultsMessage(searchTerm) : noStructureMessage}
+                    {noStructureMessage}
                   </SyntaxHighlighter>
                 )}
               </div>
 
-              {structureMap.size > 0 && (
-                <div className="mt-8">
-                  <h2 className="text-2xl font-bold mb-4">Repository Analysis</h2>
-                  <RepoGraphs fileTypeData={fileTypeData} languageData={languageData} />
-                </div>
-              )}
               {/* <AIFeedback structureMap={structureMap} /> */}
             </div>
           </div>
