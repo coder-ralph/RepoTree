@@ -456,11 +456,11 @@ export default function RepoProjectStructure() {
       </Dialog>
 
       <Card
-        className="w-full max-w-5xl mx-auto p-2 md:p-8 bg-gradient-to-br from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-xl"
+        className="w-full max-w-5xl mx-auto p-2 md:p-8 bg-white dark:bg-gray-900 shadow-2xl shadow-indigo-400/50"
         id="generator"
       >
         <CardHeader>
-          <CardTitle className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black dark:text-white flex items-center justify-center gap-2">
+          <CardTitle className="text-3xl md:text-5xl lg:text-6xl font-semibold text-black dark:text-white flex items-center justify-center gap-2">
             Repo<span className="text-blue-600">Tree</span>Generator
           </CardTitle>
           <p className="text-center text-sm md:text-base text-gray-600 dark:text-gray-300">
@@ -515,7 +515,7 @@ export default function RepoProjectStructure() {
 
               {/* Repository URL Input with Private Repos Label */}
               <div className="sm:col-span-7">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Repository URL
                   </label>

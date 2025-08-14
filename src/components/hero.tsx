@@ -23,7 +23,7 @@ const Hero = () => {
             variants={fadeIn}
             className="text-center"
           >
-            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-gray-900 dark:text-white font-bold mb-6 leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-gray-900 dark:text-white font-bold mb-6 leading-tight">
               Visualize Your<br />
               <Highlight>GitHub & GitLab Repos</Highlight>
             </h1>

@@ -22,9 +22,9 @@ const AboutCard = ({
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay: index * 0.2 }}
   >
-    <Card className="p-6 rounded-xl bg-gradient-to-br from-blue-50 to-white dark:from-gray-800 dark:to-blue-900 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+    <Card className="p-6 rounded-xl bg-white dark:bg-blue-700 shadow-cyan-400/50 hover:shadow-2xl hover:shadow-cyan-400/50 transition-all duration-300 transform hover:scale-105">
       <CardHeader className="flex flex-col items-center space-y-4">
-        <Icon className="w-16 h-16 text-blue-600" />
+        <Icon className="w-16 h-16 text-blue-600 dark:text-white" />
         <CardTitle className="font-bold text-xl sm:text-2xl md:text-3xl text-gray-800 dark:text-white">
           {title}
         </CardTitle>
