@@ -67,14 +67,14 @@ const CustomizationOptions: React.FC<CustomizationOptionsProps> = ({ options, on
           onCheckedChange={(checked: boolean) => onChange({ showDescriptions: checked })}
         />
       </div>
-      {/* Root Directory */}
+      {/* Root Folder Name */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col">
-          <Label htmlFor="show-root-directory">Root Directory</Label>
+          <Label htmlFor="show-root-folder-name">Root Folder Name</Label>
           <span className="text-xs text-muted-foreground italic">ASCII VIEW ONLY</span>
         </div>
         <Switch
-          id="show-root-directory"
+          id="show-root-folder-name"
           checked={options.showRootDirectory}
           onCheckedChange={(checked: boolean) => onChange({ showRootDirectory: checked })}
         />

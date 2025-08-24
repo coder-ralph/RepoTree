@@ -49,6 +49,18 @@ export const validateGitLabUrl = (url: string): boolean => {
   return gitlabUrlPattern.test(url)
 }
 
+// Extract repository name from URL
+export const extractRepoName = (repoUrl: string): string => {
+  try {
+    // Handle both GitHub and GitLab URLs
+    const urlParts = repoUrl.replace(/\/$/, '').split('/')
+    const repoName = urlParts[urlParts.length - 1]
+    return repoName || 'Repository'
+  } catch {
+    return 'Repository'
+  }
+}
+
 // Validate repository size and structure
 export const validateRepositoryStructure = (tree: TreeItem[]): RepoValidationResult => {
   const result: RepoValidationResult = {
@@ -131,14 +143,14 @@ const getGitLabToken = (): string | undefined => {
 export const fetchProjectStructure = async (
   repoUrl: string, 
   repoType: "github" | "gitlab"
-): Promise<{ tree: TreeItem[]; validation: RepoValidationResult }> => {
+): Promise<{ tree: TreeItem[]; validation: RepoValidationResult; repoUrl: string }> => {
   const tree = repoType === "github" 
     ? await fetchGitHubProjectStructure(repoUrl)
     : await fetchGitLabProjectStructure(repoUrl)
   
   const validation = validateRepositoryStructure(tree)
   
-  return { tree, validation }
+  return { tree, validation, repoUrl }
 }
 
 const fetchGitHubProjectStructure = async (repoUrl: string): Promise<TreeItem[]> => {
@@ -277,8 +289,9 @@ export const generateStructure = (tree: TreeItem[]): DirectoryMap => {
 // Optimized structure building with chunking for large trees
 export const buildStructureString = (
   map: DirectoryMap, 
+  customizationOptions: TreeCustomizationOptions, 
+  repoUrl = "", // Repository URL parameter
   prefix = "", 
-  options: TreeCustomizationOptions, 
   currentPath = "",
   maxDepth = 50 // Prevent infinite recursion
 ): string => {
@@ -288,9 +301,11 @@ export const buildStructureString = (
 
   let result = ""
   
-  // Add root directory indicator if enabled
-  if (prefix === "" && options.showRootDirectory) {
-    result += "./\n"
+  // Add root folder name if enabled and at root level
+  if (prefix === "" && customizationOptions.showRootDirectory && repoUrl) {
+    const repoName = extractRepoName(repoUrl)
+    const icon = customizationOptions.useIcons ? "📂 " : ""
+    result += `${icon}${repoName}\n`
   }
 
   const entries = Array.from(map.entries())
@@ -317,25 +332,25 @@ export const buildStructureString = (
   for (let index = 0; index < sortedEntries.length; index++) {
     const [key, value] = sortedEntries[index]
     const isLast = index === lastIndex
-    const connector = getConnector(isLast, options.asciiStyle)
-    const childPrefix = getChildPrefix(isLast, options.asciiStyle)
-    const icon = options.useIcons ? getIcon(value instanceof Map) : ""
+    const connector = getConnector(isLast, customizationOptions.asciiStyle)
+    const childPrefix = getChildPrefix(isLast, customizationOptions.asciiStyle)
+    const icon = customizationOptions.useIcons ? getIcon(value instanceof Map) : ""
     const isDirectory = value instanceof Map
     
     // Build current file/directory path
     const itemPath = currentPath ? `${currentPath}/${key}` : key
     
     // Add trailing slash for directories if enabled
-    const displayName = (isDirectory && options.showTrailingSlash) ? `${key}/` : key
+    const displayName = (isDirectory && customizationOptions.showTrailingSlash) ? `${key}/` : key
     
     // Get description for this item (cached for performance)
     const description = getDescription(key, isDirectory, itemPath)
-    const descriptionText = options.showDescriptions && description ? `                     # ${description}` : ""
+    const descriptionText = customizationOptions.showDescriptions && description ? `                     # ${description}` : ""
 
     result += `${prefix}${connector}${icon}${displayName}${descriptionText}\n`
     
     if (isDirectory) {
-      result += buildStructureString(value, `${prefix}${childPrefix}`, options, itemPath, maxDepth - 1)
+      result += buildStructureString(value, customizationOptions, repoUrl, `${prefix}${childPrefix}`, itemPath, maxDepth - 1)
     }
   }
 

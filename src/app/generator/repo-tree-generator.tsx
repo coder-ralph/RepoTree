@@ -290,10 +290,10 @@ export default function RepoProjectStructure() {
     // For very large structures, limit rendering to prevent performance issues
     const mapSize = structureMap.size
     if (mapSize > PERFORMANCE_THRESHOLDS.LARGE_REPO_ENTRIES) {
-      return buildStructureString(filteredStructureMap, "", customizationOptions, "", 20) // Limit depth
+      return buildStructureString(filteredStructureMap, customizationOptions, repoUrl, "", "", 20) // Limit depth
     }
-    return buildStructureString(filteredStructureMap, "", customizationOptions)
-  }, [filteredStructureMap, customizationOptions, structureMap.size])
+    return buildStructureString(filteredStructureMap, customizationOptions, repoUrl)
+  }, [filteredStructureMap, customizationOptions, structureMap.size, repoUrl])
 
   const copyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(customizedStructure).then(() => {
