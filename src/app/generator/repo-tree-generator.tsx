@@ -46,7 +46,8 @@ import {
   RefreshCw,
   Search,
   Settings,
-  ListTree
+  ListTree,
+  X
 } from "lucide-react"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism"
@@ -373,7 +374,16 @@ export default function RepoProjectStructure() {
     })
   }
 
-  const noStructureMessage = `No structure generated yet. Enter a ${repoType === "github" ? "GitHub" : "GitLab"} URL and click Generate.`
+  const getDisplayMessage = useCallback(() => {
+    if (validation.isError && validation.message) {
+      return { text: validation.message, isError: true }
+    }
+    if (searchTerm && structureMap.size > 0) {
+      return { text: `No files or folders found matching "${searchTerm}".\n\nTips:\n- Check the spelling\n- Try searching for partial names\n- Include file extensions (.js, .ts, .json)`, isError: false }
+    }
+    return { text: `No structure generated yet. Enter a ${repoType === "github" ? "GitHub" : "GitLab"} URL and click Generate.`, isError: false }
+  }, [validation, searchTerm, structureMap.size, repoType])
+
   const noResultsMessage = useCallback(
     (searchTerm: string) =>
       `No files or folders found matching "${searchTerm}".\n\nTips:\n- Check the spelling\n- Try searching for partial names\n- Include file extensions (.js, .ts, .json)`,
@@ -571,8 +581,6 @@ export default function RepoProjectStructure() {
               </div>
             </div>
 
-            {validation.isError && <p className="text-red-500 text-sm mt-2">{validation.message}</p>}
-
             <div>
               {/* Menu Bar*/}
               <div className="border border-gray-300 dark:border-gray-600 rounded-t-lg bg-gray-50 dark:bg-gray-800">
@@ -738,24 +746,33 @@ export default function RepoProjectStructure() {
               <div className="relative border border-gray-300 dark:border-gray-600 border-t-0 rounded-b-lg overflow-hidden" ref={treeRef}>
                 {viewMode === "ascii" ? (
                   <div style={{ contain: "layout style paint" }}> {/* CSS containment for performance */}
-                    <SyntaxHighlighter
-                      language="plaintext"
-                      style={atomDark}
-                      className={`${expanded ? "max-h-[none]" : "max-h-96"} overflow-y-auto min-h-[200px]`}
-                      showLineNumbers={customizationOptions.showLineNumbers}
-                      wrapLines={true}
-                      customStyle={{
-                        margin: 0,
-                        borderRadius: 0,
-                        border: 'none'
-                      }}
-                    >
-                      {customizedStructure
-                        ? customizedStructure
-                        : searchTerm
-                          ? noResultsMessage(searchTerm)
-                          : noStructureMessage}
-                    </SyntaxHighlighter>
+                    {customizedStructure ? (
+                      <SyntaxHighlighter
+                        language="plaintext"
+                        style={atomDark}
+                        className={`${expanded ? "max-h-[none]" : "max-h-96"} overflow-y-auto min-h-[200px]`}
+                        showLineNumbers={customizationOptions.showLineNumbers}
+                        wrapLines={true}
+                        customStyle={{
+                          margin: 0,
+                          borderRadius: 0,
+                          border: 'none'
+                        }}
+                      >
+                        {customizedStructure}
+                      </SyntaxHighlighter>
+                    ) : (
+                      <div className="bg-[#1d1f21] min-h-[200px] p-4 flex items-start">
+                        {getDisplayMessage().isError ? (
+                          <div className="flex items-start gap-2 text-red-500">
+                            <X className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                            <span className="font-mono text-sm">Error: {getDisplayMessage().text}</span>
+                          </div>
+                        ) : (
+                          <span className="font-mono text-sm text-gray-400">{getDisplayMessage().text}</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ) : viewMode === "interactive" ? (
                   filteredStructureMap.size > 0 ? (
@@ -763,18 +780,18 @@ export default function RepoProjectStructure() {
                       <InteractiveTreeView structure={filteredStructureMap} customizationOptions={customizationOptions} />
                     </div>
                   ) : (
-                    <SyntaxHighlighter
-                      language="plaintext"
-                      style={atomDark}
-                      className="max-h-96 overflow-y-auto min-h-[200px]"
-                      customStyle={{
-                        margin: 0,
-                        borderRadius: 0,
-                        border: 'none'
-                      }}
-                    >
-                      {searchTerm ? noResultsMessage(searchTerm) : noStructureMessage}
-                    </SyntaxHighlighter>
+                    <div className="bg-[#1d1f21] min-h-[200px] p-4 flex items-start">
+                      {searchTerm ? (
+                        <span className="font-mono text-sm text-gray-400">{noResultsMessage(searchTerm)}</span>
+                      ) : getDisplayMessage().isError ? (
+                        <div className="flex items-start gap-2 text-red-500">
+                          <X className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                          <span className="font-mono text-sm">Error: {getDisplayMessage().text}</span>
+                        </div>
+                      ) : (
+                        <span className="font-mono text-sm text-gray-400">{getDisplayMessage().text}</span>
+                      )}
+                    </div>
                   )
                 ) : viewMode === "analysis" && structureMap.size > 0 ? (
                   <div className="bg-white dark:bg-gray-900 min-h-[400px] p-6">
@@ -785,18 +802,16 @@ export default function RepoProjectStructure() {
                     <RepoGraphs fileTypeData={fileTypeData} languageData={languageData} />
                   </div>
                 ) : (
-                  <SyntaxHighlighter
-                    language="plaintext"
-                    style={atomDark}
-                    className="max-h-96 overflow-y-auto min-h-[200px]"
-                    customStyle={{
-                      margin: 0,
-                      borderRadius: 0,
-                      border: 'none'
-                    }}
-                  >
-                    {noStructureMessage}
-                  </SyntaxHighlighter>
+                  <div className="bg-[#1d1f21] min-h-[200px] p-4 flex items-start">
+                    {getDisplayMessage().isError ? (
+                      <div className="flex items-start gap-2 text-red-500">
+                        <X className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                        <span className="font-mono text-sm">Error: {getDisplayMessage().text}</span>
+                      </div>
+                    ) : (
+                      <span className="font-mono text-sm text-gray-400">{getDisplayMessage().text}</span>
+                    )}
+                  </div>
                 )}
               </div>
 
