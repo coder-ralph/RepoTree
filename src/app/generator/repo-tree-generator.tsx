@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-// import AIFeedback from "@/components/ai-feedback"
 import InteractiveTreeView from "@/components/interactive-tree-view"
 import PrivateReposDialog from "@/components/private-repos-dialog"
 import { RepoGraphs } from "@/components/repo-graphs"
@@ -815,7 +814,6 @@ export default function RepoProjectStructure() {
                 )}
               </div>
 
-              {/* <AIFeedback structureMap={structureMap} /> */}
             </div>
           </div>
         </CardContent>
