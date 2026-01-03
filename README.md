@@ -11,7 +11,6 @@ A web tool that visualizes GitHub and GitLab repositories with clean ASCII trees
 * 👀 **Instant Visualization**: Convert any GitHub & GitLab repository structure into a clean ASCII tree
 * 🎯 **Interactive Tree View**: Expand or collapse folders for better navigation and exploration
 * 📊 **Repository Analysis**: Visualize file type distribution and language breakdown with interactive graphs
-* 🤖 **AI-Powered Feedback** *(Currently Disabled)*: Get intelligent suggestions and analysis for your repository structure
 * 💾 **Multiple Export Formats**: Download trees as README.md, .txt, .json, or .html files
 * 🔍 **Real-time Search**: Quickly filter and highlight specific files or directories
 * 🎨 **Dual View Modes**: Switch between ASCII and Interactive views for enhanced user experience
@@ -96,8 +95,6 @@ RepoTree provides insightful visualizations:
 
 ![Repository Analysis](repository-analysis.png)
 
-- **Repository Structure** *(Currently Disabled)*: Get AI-powered feedback on your project organization
-
 ## 🎯 Use Cases
 
 - 📝 **Documentation**: Include clean directory trees in your README files
@@ -117,10 +114,6 @@ A year ago, I saw a Stack Overflow question about generating directory trees fro
 ## 🤝 Contributing
 
 Contributions are welcome! Report issues [here](https://github.com/coder-ralph/RepoTree/issues) or submit a Pull Request [here](https://github.com/coder-ralph/RepoTree/pulls).
-
-## 🫡 Acknowledgements
-
-This project was inspired by Nathan Friend's [Tree Online](https://gitlab.com/nfriend/tree-online) and [ASCII Tree Generator](https://ascii-tree-generator.com/). I used these tools to create documentation for my project before.
 
 ## ⭐ Support
 
