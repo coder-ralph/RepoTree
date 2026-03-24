@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { ArrowLeft, Play, Pause, Volume2, VolumeX, Maximize } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import {
@@ -10,7 +9,9 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from '@/components/ui/accordion';
+import Header from '@/components/layout/header';
+import Footer from '@/components/layout/footer';
 
 const MinimalistVideoPlayer = ({ src }: { src: string }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -24,19 +25,13 @@ const MinimalistVideoPlayer = ({ src }: { src: string }) => {
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
     const updateTime = () => {
       setCurrentTime(video.currentTime);
       setProgress((video.currentTime / video.duration) * 100);
     };
-
-    const updateDuration = () => {
-      setDuration(video.duration);
-    };
-
+    const updateDuration = () => setDuration(video.duration);
     video.addEventListener('timeupdate', updateTime);
     video.addEventListener('loadedmetadata', updateDuration);
-
     return () => {
       video.removeEventListener('timeupdate', updateTime);
       video.removeEventListener('loadedmetadata', updateDuration);
@@ -46,19 +41,14 @@ const MinimalistVideoPlayer = ({ src }: { src: string }) => {
   const togglePlay = () => {
     const video = videoRef.current;
     if (!video) return;
-
-    if (isPlaying) {
-      video.pause();
-    } else {
-      video.play();
-    }
+    if (isPlaying) video.pause();
+    else video.play();
     setIsPlaying(!isPlaying);
   };
 
   const toggleMute = () => {
     const video = videoRef.current;
     if (!video) return;
-
     video.muted = !isMuted;
     setIsMuted(!isMuted);
   };
@@ -66,123 +56,59 @@ const MinimalistVideoPlayer = ({ src }: { src: string }) => {
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const video = videoRef.current;
     if (!video) return;
-
     const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const width = rect.width;
-    const newTime = (clickX / width) * duration;
-    
-    video.currentTime = newTime;
+    video.currentTime = ((e.clientX - rect.left) / rect.width) * duration;
   };
 
   const toggleFullscreen = () => {
     const video = videoRef.current;
     if (!video) return;
-
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      video.requestFullscreen();
-    }
+    if (document.fullscreenElement) document.exitFullscreen();
+    else video.requestFullscreen();
   };
 
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
+  const formatTime = (t: number) =>
+    `${Math.floor(t / 60)}:${Math.floor(t % 60).toString().padStart(2, '0')}`;
 
   return (
-    <div 
-      className="relative w-full bg-black rounded-lg overflow-hidden group"
+    <div
+      className="relative w-full bg-black rounded-xl overflow-hidden"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
     >
-      <video
-        ref={videoRef}
-        className="w-full h-auto"
-        src={src}
-        onClick={togglePlay}
-      />
-      
-      {/* Controls Overlay */}
-      <div className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
-        {/* Play/Pause Button in Center */}
+      <video ref={videoRef} className="w-full h-auto" src={src} onClick={togglePlay} />
+      <div
+        className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}
+      >
         <div className="absolute inset-0 flex items-center justify-center">
           <button
             onClick={togglePlay}
-            className="bg-black/50 hover:bg-black/70 text-white p-4 rounded-full transition-all duration-200 hover:scale-110"
-            aria-label={isPlaying ? "Pause video" : "Play video"}
-            title={isPlaying ? "Pause video" : "Play video"}
+            className="bg-black/50 hover:bg-black/70 text-white p-4 rounded-full transition-all"
           >
-            {isPlaying ? (
-              <Pause className="w-8 h-8" />
-            ) : (
-              <Play className="w-8 h-8 ml-1" />
-            )}
+            {isPlaying ? <Pause size={24} /> : <Play size={24} className="ml-0.5" />}
           </button>
         </div>
-
-        {/* Bottom Controls */}
         <div className="absolute bottom-0 left-0 right-0 p-4">
-          {/* Progress Bar */}
-          <div 
-            className="w-full h-1 bg-white/30 rounded-full cursor-pointer mb-3 hover:h-2 transition-all duration-200"
+          <div
+            className="w-full h-1 bg-white/30 rounded-full cursor-pointer mb-3 hover:h-1.5 transition-all"
             onClick={handleProgressClick}
-            role="progressbar"
-            aria-label="Video progress"
-            aria-valuenow={progress}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            title={`Video progress: ${Math.round(progress)}%`}
           >
-            <div 
-              className="h-full bg-blue-500 rounded-full transition-all duration-200"
-              style={{ width: `${progress}%` }}
-            />
+            <div className="h-full bg-blue-500 rounded-full" style={{ width: `${progress}%` }} />
           </div>
-
-          {/* Control Buttons */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={togglePlay}
-                className="text-white hover:text-blue-400 transition-colors duration-200"
-                aria-label={isPlaying ? "Pause video" : "Play video"}
-                title={isPlaying ? "Pause video" : "Play video"}
-              >
-                {isPlaying ? (
-                  <Pause className="w-5 h-5" />
-                ) : (
-                  <Play className="w-5 h-5" />
-                )}
+            <div className="flex items-center gap-3">
+              <button onClick={togglePlay} className="text-white hover:text-blue-400 transition-colors">
+                {isPlaying ? <Pause size={16} /> : <Play size={16} />}
               </button>
-
-              <button
-                onClick={toggleMute}
-                className="text-white hover:text-blue-400 transition-colors duration-200"
-                aria-label={isMuted ? "Unmute video" : "Mute video"}
-                title={isMuted ? "Unmute video" : "Mute video"}
-              >
-                {isMuted ? (
-                  <VolumeX className="w-5 h-5" />
-                ) : (
-                  <Volume2 className="w-5 h-5" />
-                )}
+              <button onClick={toggleMute} className="text-white hover:text-blue-400 transition-colors">
+                {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
               </button>
-
-              <span className="text-white text-sm">
+              <span className="text-white text-xs font-mono">
                 {formatTime(currentTime)} / {formatTime(duration)}
               </span>
             </div>
-
-            <button
-              onClick={toggleFullscreen}
-              className="text-white hover:text-blue-400 transition-colors duration-200"
-              aria-label="Toggle fullscreen"
-              title="Toggle fullscreen"
-            >
-              <Maximize className="w-5 h-5" />
+            <button onClick={toggleFullscreen} className="text-white hover:text-blue-400 transition-colors">
+              <Maximize size={16} />
             </button>
           </div>
         </div>
@@ -191,117 +117,115 @@ const MinimalistVideoPlayer = ({ src }: { src: string }) => {
   );
 };
 
-const DocsPage = () => {
+export default function DocsPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <Button
-          onClick={() => router.back()}
-          className="mb-8 flex items-center text-white rounded-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-300"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Go back
-        </Button>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
+      <Header />
+      <main className="flex-1 py-10 px-4">
+        <div className="max-w-2xl mx-auto">
+          <button
+            onClick={() => router.back()}
+            className="mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          >
+            <ArrowLeft size={14} />
+            Go back
+          </button>
 
-        <h1 className="text-3xl font-bold mb-6">RepoTree Documentation</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2 tracking-tight">
+            Documentation
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
+            Everything you need to know about using RepoTree.
+          </p>
 
-        <div className="p-6 space-y-4 transition-colors duration-300">
-          <section id="introduction" className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Introduction</h2>
-            <p>
-              RepoTree is a powerful tool that generates a clean ASCII
-              representation of a GitHub or GitLab repository structure, perfect for
-              documentation and sharing.
-            </p>
-          </section>
+          <div className="space-y-8">
+            <section>
+              <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-2">
+                Introduction
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                RepoTree generates clean ASCII tree representations of GitHub and GitLab
+                repositories — perfect for README files, documentation, and code reviews.
+                Public repositories work immediately without signing in. Private repositories
+                require OAuth authentication.
+              </p>
+            </section>
 
-          <section id="features" className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Features</h2>
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1">
-                <AccordionTrigger>Core Features</AccordionTrigger>
-                <AccordionContent>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li><strong>Download in Different Formats:</strong> Users can download the directory structure in formats like README.md, .txt, .json, or .html.</li>
-                    <li><strong>Syntax Highlighting:</strong> Enhances readability using prism-react-renderer for syntax highlighting.</li>
-                    <li><strong>Real-time Search Bar:</strong> Quickly filter and highlight specific files or directories within the generated structure.</li>
-                    <li><strong>AI Feedback Analysis:</strong> Provides feedback and suggestions for your repository structure based on AI analysis.</li>
-                    <li><strong>Repository Analysis Graphs:</strong> Visualizes repository data, such as file type distribution and languages breakdown, with interactive graphs.</li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2">
-                <AccordionTrigger>User Experience</AccordionTrigger>
-                <AccordionContent>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li><strong>Interactive Tree View:</strong> Allows expansion or collapse of folders for better navigation.</li>
-                    <li><strong>Clipboard Copy Notification:</strong> Provides a toast notification when the directory structure is copied to the clipboard.</li>
-                    <li><strong>View Mode Toggle:</strong> Switch between ASCII view and Interactive view for an enhanced user experience.</li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3">
-                <AccordionTrigger>Technical Features</AccordionTrigger>
-                <AccordionContent>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li><strong>Persistent State with LocalStorage:</strong> Saves the last fetched repository URL, maintaining input between sessions.</li>
-                    <li><strong>Server-Side Fetching with Next.js:</strong> Optimized server-side fetching improves performance and SEO.</li>
-                    <li><strong>Error Handling and Validation:</strong> Validates GitHub URLs and shows error messages for invalid inputs.</li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </section>
+            <section>
+              <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+                Features
+              </h2>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="core">
+                  <AccordionTrigger className="text-sm">Core features</AccordionTrigger>
+                  <AccordionContent>
+                    <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2 leading-relaxed">
+                      <li><strong className="text-gray-800 dark:text-gray-300">ASCII tree output</strong> — clean, copy-ready directory structures</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Interactive tree view</strong> — collapsible folder explorer</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Repository analysis</strong> — file type and language breakdown charts</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Multiple export formats</strong> — .md, .txt, .json, .html</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Real-time search</strong> — filter files and folders instantly</li>
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="customization">
+                  <AccordionTrigger className="text-sm">Customization options</AccordionTrigger>
+                  <AccordionContent>
+                    <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2 leading-relaxed">
+                      <li><strong className="text-gray-800 dark:text-gray-300">ASCII styles</strong> — basic, detailed, or minimal connectors</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">File icons</strong> — VS Code-style icons in both views</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Line numbers</strong> — numbered output (ASCII view)</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Descriptions</strong> — auto-generated file/folder descriptions</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Root folder name</strong> — show or hide the repository name</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Trailing slashes</strong> — append / to directories</li>
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="auth">
+                  <AccordionTrigger className="text-sm">Authentication</AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                      RepoTree uses OAuth for authentication — no personal access tokens needed.
+                      Sign in with GitHub or GitLab to access private repositories and get higher
+                      API rate limits (5,000 req/hr vs 60 req/hr unauthenticated for GitHub).
+                      Your session token is stored in an encrypted httpOnly cookie and never
+                      exposed to client-side JavaScript.
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </section>
 
-          <section id="tech-stack" className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Tech Stack</h2>
-            <ul className="list-disc pl-6 space-y-2">
-              <li><strong>Next.js:</strong> React framework for server-side rendering and routing</li>
-              <li><strong>React:</strong> JavaScript library for building user interfaces</li>
-              <li><strong>TypeScript:</strong> Typed superset of JavaScript for improved developer experience</li>
-              <li><strong>Tailwind CSS:</strong> Utility-first CSS framework for rapid UI development</li>
-              <li><strong>Shadcn UI:</strong> Component library for consistent and customizable UI elements</li>
-              <li><strong>Octokit:</strong> GitHub API client for fetching repository data</li>
-              <li><strong>Recharts:</strong> Composable charting library for data visualization</li>
-              <li><strong>Axios:</strong> Promise-based HTTP client for making requests</li>
-              <li><strong>Framer Motion:</strong> Animation library for React</li>
-              <li><strong>Lucide:</strong> A set of open-source icons for React</li>
-              <li><strong>Radix UI:</strong> Low-level UI primitives for building accessible, high-quality design systems</li>
-              <li><strong>File Saver:</strong> Library to save files on the client-side</li>
-              <li><strong>Mini SVG Data URI:</strong> Utility for converting SVGs to data URIs</li>
-            </ul>
-          </section>
-
-          <section id="demo" className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Demo</h2>
-            <div className="w-full">
+            <section>
+              <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+                Demo
+              </h2>
               <MinimalistVideoPlayer src="/video/demo2.webm" />
+            </section>
+
+            <section>
+              <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+                Roadmap
+              </h2>
+              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1.5 leading-relaxed">
+                <li>→ Shareable tree links</li>
+              </ul>
+            </section>
+
+            <div className="pt-4">
+              <Link
+                href="/generator"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors"
+              >
+                Open Generator →
+              </Link>
             </div>
-          </section>
-
-          <section id="future-features" className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Future Features</h2>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>Integration with Bitbucket repositories</li>
-              <li>Advanced filtering options for large repositories</li>
-              <li>Customizable ASCII art styles for tree representation</li>
-            </ul>
-          </section>
-
-          <div className="mt-8">
-            <Link
-              href="/generator"
-              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300"
-            >
-              Try RepoTree Now
-            </Link>
           </div>
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
-};
-
-export default DocsPage;
+}
