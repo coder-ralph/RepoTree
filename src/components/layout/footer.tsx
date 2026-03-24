@@ -17,7 +17,7 @@ const Footer = () => {
                 Repo<span className="text-blue-600">Tree</span>
               </span>
             </Link>
-            <p className="text-xs text-gray-400 dark:text-gray-500">
+            <p className="text-xs text-gray-600 dark:text-gray-400">
               Generate clean ASCII trees from any repository.
             </p>
           </div>
@@ -34,7 +34,7 @@ const Footer = () => {
               <Link
                 key={href}
                 href={href}
-                className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               >
                 {label}
               </Link>
@@ -44,7 +44,7 @@ const Footer = () => {
 
         {/* Bottom row */}
         <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
-          <p className="text-xs text-gray-400 dark:text-gray-500">
+          <p className="text-xs text-gray-600 dark:text-gray-400">
             © {new Date().getFullYear()} RepoTree. All rights reserved.
           </p>
 
@@ -52,7 +52,7 @@ const Footer = () => {
             href="https://app.daily.dev/coderralph"
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            className="group flex items-center justify-center gap-2 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
           >
             <span>Made with ☕ by</span>
             <Image

@@ -95,7 +95,7 @@ export default function LandingPage() {
                 <span className="text-blue-600">Repo Structure</span>
               </h1>
 
-              <p className="text-lg text-gray-500 dark:text-gray-400 max-w-lg mx-auto mb-8 leading-relaxed">
+              <p className="text-lg text-gray-600 dark:text-gray-400 max-w-lg mx-auto mb-8 leading-relaxed">
                 Generate clean ASCII trees from any GitHub or GitLab repository.
                 Perfect for documentation, READMEs, and code reviews.
               </p>
@@ -134,7 +134,7 @@ export default function LandingPage() {
                   <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
                   <div className="w-2.5 h-2.5 rounded-full bg-amber-500/60" />
                   <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
-                  <span className="ml-2 text-xs text-gray-500 font-mono">repository-structure.txt</span>
+                  <span className="ml-2 text-xs text-gray-300 font-mono">repository-structure.txt</span>
                 </div>
                 <pre className="p-5 text-xs text-gray-300 font-mono leading-relaxed overflow-x-auto">
                   {ASCII_DEMO}
@@ -168,7 +168,7 @@ export default function LandingPage() {
                   <Icon size={15} className="text-blue-600 dark:text-blue-400" />
                 </div>
                 <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">{title}</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{desc}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{desc}</p>
               </motion.div>
             ))}
           </div>

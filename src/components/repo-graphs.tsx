@@ -204,7 +204,7 @@ export const RepoGraphs: React.FC<Props> = ({ fileTypeData, languageData }) => {
           <h3 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white mb-1">
             Programming Languages
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Distribution of languages used in the repository
           </p>
         </div>
@@ -249,7 +249,7 @@ export const RepoGraphs: React.FC<Props> = ({ fileTypeData, languageData }) => {
           <h3 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white mb-1">
             File Type Distribution
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Breakdown of different file types in the repository
           </p>
         </div>
@@ -371,7 +371,7 @@ export const RepoGraphs: React.FC<Props> = ({ fileTypeData, languageData }) => {
           ].map(({ label, value, color }) => (
             <div key={label} className="text-center">
               <div className={`text-xl md:text-2xl font-semibold ${color}`}>{value}</div>
-              <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mt-1">
                 {label}
               </div>
             </div>

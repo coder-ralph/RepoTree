@@ -711,7 +711,7 @@ function EmptyOutput({
     return (
       <div className="bg-[#1d1f21] min-h-[200px] flex flex-col items-center justify-center gap-3">
         <div className="w-5 h-5 border-2 border-gray-600 border-t-blue-500 rounded-full animate-spin" />
-        <p className="text-xs text-gray-500 font-mono">
+        <p className="text-xs text-gray-300 font-mono">
           {repoName ? `Fetching ${repoName}…` : 'Fetching repository structure…'}
         </p>
       </div>
@@ -731,7 +731,7 @@ function EmptyOutput({
 
   return (
     <div className="bg-[#1d1f21] min-h-[200px] flex items-center justify-center">
-      <p className="text-sm text-gray-500 font-mono">
+      <p className="text-sm text-gray-300 font-mono">
         Enter a {provider === 'github' ? 'GitHub' : 'GitLab'} URL and click Generate
       </p>
     </div>
