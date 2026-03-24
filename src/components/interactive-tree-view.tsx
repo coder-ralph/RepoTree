@@ -1,249 +1,66 @@
-import React, { useState, useRef } from 'react';
+'use client';
 
-import { DirectoryMap } from '@/lib/repo-tree-utils';
-import { TreeCustomizationOptions } from '@/types/tree-customization';
-import { 
-  ChevronDown, 
-  ChevronRight, 
-  File, 
-  Folder, 
+import React, { useState } from 'react';
+import type { DirectoryMap } from '@/lib/repo-tree-utils';
+import type { TreeCustomizationOptions } from '@/types/tree-customization';
+import {
+  ChevronDown,
+  ChevronRight,
+  File,
+  Folder,
   FolderOpen,
   FileText,
-  Image as ImageIcon,
   Code,
   Settings,
   Database,
   Archive,
   Music,
   Video,
+  Image as ImageIcon,
 } from 'lucide-react';
-
 import '@/styles/treeview.css';
 
-// File extension to icon mapping (VS Code style)
 const getFileIcon = (filename: string) => {
   const ext = filename.split('.').pop()?.toLowerCase();
   const name = filename.toLowerCase();
-  const iconProps = { size: 16 };
-  
-  // Special file names
-  if (name === 'dockerfile' || name === 'dockerfile.dev' || name === 'dockerfile.prod') {
-    return <Code {...iconProps} className="text-blue-500" />;
-  }
-  if (name === 'makefile' || name === 'cmake' || name === 'cmakefile') {
-    return <Settings {...iconProps} className="text-green-700" />;
-  }
-  if (name === 'readme' || name === 'readme.md' || name === 'readme.txt') {
-    return <FileText {...iconProps} className="text-blue-500" />;
-  }
-  if (name === 'license' || name === 'license.md' || name === 'license.txt') {
-    return <FileText {...iconProps} className="text-yellow-500" />;
-  }
-  if (name === '.gitignore' || name === '.gitattributes') {
-    return <Settings {...iconProps} className="text-orange-500" />;
-  }
-  if (name === 'package.json' || name === 'package-lock.json') {
-    return <Settings {...iconProps} className="text-red-600" />;
-  }
-  if (name === 'yarn.lock') {
-    return <Settings {...iconProps} className="text-blue-600" />;
-  }
-  
+  const p = { size: 15 };
+
+  if (['dockerfile', 'dockerfile.dev', 'dockerfile.prod'].includes(name))
+    return <Code {...p} className="text-blue-400" />;
+  if (['makefile', 'cmake'].includes(name))
+    return <Settings {...p} className="text-green-600" />;
+  if (['readme.md', 'readme.txt', 'readme'].includes(name))
+    return <FileText {...p} className="text-blue-400" />;
+  if (['.gitignore', '.gitattributes'].includes(name))
+    return <Settings {...p} className="text-orange-400" />;
+  if (['package.json', 'package-lock.json'].includes(name))
+    return <Settings {...p} className="text-red-500" />;
+
   switch (ext) {
-    // Web Technologies
-    case 'js':
-    case 'mjs':
-      return <Code {...iconProps} className="text-yellow-400" />;
-    case 'jsx':
-      return <Code {...iconProps} className="text-cyan-400" />;
-    case 'ts':
-      return <Code {...iconProps} className="text-blue-500" />;
-    case 'tsx':
-      return <Code {...iconProps} className="text-cyan-400" />;
-    case 'html':
-    case 'htm':
-      return <Code {...iconProps} className="text-orange-500" />;
-    case 'css':
-      return <Code {...iconProps} className="text-blue-400" />;
-    case 'scss':
-    case 'sass':
-      return <Code {...iconProps} className="text-pink-500" />;
-    case 'less':
-      return <Code {...iconProps} className="text-blue-800" />;
-    case 'vue':
-      return <Code {...iconProps} className="text-green-500" />;
-    case 'svelte':
-      return <Code {...iconProps} className="text-orange-600" />;
-
-    // Backend Languages
-    case 'py':
-    case 'pyw':
-    case 'pyc':
-      return <Code {...iconProps} className="text-blue-600" />;
-    case 'java':
-      return <Code {...iconProps} className="text-orange-600" />;
-    case 'class':
-    case 'jar':
-      return <Archive {...iconProps} className="text-orange-600" />;
-    case 'php':
-      return <Code {...iconProps} className="text-purple-600" />;
-    case 'rb':
-      return <Code {...iconProps} className="text-red-600" />;
-    case 'go':
-      return <Code {...iconProps} className="text-cyan-600" />;
-    case 'rs':
-      return <Code {...iconProps} className="text-orange-700" />;
-    case 'kt':
-      return <Code {...iconProps} className="text-purple-500" />;
-    case 'scala':
-      return <Code {...iconProps} className="text-red-600" />;
-    case 'clj':
-    case 'cljs':
-      return <Code {...iconProps} className="text-blue-500" />;
-    case 'ex':
-    case 'exs':
-      return <Code {...iconProps} className="text-purple-700" />;
-
-    // C Family
-    case 'c':
-      return <Code {...iconProps} className="text-gray-600" />;
-    case 'cpp':
-    case 'cc':
-    case 'cxx':
-      return <Code {...iconProps} className="text-blue-600" />;
-    case 'h':
-    case 'hpp':
-      return <Code {...iconProps} className="text-purple-500" />;
-    case 'cs':
-      return <Code {...iconProps} className="text-green-600" />;
-
-    // Mobile Development
-    case 'swift':
-      return <Code {...iconProps} className="text-orange-500" />;
-    case 'dart':
-      return <Code {...iconProps} className="text-blue-500" />;
-    case 'm':
-    case 'mm':
-      return <Code {...iconProps} className="text-blue-400" />;
-
-    // Functional Languages
-    case 'hs':
-      return <Code {...iconProps} className="text-purple-700" />;
-    case 'ml':
-      return <Code {...iconProps} className="text-orange-600" />;
-    case 'elm':
-      return <Code {...iconProps} className="text-cyan-500" />;
-    case 'fs':
-    case 'fsx':
-      return <Code {...iconProps} className="text-blue-600" />;
-
-    // Scripting
-    case 'sh':
-    case 'bash':
-    case 'zsh':
-    case 'fish':
-      return <Code {...iconProps} className="text-green-500" />;
-    case 'ps1':
-      return <Code {...iconProps} className="text-blue-800" />;
-    case 'bat':
-    case 'cmd':
-      return <Code {...iconProps} className="text-yellow-500" />;
-
-    // Data & Config
-    case 'json':
-    case 'jsonc':
-      return <Settings {...iconProps} className="text-yellow-600" />;
-    case 'xml':
-      return <Code {...iconProps} className="text-orange-600" />;
-    case 'yaml':
-    case 'yml':
-      return <Settings {...iconProps} className="text-red-600" />;
-    case 'toml':
-      return <Settings {...iconProps} className="text-yellow-800" />;
-    case 'ini':
-    case 'conf':
-      return <Settings {...iconProps} className="text-gray-500" />;
-    case 'env':
-      return <Settings {...iconProps} className="text-yellow-500" />;
-
-    // Database
-    case 'sql':
-      return <Database {...iconProps} className="text-orange-500" />;
-    case 'db':
-    case 'sqlite':
-    case 'sqlite3':
-      return <Database {...iconProps} className="text-blue-700" />;
-
-    // Documentation
-    case 'md':
-    case 'markdown':
-      return <FileText {...iconProps} className="text-gray-300" />;
-    case 'rst':
-      return <FileText {...iconProps} className="text-gray-400" />;
-    case 'tex':
-      return <FileText {...iconProps} className="text-green-700" />;
-    case 'pdf':
-      return <FileText {...iconProps} className="text-red-600" />;
-    case 'doc':
-    case 'docx':
-      return <FileText {...iconProps} className="text-blue-600" />;
-    case 'ppt':
-    case 'pptx':
-      return <FileText {...iconProps} className="text-orange-600" />;
-    case 'xls':
-    case 'xlsx':
-      return <FileText {...iconProps} className="text-green-600" />;
-
-    // Images
-    case 'png':
-    case 'jpg':
-    case 'jpeg':
-    case 'gif':
-    case 'bmp':
-    case 'tiff':
-    case 'webp':
-    case 'ico':
-      return <ImageIcon {...iconProps} className="text-purple-400" />;
-    case 'svg':
-      return <ImageIcon {...iconProps} className="text-yellow-600" />;
-
-    // Audio
-    case 'mp3':
-    case 'wav':
-    case 'flac':
-    case 'ogg':
-    case 'm4a':
-    case 'aac':
-      return <Music {...iconProps} className="text-green-400" />;
-
-    // Video
-    case 'mp4':
-    case 'avi':
-    case 'mov':
-    case 'wmv':
-    case 'webm':
-    case 'mkv':
-    case 'flv':
-      return <Video {...iconProps} className="text-red-400" />;
-
-    // Archives
-    case 'zip':
-    case 'rar':
-    case '7z':
-    case 'tar':
-    case 'gz':
-    case 'bz2':
-    case 'xz':
-      return <Archive {...iconProps} className="text-yellow-500" />;
-
-    // Text
-    case 'txt':
-    case 'log':
-    case 'rtf':
-      return <FileText {...iconProps} className="text-gray-400" />;
-
-    default:
-      return <File {...iconProps} className="text-gray-400" />;
+    case 'ts': case 'tsx': return <Code {...p} className="text-blue-500" />;
+    case 'js': case 'jsx': case 'mjs': return <Code {...p} className="text-yellow-400" />;
+    case 'css': case 'scss': case 'sass': return <Code {...p} className="text-pink-400" />;
+    case 'html': case 'htm': return <Code {...p} className="text-orange-500" />;
+    case 'py': return <Code {...p} className="text-blue-600" />;
+    case 'go': return <Code {...p} className="text-cyan-500" />;
+    case 'rs': return <Code {...p} className="text-orange-600" />;
+    case 'java': case 'kt': return <Code {...p} className="text-orange-500" />;
+    case 'rb': return <Code {...p} className="text-red-500" />;
+    case 'php': return <Code {...p} className="text-purple-500" />;
+    case 'json': case 'jsonc': return <Settings {...p} className="text-yellow-500" />;
+    case 'yaml': case 'yml': return <Settings {...p} className="text-red-500" />;
+    case 'toml': return <Settings {...p} className="text-yellow-700" />;
+    case 'sql': return <Database {...p} className="text-orange-400" />;
+    case 'md': case 'mdx': return <FileText {...p} className="text-gray-400" />;
+    case 'pdf': return <FileText {...p} className="text-red-500" />;
+    case 'png': case 'jpg': case 'jpeg': case 'gif': case 'webp': case 'ico':
+      return <ImageIcon {...p} className="text-purple-400" />;
+    case 'svg': return <ImageIcon {...p} className="text-yellow-500" />;
+    case 'mp3': case 'wav': case 'ogg': return <Music {...p} className="text-green-400" />;
+    case 'mp4': case 'webm': case 'mov': return <Video {...p} className="text-red-400" />;
+    case 'zip': case 'tar': case 'gz': case 'rar': return <Archive {...p} className="text-yellow-400" />;
+    case 'sh': case 'bash': case 'zsh': return <Code {...p} className="text-green-400" />;
+    default: return <File {...p} className="text-gray-400" />;
   }
 };
 
@@ -254,129 +71,79 @@ interface TreeNodeProps {
   customizationOptions: TreeCustomizationOptions;
 }
 
-const TreeNode: React.FC<TreeNodeProps> = ({
-  name,
-  content,
-  depth,
-  customizationOptions,
-}) => {
-  const [isExpanded, setIsExpanded] = useState(depth < 2); // Auto-expand first 2 levels
-  const contentRef = useRef<HTMLDivElement>(null);
+const TreeNode: React.FC<TreeNodeProps> = ({ name, content, depth, customizationOptions }) => {
+  const [isExpanded, setIsExpanded] = useState(depth < 2);
   const isFolder = content instanceof Map;
 
-  const toggleExpanded = () => {
-    if (isFolder) {
-      setIsExpanded(!isExpanded);
-    }
-  };
-
-  const getFolderIcon = () => {
-    if (!isFolder) return null;
-    if (!customizationOptions.useIcons) return null;
-    
-    const iconProps = { size: 16 };
-    
-    if (isExpanded) {
-      return <FolderOpen {...iconProps} className="text-blue-400" />;
-    } else {
-      return <Folder {...iconProps} className="text-blue-400" />;
-    }
-  };
-
-  const getExpandIcon = () => {
-    if (!isFolder) return <div className="w-4 h-4" />; // Spacer for alignment
-    
-    const iconProps = { size: 12 };
-    
-    return isExpanded ? 
-      <ChevronDown {...iconProps} className="text-gray-400 transition-transform duration-200" /> :
-      <ChevronRight {...iconProps} className="text-gray-400 transition-transform duration-200" />;
-  };
-
-  const getIndentationClass = () => {
-    return `tree-node-depth-${depth}`;
-  };
+  const getIndentClass = () => `tree-node-depth-${Math.min(depth, 8)}`;
 
   if (isFolder) {
     return (
       <div className="select-none">
-        <div 
-          className={`tree-node ${getIndentationClass()}`}
-          onClick={toggleExpanded}
+        <div
+          className={`tree-node ${getIndentClass()}`}
+          onClick={() => setIsExpanded((v) => !v)}
           style={{ cursor: 'pointer' }}
         >
           <span className="tree-expand-icon">
-            {getExpandIcon()}
+            {isExpanded
+              ? <ChevronDown size={11} className="text-gray-400" />
+              : <ChevronRight size={11} className="text-gray-400" />}
           </span>
           <span className="tree-node-icon">
-            {getFolderIcon()}
+            {customizationOptions.useIcons && (
+              isExpanded
+                ? <FolderOpen size={15} className="text-blue-400" />
+                : <Folder size={15} className="text-blue-400" />
+            )}
           </span>
-          <span className="tree-node-name" title={name}>
-            {name}
-          </span>
+          <span className="tree-node-name">{name}</span>
         </div>
-        
-        <div 
-          className="tree-children"
-          style={{ 
-            height: isExpanded ? 'auto' : '0px',
-            overflow: 'hidden',
-            transition: 'height 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
-          }}
-        >
-          {isExpanded && (
-            <div ref={contentRef}>
-              {Array.from(content.entries())
-                .sort(([a, childrenA], [b, childrenB]) => {
-                  const aIsFolder = childrenA instanceof Map;
-                  const bIsFolder = childrenB instanceof Map;
-                  if (aIsFolder && !bIsFolder) return -1;
-                  if (!aIsFolder && bIsFolder) return 1;
-                  return a.localeCompare(b);
-                })
-                .map(([childName, childContent]) => (
-                  <TreeNode
-                    key={childName}
-                    name={childName}
-                    content={childContent}
-                    depth={depth + 1}
-                    customizationOptions={customizationOptions}
-                  />
-                ))}
-            </div>
-          )}
+
+        <div style={{ height: isExpanded ? 'auto' : 0, overflow: 'hidden' }}>
+          {isExpanded && Array.from(content.entries())
+            .sort(([a, va], [b, vb]) => {
+              const aDir = va instanceof Map;
+              const bDir = vb instanceof Map;
+              if (aDir !== bDir) return aDir ? -1 : 1;
+              return a.localeCompare(b);
+            })
+            .map(([childName, childContent]) => (
+              <TreeNode
+                key={childName}
+                name={childName}
+                content={childContent}
+                depth={depth + 1}
+                customizationOptions={customizationOptions}
+              />
+            ))}
         </div>
-      </div>
-    );
-  } else {
-    return (
-      <div className={`tree-node tree-node-file ${getIndentationClass()}`}>
-        <span className="tree-expand-icon">
-          <div className="w-4 h-4" /> {/* Spacer for alignment */}
-        </span>
-        <span className="tree-node-icon">
-          {customizationOptions.useIcons ? getFileIcon(name) : null}
-        </span>
-        <span className="tree-node-name" title={name}>
-          {name}
-        </span>
       </div>
     );
   }
+
+  return (
+    <div className={`tree-node tree-node-file ${getIndentClass()}`}>
+      <span className="tree-expand-icon">
+        <div className="w-3 h-3" />
+      </span>
+      <span className="tree-node-icon">
+        {customizationOptions.useIcons && getFileIcon(name)}
+      </span>
+      <span className="tree-node-name">{name}</span>
+    </div>
+  );
 };
 
-interface InteractiveTreeViewProps {
+interface Props {
   structure: DirectoryMap;
   customizationOptions: TreeCustomizationOptions;
 }
 
-const InteractiveTreeView: React.FC<InteractiveTreeViewProps> = ({
-  structure,
-  customizationOptions,
-}) => {
+const InteractiveTreeView: React.FC<Props> = ({ structure, customizationOptions }) => {
   if (!structure || structure.size === 0) {
     return (
-      <div className="text-gray-400 text-center py-8">
+      <div className="text-gray-500 text-sm text-center py-6">
         No files to display
       </div>
     );
@@ -385,11 +152,10 @@ const InteractiveTreeView: React.FC<InteractiveTreeViewProps> = ({
   return (
     <div className="tree-container">
       {Array.from(structure.entries())
-        .sort(([a, childrenA], [b, childrenB]) => {
-          const aIsFolder = childrenA instanceof Map;
-          const bIsFolder = childrenB instanceof Map;
-          if (aIsFolder && !bIsFolder) return -1;
-          if (!aIsFolder && bIsFolder) return 1;
+        .sort(([a, va], [b, vb]) => {
+          const aDir = va instanceof Map;
+          const bDir = vb instanceof Map;
+          if (aDir !== bDir) return aDir ? -1 : 1;
           return a.localeCompare(b);
         })
         .map(([name, content]) => (
