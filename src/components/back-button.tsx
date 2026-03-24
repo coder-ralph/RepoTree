@@ -1,21 +1,18 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
 const BackButton = () => {
   const router = useRouter();
-
   return (
-    // Privacy Policy and Cookie Policy Arrow button
-    <Button
+    <button
       onClick={() => router.back()}
-      className="mb-8 flex items-center text-white rounded-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+      className="mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
     >
-      <ArrowLeft className="h-4 w-4 mr-2" />
+      <ArrowLeft size={14} />
       Go back
-    </Button>
+    </button>
   );
 };
 

@@ -1,28 +1,28 @@
-"use client"
+'use client';
 
-import type React from "react"
+import type React from 'react';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import type { TreeCustomizationOptions } from '@/types/tree-customization';
 
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import type { TreeCustomizationOptions } from "@/types/tree-customization"
-
-interface CustomizationOptionsProps {
-  options: TreeCustomizationOptions
-  onChange: (newOptions: Partial<TreeCustomizationOptions>) => void
+interface Props {
+  options: TreeCustomizationOptions;
+  onChange: (newOptions: Partial<TreeCustomizationOptions>) => void;
 }
 
-const CustomizationOptions: React.FC<CustomizationOptionsProps> = ({ options, onChange }) => {
+const CustomizationOptions: React.FC<Props> = ({ options, onChange }) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 py-1">
+      {/* ASCII Style */}
       <div className="flex items-center justify-between">
-        <Label htmlFor="ascii-style">ASCII Style</Label>
+        <Label htmlFor="ascii-style" className="text-sm">ASCII style</Label>
         <Select
           value={options.asciiStyle}
-          onValueChange={(value) => onChange({ asciiStyle: value as "basic" | "detailed" | "minimal" })}
+          onValueChange={(v) => onChange({ asciiStyle: v as 'basic' | 'detailed' | 'minimal' })}
         >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select ASCII style" />
+          <SelectTrigger className="w-32 h-8 text-sm">
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="basic">Basic</SelectItem>
@@ -31,68 +31,29 @@ const CustomizationOptions: React.FC<CustomizationOptionsProps> = ({ options, on
           </SelectContent>
         </Select>
       </div>
-      {/* Use Icons */}
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col">
-          <Label htmlFor="use-icons">Use Icons</Label>
-          <span className="text-xs text-muted-foreground italic">BOTH VIEW</span>
-        </div>
-        <Switch
-          id="use-icons"
-          checked={options.useIcons}
-          onCheckedChange={(checked: boolean) => onChange({ useIcons: checked })}
-        />
-      </div>
-      {/* Show Line Numbers */}
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col">
-          <Label htmlFor="show-line-numbers">Show Line Numbers</Label>
-          <span className="text-xs text-muted-foreground italic">ASCII VIEW ONLY</span>
-        </div>
-        <Switch
-          id="show-line-numbers"
-          checked={options.showLineNumbers}
-          onCheckedChange={(checked: boolean) => onChange({ showLineNumbers: checked })}
-        />
-      </div>
-      {/* Show Descriptions */}
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col">
-          <Label htmlFor="show-descriptions">Show Descriptions</Label>
-          <span className="text-xs text-muted-foreground italic">ASCII VIEW ONLY</span>
-        </div>
-        <Switch
-          id="show-descriptions"
-          checked={options.showDescriptions}
-          onCheckedChange={(checked: boolean) => onChange({ showDescriptions: checked })}
-        />
-      </div>
-      {/* Root Folder Name */}
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col">
-          <Label htmlFor="show-root-folder-name">Root Folder Name</Label>
-          <span className="text-xs text-muted-foreground italic">ASCII VIEW ONLY</span>
-        </div>
-        <Switch
-          id="show-root-folder-name"
-          checked={options.showRootDirectory}
-          onCheckedChange={(checked: boolean) => onChange({ showRootDirectory: checked })}
-        />
-      </div>
-      {/* Trailing Slash */}
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col">
-          <Label htmlFor="show-trailing-slash">Trailing Slash</Label>
-          <span className="text-xs text-muted-foreground italic">ASCII VIEW ONLY</span>
-        </div>
-        <Switch
-          id="show-trailing-slash"
-          checked={options.showTrailingSlash}
-          onCheckedChange={(checked: boolean) => onChange({ showTrailingSlash: checked })}
-        />
-      </div>
-    </div>
-  )
-}
 
-export default CustomizationOptions
+      {/* Options list */}
+      {([
+        { id: 'useIcons', label: 'Use icons', note: 'Both views' },
+        { id: 'showLineNumbers', label: 'Line numbers', note: 'ASCII only' },
+        { id: 'showDescriptions', label: 'Descriptions', note: 'ASCII only' },
+        { id: 'showRootDirectory', label: 'Root folder name', note: 'ASCII only' },
+        { id: 'showTrailingSlash', label: 'Trailing slash', note: 'ASCII only' },
+      ] as const).map(({ id, label, note }) => (
+        <div key={id} className="flex items-center justify-between">
+          <div>
+            <Label htmlFor={id} className="text-sm">{label}</Label>
+            <p className="text-xs text-gray-400 dark:text-gray-500">{note}</p>
+          </div>
+          <Switch
+            id={id}
+            checked={options[id]}
+            onCheckedChange={(checked) => onChange({ [id]: checked })}
+          />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default CustomizationOptions;
