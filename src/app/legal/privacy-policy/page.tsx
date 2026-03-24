@@ -1,96 +1,120 @@
 import type { Metadata } from 'next';
 import BackButton from '@/components/back-button';
+import Header from '@/components/layout/header';
+import Footer from '@/components/layout/footer';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - RepoTree',
-  description:
-    'RepoTree Privacy Policy: We do not collect personal data, use cookies, or track users. Read more about our privacy practices.',
+  title: 'Privacy Policy — RepoTree',
+  description: 'RepoTree Privacy Policy: how we handle your data and authentication.',
   robots: { index: true, follow: true },
-  alternates: {
-    canonical: 'https://ascii-repotree.vercel.app/legal/privacy-policy',
-  },
+  alternates: { canonical: 'https://ascii-repotree.vercel.app/legal/privacy-policy' },
 };
 
-const PrivacyPolicy = () => {
-  const lastUpdated = '2025-07-21';
-
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'PrivacyPolicy',
-    name: 'RepoTree Privacy Policy',
-    url: 'https://ascii-repotree.vercel.app/legal/privacy-policy',
-    dateModified: lastUpdated,
-    publisher: {
-      '@type': 'Organization',
-      name: 'RepoTree',
-      url: 'https://ascii-repotree.vercel.app',
-    },
-    description:
-      'RepoTree does not collect, store, or share any personal data. No cookies or tracking technologies are used.',
-  };
-
+export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white py-12 px-4 sm:px-6 lg:px-8">
-      {/* JSON-LD Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
+      <Header />
+      <main className="flex-1 py-10 px-4">
+        <div className="max-w-2xl mx-auto">
+          <BackButton />
 
-      <div className="max-w-3xl mx-auto">
-        <BackButton />
-
-        <h1 className="text-3xl font-bold mb-2">Privacy Policy</h1>
-        <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-          Last updated: July 21, 2025
-        </p>
-
-        <div className="p-6 space-y-4">
-          <p>
-            This Privacy Policy outlines RepoTree&apos;s approach to your privacy when using our website (
-            <a href="https://ascii-repotree.vercel.app" className="text-blue-500 hover:underline">
-              https://ascii-repotree.vercel.app
-            </a>
-            ).
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-1 tracking-tight">
+            Privacy Policy
+          </h1>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-8">
+            Last updated: March 23, 2026
           </p>
 
-          <h2 className="text-xl font-semibold">No Data Collection</h2>
-          <p>
-            RepoTree does <strong>not collect, store, or share</strong> any personal data. We do not require account creation or authentication, and we do not use cookies or tracking technologies.
-          </p>
+          <div className="prose prose-sm dark:prose-invert max-w-none space-y-6 text-gray-600 dark:text-gray-400">
+            <section>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Overview</h2>
+              <p className="leading-relaxed">
+                RepoTree is designed to respect your privacy. We collect minimal data and do not
+                sell or share your information with third parties.
+              </p>
+            </section>
 
-          <h2 className="text-xl font-semibold">Third-Party Services</h2>
-          <p>
-            We may use GitHub&apos;s public APIs to fetch repository data, but this interaction is read-only and does not involve your personal data.
-          </p>
+            <section>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                Authentication data
+              </h2>
+              <p className="leading-relaxed">
+                When you sign in with GitHub or GitLab via OAuth, we receive an access token and
+                basic profile information (name, avatar, email if public). This data is stored
+                in an encrypted JWT session cookie. We do not store your access token in a
+                database — it lives only in your browser session cookie and expires after 24 hours.
+              </p>
+            </section>
 
-          <h2 className="text-xl font-semibold">Security and Transparency</h2>
-          <p>
-            RepoTree was built with simplicity and privacy by design. Since we do not collect any data, there is no personal information to secure.
-          </p>
+            <section>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                Repository access
+              </h2>
+              <p className="leading-relaxed">
+                When you generate a repository tree, RepoTree fetches data from the GitHub or
+                GitLab API on your behalf using your session token. Repository content is not
+                stored on our servers — it is processed in memory and returned to your browser.
+              </p>
+            </section>
 
-          <h2 className="text-xl font-semibold">Policy Changes</h2>
-          <p>
-            If our privacy practices change in the future, we will update this policy and notify users accordingly.
-          </p>
+            <section>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                Local storage
+              </h2>
+              <p className="leading-relaxed">
+                RepoTree stores your last-used repository URL and customization preferences
+                in your browser&apos;s localStorage for convenience. This data never leaves your
+                device and contains no sensitive information.
+              </p>
+            </section>
 
-          <p>
-            If you have any questions about this Privacy Policy, feel free to reach out to us at{' '}
-            <a href="mailto:privacy@repotree.com" className="text-blue-500 hover:underline">
-              privacy@repotree.com
-            </a>.
-          </p>
+            <section>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                Analytics
+              </h2>
+              <p className="leading-relaxed">
+                We use Vercel Analytics for anonymous usage metrics. No personal data is
+                collected. No cross-site tracking occurs.
+              </p>
+            </section>
 
-          <p>
-            You can also read our{' '}
-            <a href="/legal/cookie-policy" className="text-blue-500 hover:underline">
-              Cookie Policy
-            </a>.
-          </p>
+            <section>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                Third-party services
+              </h2>
+              <p className="leading-relaxed">
+                RepoTree uses the GitHub REST API and GitLab REST API to fetch repository data.
+                These interactions are governed by their respective privacy policies.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                Contact
+              </h2>
+              <p className="leading-relaxed">
+                Questions about this policy? Open an issue on{' '}
+                <a
+                  href="https://github.com/coder-ralph/RepoTree/issues"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  GitHub
+                </a>.
+              </p>
+            </section>
+
+            <p className="text-xs">
+              See also:{' '}
+              <a href="/legal/cookie-policy" className="text-blue-600 hover:underline">
+                Cookie Policy
+              </a>
+            </p>
+          </div>
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
-};
-
-export default PrivacyPolicy;
+}

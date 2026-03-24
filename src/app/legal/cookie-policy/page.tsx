@@ -1,96 +1,112 @@
 import type { Metadata } from 'next';
 import BackButton from '@/components/back-button';
+import Header from '@/components/layout/header';
+import Footer from '@/components/layout/footer';
 
 export const metadata: Metadata = {
-  title: 'Cookie Policy - RepoTree',
-  description:
-    'RepoTree Cookie Policy: We do not use cookies, tracking technologies, or third-party trackers. Full details here.',
+  title: 'Cookie Policy — RepoTree',
+  description: 'RepoTree Cookie Policy: we use only a single session cookie for authentication.',
   robots: { index: true, follow: true },
-  alternates: {
-    canonical: 'https://ascii-repotree.vercel.app/legal/cookie-policy',
-  },
+  alternates: { canonical: 'https://ascii-repotree.vercel.app/legal/cookie-policy' },
 };
 
-const CookiePolicy = () => {
-  const lastUpdated = '2025-07-21';
-
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: 'RepoTree Cookie Policy',
-    url: 'https://ascii-repotree.vercel.app/legal/cookie-policy',
-    dateModified: lastUpdated,
-    publisher: {
-      '@type': 'Organization',
-      name: 'RepoTree',
-      url: 'https://ascii-repotree.vercel.app',
-    },
-    description:
-      'RepoTree does not use cookies or tracking technologies. We do not place any cookies, including essential, functional, analytical, or advertising cookies.',
-  };
-
+export default function CookiePolicy() {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white py-12 px-4 sm:px-6 lg:px-8">
-      {/* JSON-LD Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
+      <Header />
+      <main className="flex-1 py-10 px-4">
+        <div className="max-w-2xl mx-auto">
+          <BackButton />
 
-      <div className="max-w-3xl mx-auto">
-        <BackButton />
-
-        <h1 className="text-3xl font-bold mb-2">Cookie Policy</h1>
-        <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-          Last updated: July 21, 2025
-        </p>
-
-        <div className="p-6 space-y-4">
-          <p>
-            RepoTree does <strong>not use cookies</strong> or any similar tracking technologies on our website (
-            <a href="https://ascii-repotree.vercel.app" className="text-blue-500 hover:underline">
-              https://ascii-repotree.vercel.app
-            </a>
-            ).
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-1 tracking-tight">
+            Cookie Policy
+          </h1>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-8">
+            Last updated: March 23, 2026
           </p>
 
-          <h2 className="text-xl font-semibold">No Use of Cookies</h2>
-          <p>
-            Our goal is to provide a simple, privacy-friendly experience. We do not place any cookies on your device, including essential, functional, analytical, or advertising cookies.
-          </p>
+          <div className="space-y-6 text-sm text-gray-600 dark:text-gray-400">
+            <section>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                Cookies we use
+              </h2>
+              <p className="leading-relaxed mb-3">
+                RepoTree sets exactly one cookie when you sign in:
+              </p>
+              <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+                      <th className="text-left px-4 py-2.5 font-medium text-gray-500 dark:text-gray-400">Name</th>
+                      <th className="text-left px-4 py-2.5 font-medium text-gray-500 dark:text-gray-400">Purpose</th>
+                      <th className="text-left px-4 py-2.5 font-medium text-gray-500 dark:text-gray-400">Duration</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="px-4 py-2.5 font-mono text-gray-900 dark:text-white">next-auth.session-token</td>
+                      <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400">Encrypted OAuth session</td>
+                      <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400">24 hours</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
 
-          <h2 className="text-xl font-semibold">Third-Party Tracking</h2>
-          <p>
-            RepoTree does not embed third-party tracking scripts or services that set cookies. All interactions with GitHub repositories happen client-side using public APIs and do not involve any user-identifiable data.
-          </p>
+            <section>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                Cookie details
+              </h2>
+              <p className="leading-relaxed">
+                The session cookie is an <strong className="text-gray-800 dark:text-gray-200">httpOnly</strong>,{' '}
+                <strong className="text-gray-800 dark:text-gray-200">secure</strong>,{' '}
+                <strong className="text-gray-800 dark:text-gray-200">SameSite=Lax</strong> cookie.
+                It is not accessible to JavaScript and cannot be read by third parties.
+                It stores an encrypted JWT containing your session — no raw tokens.
+              </p>
+            </section>
 
-          <h2 className="text-xl font-semibold">Your Privacy Matters</h2>
-          <p>
-            RepoTree was built with simplicity and privacy by design. Since we do not use cookies, there&apos;s no need to manage or opt out of cookie settings.
-          </p>
+            <section>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                Cookies we do not use
+              </h2>
+              <ul className="leading-relaxed space-y-1">
+                <li>✗ No advertising or tracking cookies</li>
+                <li>✗ No analytics cookies (we use server-side analytics only)</li>
+                <li>✗ No third-party cookies</li>
+                <li>✗ No persistent preference cookies</li>
+              </ul>
+            </section>
 
-          <h2 className="text-xl font-semibold">Policy Changes</h2>
-          <p>
-            If our cookie practices change in the future, we will update this policy and notify users accordingly.
-          </p>
+            <section>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                Unauthenticated users
+              </h2>
+              <p className="leading-relaxed">
+                If you use RepoTree without signing in, no cookies are set at all.
+              </p>
+            </section>
 
-          <p>
-            If you have any questions about our Cookie Policy, feel free to contact us at{' '}
-            <a href="mailto:privacy@repotree.com" className="text-blue-500 hover:underline">
-              privacy@repotree.com
-            </a>.
-          </p>
+            <section>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                Removing the cookie
+              </h2>
+              <p className="leading-relaxed">
+                Click &quot;Sign out&quot; in the header to clear your session cookie immediately.
+                It will also expire automatically after 24 hours.
+              </p>
+            </section>
 
-          <p>
-            You can also read our{' '}
-            <a href="/legal/privacy-policy" className="text-blue-500 hover:underline">
-              Privacy Policy
-            </a>.
-          </p>
+            <p className="text-xs">
+              See also:{' '}
+              <a href="/legal/privacy-policy" className="text-blue-600 hover:underline">
+                Privacy Policy
+              </a>
+            </p>
+          </div>
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
-};
-
-export default CookiePolicy;
+}
