@@ -13,7 +13,7 @@ const Header = () => {
           <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105">
             <FolderTree size={15} className="text-white" />
           </div>
-          <span className="font-semibold text-gray-900 dark:text-white text-sm tracking-tight">
+          <span className="font-semibold text-gray-900 dark:text-white text-lg tracking-tight">
             Repo<span className="text-blue-600">Tree</span>
           </span>
         </Link>
