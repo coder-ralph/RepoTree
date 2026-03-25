@@ -24,11 +24,20 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://ascii-repotree.vercel.app',
     siteName: 'RepoTree',
+    images: [
+      {
+        url: '/opengraph-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'RepoTree — ASCII Tree Generator',
+      },
+    ],
   },
   twitter: {
     card: 'summary',
     title: 'RepoTree — ASCII Tree Generator',
     description: 'Generate clean ASCII trees from any GitHub or GitLab repository.',
+    images: ['/opengraph-image.png'],
   },
 };
 
