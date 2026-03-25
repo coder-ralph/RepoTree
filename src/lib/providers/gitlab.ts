@@ -43,7 +43,11 @@ export class GitLabProvider implements RepoProvider {
       'Content-Type': 'application/json',
     };
     if (token) {
-      headers['PRIVATE-TOKEN'] = token;
+      if (token.startsWith('glpat-')) {
+        headers['PRIVATE-TOKEN'] = token;
+      } else {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
     }
     return headers;
   }
