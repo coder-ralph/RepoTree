@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          body: |
+            # 🌳 RepoTree v0.2.0
+
+            A major upgrade introducing secure OAuth authentication, a fully integrated repository browser, and a significantly improved UI/UX.
+
+            ---
+
+            ## 🚀 Highlights
+
+            ### 🔐 OAuth-only authentication
+            - Removed PAT-based authentication entirely
+            - GitHub & GitLab login via NextAuth (Auth.js)
+            - JWT stored in encrypted httpOnly cookies
+            - Tokens never exposed to client-side code
+
+            ### 📂 Authenticated repository browser
+            - New **My Repositories** tab inside generator
+            - Browse public & private repositories (OAuth scope-based)
+            - Search: name, description, full name
+            - Sorting: recently updated, A–Z, stars
+            - Pagination: 8 per page with smart ellipsis
+            - Click repo → instant tree generation (no URL paste)
+
+            ### 🔗 Dual-source generator
+            - **My Repositories** (authenticated)
+            - **Paste URL** (public repos, no login required)
+
+            ### 🎨 UI/UX improvements
+            - Cleaner user menu (avatar + sign out)
+            - Improved layout and interaction flow
+            - Integrated favicon and iOS icons
+            - Better responsiveness and usability
+
+            ### 🔒 Security improvements
+            - Tokens stored in httpOnly cookies (not localStorage)
+            - No NEXT_PUBLIC_* tokens
+            - Server-side API handling only
+            - Secured `/api/repos` and `/api/tree`
+
+            ### 🏗 Architecture
+            - Added `/api/repos` for authenticated repo listing
+            - Provider abstraction (GitHub + GitLab)
+            - Server-side tree fetching
+            - Dual data-source generator design
+
+            ### 🧹 Removed
+            - token-status.tsx
+            - private-repos-dialog.tsx
+            - api/repo/route.ts
+            - github-signin/page.tsx
+
+            ### 📄 Documentation
+            - Updated migration guide (OAuth + repo browser)
+
+            👉 See full migration guide: MIGRATION.md
+
+            ---
+
+            ## 🧠 Summary
+
+            This release completes the transition to a secure OAuth-only architecture and introduces a significantly improved post-login experience with direct repository browsing and generation.
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
