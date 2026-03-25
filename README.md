@@ -1,130 +1,104 @@
 # RepoTree 🌳
 
-A web tool that visualizes GitHub and GitLab repositories with clean ASCII trees. Perfect for documentation, sharing, and understanding project structures. It runs entirely in the browser and fetches live data using GitHub’s official [REST API (Git/Trees API)](https://docs.github.com/en/rest/git/trees?apiVersion=2022-11-28#get-a-tree) to ensure accuracy.
+A web tool that visualizes GitHub and GitLab repositories with clean ASCII trees. Supports both public and private repositories via OAuth authentication.
+
+![RepoTree Preview](https://raw.githubusercontent.com/coder-ralph/RepoTree/main/public/opengraph-image.png)
 
 [![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-RepoTree-blue?style=for-the-badge)](https://ascii-repotree.vercel.app/)
 [![MIT License](https://img.shields.io/badge/📄_License-MIT-green?style=for-the-badge)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/coder-ralph/RepoTree?style=for-the-badge)](https://github.com/coder-ralph/RepoTree)
 
-## 🚀 Features
+## Features
 
-* 👀 **Instant Visualization**: Convert any GitHub & GitLab repository structure into a clean ASCII tree
-* 🎯 **Interactive Tree View**: Expand or collapse folders for better navigation and exploration
-* 📊 **Repository Analysis**: Visualize file type distribution and language breakdown with interactive graphs
-* 💾 **Multiple Export Formats**: Download trees as README.md, .txt, .json, or .html files
-* 🔍 **Real-time Search**: Quickly filter and highlight specific files or directories
-* 🎨 **Dual View Modes**: Switch between ASCII and Interactive views for enhanced user experience
-* 🌙 **Dark & Light Themes**: Comfortable viewing in any lighting condition
-* ✨ **Syntax Highlighting**: Enhanced readability with beautiful code highlighting
-* 📋 **One-Click Copy**: Copy directory structure to clipboard
-* 💾 **Persistent State**: Remembers your last repository URL between sessions
-* 🔒 **Private Repository Support**: Access private repos with personal access tokens
-* 🚀 **Zero Installation**: Works directly in your browser - no setup required
+- **ASCII tree visualization** — clean, copy-ready directory structure output
+- **Interactive tree view** — collapsible folder explorer with VS Code-style file icons
+- **Repository analysis** — file type distribution and language breakdown charts
+- **Multiple export formats** — download as .md, .txt, .json, or .html
+- **Real-time search** — filter files and folders as you type
+- **Customizable output** — icons, line numbers, descriptions, trailing slashes
+- **Dark & light themes** — automatic system preference detection
+- **OAuth authentication** — secure GitHub and GitLab sign-in for private repo access
 
-## 🖥 Viewing Modes
+## Quick start
 
-![ASCII Mode](ascii-view.png)
-
-![Interactive Mode](interactive-view.png)
-
-## ⚙️ Tech Stack
-
-RepoTree is built with modern technologies for optimal performance and user experience:
-
-| Technology | Purpose | 
-|------------|---------|
-| **Next.js** | React framework for server-side rendering and routing |
-| **TypeScript** | Type-safe development and better code quality |
-| **Tailwind CSS** | Utility-first CSS framework for rapid UI development |
-| **Shadcn UI** | Beautiful, accessible component library |
-| **Octokit** | Official GitHub API client for repository data |
-| **Recharts** | Composable charting library for data visualization |
-| **Framer Motion** | Smooth animations and transitions |
-| **Radix UI** | Low-level UI primitives for accessibility |
-| **Lucide React** | Beautiful, customizable icon set |
-
-## 🚦 Quick Start
-
-### 1. **Online Usage** (Recommended)
-Simply visit [RepoTree](https://ascii-repotree.vercel.app/) and start generating trees instantly!
-
-### 2. **Self-hosting / Local Development**
+### Local development
 
 ```bash
 # Clone the repository
 git clone https://github.com/coder-ralph/RepoTree.git
-
-# Navigate to project directory
 cd RepoTree
 
 # Install dependencies
 npm install
 
-# Start development server
-npm run dev
+# Copy environment template
+cp .env.example .env.local
 
-# Open your browser
-open http://localhost:3000
+# Fill in your environment variables (see setup below)
+# Then start the dev server
+npm run dev
 ```
 
-## 📖 Usage Guide
+Open [http://localhost:3000](http://localhost:3000).
 
-### Basic Usage
-1. 🌐 Visit [RepoTree](https://ascii-repotree.vercel.app/)
-2. 📝 Paste your GitHub or GitLab repository URL
-3. 🔘 Click the **Generate** button
-4. 🎉 Explore your repository structure!
-5. 💾 Download in your preferred format
+### Environment variables
 
-### 🔒 Accessing Private Repositories
+```bash
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=          # openssl rand -base64 32
 
-For private repositories, you'll need to enable private access:
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
 
-1. **Click "Enable Private Repos"** at the top of the input field
-2. **Follow the setup instructions**:
-   - **GitHub**: Create a personal access token with `repo` scope
-   - **GitLab**: Create a token with `read_repository` scope
-3. **Enter your token** - it's stored locally and never shared
-4. **Generate trees** from your private repositories securely!
+GITLAB_CLIENT_ID=
+GITLAB_CLIENT_SECRET=
+```
 
-### 📊 Understanding Repository Analysis
+### GitHub OAuth app
 
-RepoTree provides insightful visualizations:
-- **File Type Distribution**: See what types of files make up your project
-- **Language Breakdown**: Understand the programming languages used
+1. Go to **GitHub Settings → Developer settings → OAuth Apps → New OAuth App**
+2. Callback URL: `http://localhost:3000/api/auth/callback/github`
+3. Copy Client ID and Secret to your `.env.local`
 
-![Repository Analysis](repository-analysis.png)
+### GitLab OAuth app
 
-## 🎯 Use Cases
+1. Go to **GitLab → Edit Profile → Applications → Add new application**
+2. Scopes: `read_user`, `read_repository`
+3. Redirect URI: `http://localhost:3000/api/auth/callback/gitlab`
+4. Copy Application ID and Secret to your `.env.local`
 
-- 📝 **Documentation**: Include clean directory trees in your README files
-- 🎓 **Education**: Help students understand project structures
-- 💼 **Code Reviews**: Quickly grasp repository organization
-- 🔄 **Migration Planning**: Visualize before restructuring projects
-- 📊 **Project Analysis**: Get insights into codebase composition
+## Tech stack
 
-## 🤔 About
+| Technology | Purpose |
+|---|---|
+| **Next.js 15** | React framework, App Router, server-side API routes |
+| **NextAuth v4** | OAuth authentication (GitHub, GitLab) |
+| **TypeScript** | Type-safe development |
+| **Tailwind CSS** | Utility-first styling |
+| **Shadcn UI** | Accessible component primitives |
+| **Octokit** | GitHub REST API client |
+| **Recharts** | Repository analysis charts |
+| **Framer Motion** | Landing page animations |
 
-I created RepoTree to help developers easily visualize and share repository structures.
+## Authentication
 
-A year ago, I saw a Stack Overflow question about generating directory trees from GitHub repositories, which inspired me to build this tool.
+RepoTree uses **OAuth-only** authentication. No personal access tokens are accepted.
 
-**[Original Stack Overflow Question](https://stackoverflow.com/questions/75522166/how-do-i-get-the-directory-tree-structure-from-a-github-repository-link)** 📚
+- Sign in with GitHub or GitLab to access private repositories
+- Session tokens are stored in encrypted httpOnly cookies — never in localStorage
+- Sessions expire after 24 hours
+- Public repositories work without any sign-in
 
-## 🤝 Contributing
+See [MIGRATION.md](MIGRATION.md) for full details on the auth architecture.
 
-Contributions are welcome! Report issues [here](https://github.com/coder-ralph/RepoTree/issues) or submit a Pull Request [here](https://github.com/coder-ralph/RepoTree/pulls).
+## Contributing
 
-## ⭐ Support
+Issues and pull requests are welcome at [github.com/coder-ralph/RepoTree](https://github.com/coder-ralph/RepoTree/issues).
 
-If RepoTree has helped you, please consider:
-- ⭐ **Starring this repository** to show your support
-- 💛 **Sharing it** with other developers
+## License
+
+MIT — see [LICENSE](LICENSE).
 
 ---
 
-<div align="center">
-
-Made with ☕ by [Ralph Rosael](https://app.daily.dev/coderralph)
-
-</div>
+Made with ❤️ and ☕ by [Ralph Rosael](https://app.daily.dev/coderralph)
