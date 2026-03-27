@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://ascii-repotree.vercel.app'),
   title: 'RepoTree — ASCII Tree Generator',
   description:
     'Generate clean ASCII trees from any GitHub or GitLab repository. Perfect for documentation, READMEs, and code reviews.',
