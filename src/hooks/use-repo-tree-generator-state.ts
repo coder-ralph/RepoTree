@@ -305,20 +305,20 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
     (format: 'md' | 'txt' | 'json' | 'html') => {
       const configs = {
         md: {
-          content: `# Directory Structure\n\n\`\`\`\n${treeString}\`\`\``,
+          content: `# Repository Structure\n\n\`\`\`\n${treeString}\`\`\``,
           mime: 'text/markdown;charset=utf-8',
           name: 'README.md',
         },
-        txt: { content: treeString, mime: 'text/plain;charset=utf-8', name: 'directory-structure.txt' },
+        txt: { content: treeString, mime: 'text/plain;charset=utf-8', name: 'repository-structure.txt' },
         json: {
           content: JSON.stringify(convertMapToJson(filteredMap), null, 2),
           mime: 'application/json;charset=utf-8',
-          name: 'directory-structure.json',
+          name: 'repository-structure.json',
         },
         html: {
           content: `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:monospace;white-space:pre;padding:2rem}</style></head><body>${treeString}</body></html>`,
           mime: 'text/html;charset=utf-8',
-          name: 'directory-structure.html',
+          name: 'repository-structure.html',
         },
       };
       const { content, mime, name } = configs[format];
