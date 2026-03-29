@@ -7,7 +7,7 @@ A web tool that visualizes GitHub and GitLab repositories with clean ASCII trees
 [![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-RepoTree-blue?style=for-the-badge)](https://ascii-repotree.vercel.app/)
 [![MIT License](https://img.shields.io/badge/📄_License-MIT-green?style=for-the-badge)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/coder-ralph/RepoTree?style=for-the-badge)](https://github.com/coder-ralph/RepoTree)
-[![Visitors](https://hitscounter.dev/api/hit?url=https%3A%2F%2Fascii-repotree.vercel.app%2Fgenerator&label=Visitors&icon=github&color=%232563eb&style=for-the-badge&tz=UTC)](https://ascii-repotree.vercel.app/)
+[![Visitors](https://hitscounter.dev/api/hit?url=https%3A%2F%2Fascii-repotree.vercel.app%2Fgenerator&label=Visitors&icon=github&color=%23007ec6&message=&style=for-the-badge&tz=UTC)](https://ascii-repotree.vercel.app/)
 
 ## Features
 
