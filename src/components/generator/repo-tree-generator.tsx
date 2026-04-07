@@ -219,6 +219,7 @@ export default function RepoTreeGenerator() {
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
               treeString={treeString}
+              structureMap={state.structureMap}
               filteredMap={filteredMap}
               customizationOptions={customizationOptions}
               onCustomizationChange={handleCustomizationChange}

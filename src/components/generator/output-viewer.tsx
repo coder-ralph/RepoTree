@@ -26,6 +26,25 @@ import type { TreeCustomizationOptions } from '@/types/tree-customization';
 import type { DirectoryMap } from '@/lib/repo-tree-utils';
 import type { ViewMode } from '@/hooks/use-repo-tree-generator-state';
 
+function NoResultsMessage({ searchTerm }: { searchTerm: string }) {
+  return (
+    <div className="bg-[#1d1f21] min-h-[220px] flex flex-col items-center justify-center px-6 gap-1">
+      <p className="text-sm text-gray-400 font-mono text-center">
+        No files or folders found matching &ldquo;{searchTerm}&rdquo;
+      </p>
+      <p className="text-xs text-gray-600 font-mono text-center mt-2">
+        Check the spelling
+      </p>
+      <p className="text-xs text-gray-600 font-mono text-center">
+        Try searching for partial names
+      </p>
+      <p className="text-xs text-gray-600 font-mono text-center">
+        Include file extensions (.js, .ts, .json)
+      </p>
+    </div>
+  );
+}
+
 interface OutputViewerProps {
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
@@ -35,6 +54,7 @@ interface OutputViewerProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   treeString: string;
+  structureMap: DirectoryMap;
   filteredMap: DirectoryMap;
   customizationOptions: TreeCustomizationOptions;
   onCustomizationChange: (opts: Partial<TreeCustomizationOptions>) => void;
@@ -61,6 +81,7 @@ export default function OutputViewer({
   searchTerm,
   setSearchTerm,
   treeString,
+  structureMap,
   filteredMap,
   customizationOptions,
   onCustomizationChange,
@@ -208,6 +229,8 @@ export default function OutputViewer({
           >
             {treeString}
           </SyntaxHighlighter>
+        ) : searchTerm && structureMap.size > 0 ? (
+          <NoResultsMessage searchTerm={searchTerm} />
         ) : (
           <OutputPlaceholder loading={loading} error={validationError} provider={repoType} repoName={repoName} />
         )
@@ -216,6 +239,8 @@ export default function OutputViewer({
           <div className="bg-[#1e293b] min-h-[220px] p-4">
             <InteractiveTreeView structure={filteredMap} customizationOptions={customizationOptions} />
           </div>
+        ) : searchTerm && structureMap.size > 0 ? (
+          <NoResultsMessage searchTerm={searchTerm} />
         ) : (
           <OutputPlaceholder loading={loading} error={validationError} provider={repoType} repoName={repoName} />
         )
