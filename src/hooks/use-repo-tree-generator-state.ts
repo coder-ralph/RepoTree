@@ -82,6 +82,8 @@ export interface RepoTreeGeneratorState {
   showStarNote: boolean;
   showDownloadMenu: boolean;
   setShowDownloadMenu: (show: boolean | ((v: boolean) => boolean)) => void;
+  showExportImageMenu: boolean;
+  setShowExportImageMenu: (show: boolean | ((v: boolean) => boolean)) => void;
   inputRef: React.RefObject<HTMLInputElement | null>;
   outputRef: React.RefObject<HTMLDivElement | null>;
   isEmpty: boolean;
@@ -96,6 +98,7 @@ export interface RepoTreeGeneratorState {
   copyToClipboard: () => void;
   handleClearInput: () => void;
   handleDownload: (format: 'md' | 'txt' | 'json' | 'html') => void;
+  handleExportImage: (format: 'png' | 'svg', repoUrl?: string) => void;
   handleCustomizationChange: (opts: Partial<TreeCustomizationOptions>) => void;
 }
 
@@ -113,6 +116,7 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
   const [viewMode, setViewMode] = useState<ViewMode>('ascii');
   const [searchTerm, setSearchTerm] = useState('');
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  const [showExportImageMenu, setShowExportImageMenu] = useState(false);
   const [customizationOptions, setCustomizationOptions] = useState<TreeCustomizationOptions>(loadOptions());
   const [fileTypeData, setFileTypeData] = useState<{ name: string; value: number }[]>([]);
   const [languageData, setLanguageData] = useState<{ name: string; percentage: number }[]>([]);
@@ -336,6 +340,135 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
     });
   }, []);
 
+  const handleExportImage = useCallback(async (format: 'png' | 'svg', repoUrl?: string) => {
+    const sanitizeRepoName = (name: string | null): string => {
+      if (!name) return 'repository';
+      return name.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    };
+
+    const extractOwnerAndRepo = (url: string): { owner: string | null; repo: string | null } => {
+      try {
+        const match = url.match(/\/(?:github|gitlab)\.com\/([^/]+)\/([^/]+)/);
+        if (match) {
+          return { owner: match[1], repo: match[2].replace(/\.git$/, '') };
+        }
+      } catch {
+        // ignore
+      }
+      return { owner: null, repo: null };
+    };
+
+    const { owner, repo } = extractOwnerAndRepo(repoUrl || '');
+    const repoNameForFilename = sanitizeRepoName(selectedRepoName || repo);
+    const headerTitle = owner && repo ? `${owner}/${repo}` : (selectedRepoName || repo || 'Repository');
+
+    const lines = treeString.split('\n');
+    const fontSize = 13;
+    const charWidth = fontSize * 0.6;
+    const lineHeight = fontSize * 1.6;
+    const padding = { top: 24, right: 32, bottom: 24, left: 32 };
+    const headerHeight = 48;
+    const watermarkHeight = 32;
+    const titleBarPadding = 20;
+
+    const maxLen = Math.max(...lines.map(l => l.length), 0);
+    const contentWidth = maxLen * charWidth;
+    const contentHeight = lines.length * lineHeight;
+    const cardWidth = Math.max(600, contentWidth + padding.left + padding.right + titleBarPadding * 2);
+    const cardHeight = headerHeight + contentHeight + padding.top + padding.bottom + watermarkHeight;
+
+    const headerCenterY = padding.top + headerHeight / 2;
+    const footerY = padding.top + headerHeight + contentHeight + padding.bottom;
+    const dotRadius = 5;
+    const dotSpacing = 14;
+    const dotStartX = 20 + 16;
+
+    const escapeXml = (str: string): string => {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    };
+
+    const buildSvgContent = () => `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${Math.ceil(cardWidth)}" height="${Math.ceil(cardHeight)}" viewBox="0 0 ${Math.ceil(cardWidth)} ${Math.ceil(cardHeight)}" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace">
+  <defs>
+    <linearGradient id="treeExportGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="50%" stop-color="#764ba2"/>
+      <stop offset="100%" stop-color="#f093fb"/>
+    </linearGradient>
+    <filter id="treeExportShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <rect x="0" y="0" width="${Math.ceil(cardWidth)}" height="${Math.ceil(cardHeight)}" fill="url(#treeExportGradient)"/>
+  <rect x="20" y="20" width="${Math.ceil(cardWidth) - 40}" height="${Math.ceil(cardHeight) - 40}" rx="16" ry="16" fill="#0d1117" filter="url(#treeExportShadow)"/>
+  <rect x="20" y="20" width="${Math.ceil(cardWidth) - 40}" height="48" rx="16" ry="16" fill="#161b22"/>
+  <rect x="20" y="52" width="${Math.ceil(cardWidth) - 40}" height="16" fill="#161b22"/>
+  <circle cx="${dotStartX}" cy="${headerCenterY}" r="${dotRadius}" fill="#ff5f57"/>
+  <circle cx="${dotStartX + dotSpacing}" cy="${headerCenterY}" r="${dotRadius}" fill="#febc2e"/>
+  <circle cx="${dotStartX + dotSpacing * 2}" cy="${headerCenterY}" r="${dotRadius}" fill="#28c840"/>
+  <text x="${Math.ceil(cardWidth / 2)}" y="${headerCenterY + 1}" text-anchor="middle" dominant-baseline="middle" fill="#e6edf3" font-size="${fontSize}" font-weight="500">${escapeXml(headerTitle)}</text>
+  ${lines.map((line, i) => `<text x="${padding.left + titleBarPadding}" y="${padding.top + headerHeight + (lineHeight * 0.75) + (i * lineHeight)}" fill="#8b949e" font-size="${fontSize}">${escapeXml(line)}</text>`).join('')}
+  <text x="${Math.ceil(cardWidth / 2)}" y="${footerY}" text-anchor="middle" dominant-baseline="middle" fill="white" fill-opacity="0.4" font-size="10" font-weight="400">Generated by RepoTree</text>
+</svg>`;
+
+    const filename = `${repoNameForFilename}-tree`;
+
+    if (format === 'svg') {
+      const svgContent = buildSvgContent();
+      const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+      saveAs(blob, `${filename}.svg`);
+    } else {
+      const container = document.createElement('div');
+      container.style.cssText = 'position: absolute; left: -9999px; top: -9999px; display: inline-block; pointer-events: none;';
+      document.body.appendChild(container);
+
+      const wrapper = document.createElement('div');
+      container.appendChild(wrapper);
+
+      try {
+        wrapper.innerHTML = buildSvgContent();
+        const svgElement = wrapper.querySelector('svg');
+        if (!svgElement) throw new Error('SVG not rendered');
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('Could not get canvas context');
+
+        const img = new Image();
+        const svgData = new XMLSerializer().serializeToString(svgElement);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => {
+            const scale = 2;
+            canvas.width = svgElement.clientWidth * scale;
+            canvas.height = svgElement.clientHeight * scale;
+            ctx.scale(scale, scale);
+            ctx.drawImage(img, 0, 0);
+            URL.revokeObjectURL(url);
+            resolve();
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error('Failed to load SVG'));
+          };
+          img.src = url;
+        });
+
+        canvas.toBlob((blob) => {
+          if (blob) saveAs(blob, `${filename}.png`);
+          document.body.removeChild(container);
+        }, 'image/png');
+      } catch (error) {
+        console.error('Error exporting PNG:', error);
+        document.body.removeChild(container);
+      }
+    }
+
+    setShowExportImageMenu(false);
+  }, [treeString, selectedRepoName]);
+
   const isEmpty = structureMap.size === 0;
   const hasOutput = !isEmpty || loading || sourceTab === 'url';
   const showInputErrorBorder = validation.isError && repoUrl.trim().length > 0;
@@ -369,6 +502,8 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
     showStarNote,
     showDownloadMenu,
     setShowDownloadMenu,
+    showExportImageMenu,
+    setShowExportImageMenu,
     inputRef,
     outputRef,
     isEmpty,
@@ -383,6 +518,7 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
     copyToClipboard,
     handleClearInput,
     handleDownload,
+    handleExportImage,
     handleCustomizationChange,
   };
 }

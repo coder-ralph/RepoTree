@@ -50,6 +50,8 @@ export default function RepoTreeGenerator() {
     showStarNote,
     showDownloadMenu,
     setShowDownloadMenu,
+    showExportImageMenu,
+    setShowExportImageMenu,
     inputRef,
     outputRef,
     isEmpty,
@@ -66,6 +68,7 @@ export default function RepoTreeGenerator() {
     copied,
     copyToClipboard,
     handleDownload,
+    handleExportImage,
     expanded,
     setExpanded,
     handleUrlChange,
@@ -227,11 +230,15 @@ export default function RepoTreeGenerator() {
               validationError={validation.isError ? validation.message : null}
               repoType={repoType}
               repoName={selectedRepoName}
+              repoUrl={repoUrl}
               copied={copied}
               onCopy={copyToClipboard}
               onDownload={handleDownload}
               showDownloadMenu={showDownloadMenu}
               setShowDownloadMenu={setShowDownloadMenu}
+              onExportImage={handleExportImage}
+              showExportImageMenu={showExportImageMenu}
+              setShowExportImageMenu={setShowExportImageMenu}
               fileTypeData={fileTypeData}
               languageData={languageData}
               outputRef={outputRef}
@@ -246,6 +253,10 @@ export default function RepoTreeGenerator() {
 
       {showDownloadMenu && (
         <div className="fixed inset-0 z-10" onClick={() => setShowDownloadMenu(false)} />
+      )}
+
+      {showExportImageMenu && (
+        <div className="fixed inset-0 z-10" onClick={() => setShowExportImageMenu(false)} />
       )}
     </>
   );
