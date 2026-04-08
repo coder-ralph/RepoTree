@@ -13,7 +13,7 @@ const Footer = () => {
               <div className="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center">
                 <FolderTree size={13} className="text-white" />
               </div>
-              <span className="font-semibold text-base text-gray-900 dark:text-white">
+              <span className="font-semibold text-sm text-gray-900 dark:text-white">
                 Repo<span className="text-blue-600">Tree</span>
               </span>
             </Link>
