@@ -166,6 +166,7 @@ export default function DocsPage() {
                       <li><strong className="text-gray-800 dark:text-gray-300">Interactive tree view</strong> — collapsible folder explorer</li>
                       <li><strong className="text-gray-800 dark:text-gray-300">Repository analysis</strong> — file type and language breakdown charts</li>
                       <li><strong className="text-gray-800 dark:text-gray-300">Multiple export formats</strong> — .md, .txt, .json, .html</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Export as image</strong> — download tree as PNG or SVG for sharing</li>
                       <li><strong className="text-gray-800 dark:text-gray-300">Real-time search</strong> — filter files and folders instantly</li>
                     </ul>
                   </AccordionContent>

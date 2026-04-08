@@ -15,6 +15,7 @@ A web tool that visualizes GitHub and GitLab repositories with clean ASCII trees
 - **Interactive tree view** — collapsible folder explorer with VS Code-style file icons
 - **Repository analysis** — file type distribution and language breakdown charts
 - **Multiple export formats** — download as .md, .txt, .json, or .html
+- **Export as image** — download and share your tree as PNG or SVG
 - **Real-time search** — filter files and folders as you type
 - **Customizable output** — icons, line numbers, descriptions, trailing slashes
 - **Dark & light themes** — automatic system preference detection
