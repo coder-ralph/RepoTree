@@ -4,10 +4,23 @@ A web tool that visualizes GitHub and GitLab repositories with clean ASCII trees
 
 ![RepoTree Preview](https://raw.githubusercontent.com/coder-ralph/RepoTree/main/public/opengraph-image.png)
 
+<div align="center">
+  <a href="https://www.producthunt.com/products/repotree?embed=true&amp;amp;utm_source=badge-featured&amp;amp;utm_medium=badge&amp;amp;utm_campaign=badge-repotree" target="_blank" rel="noopener noreferrer">
+    <img alt="RepoTree - Visualize &amp; analyze GitHub &amp; GitLab repos instantly | Product Hunt" width="150" height="36" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1113350&amp;theme=light&amp;t=1775545024553">
+  </a>
+  <a href="https://open-launch.com/projects/repotree" target="_blank" rel="noopener noreferrer">
+    <img src="https://open-launch.com/api/badge/79b3264d-6411-4e68-aaa8-8a325bc28561/featured-dark.svg" alt="Featured on Open-Launch" width="150" height="36" />
+  </a>
+</div>
+
+<div align="center">
+
 [![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-RepoTree-blue?style=for-the-badge)](https://ascii-repotree.vercel.app/)
 [![MIT License](https://img.shields.io/badge/📄_License-MIT-green?style=for-the-badge)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/coder-ralph/RepoTree?style=for-the-badge)](https://github.com/coder-ralph/RepoTree)
 [![Visitors](https://hitscounter.dev/api/hit?url=https%3A%2F%2Fascii-repotree.vercel.app%2Fgenerator&label=Visitors&icon=github&color=%23007ec6&message=&style=for-the-badge&tz=UTC)](https://ascii-repotree.vercel.app/)
+
+</div>
 
 ## Features
 
