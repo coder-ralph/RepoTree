@@ -14,6 +14,7 @@ import {
   Copy,
   Download,
   FolderTree,
+  Image,
   ListTree,
   Maximize,
   Minimize,
@@ -62,11 +63,15 @@ interface OutputViewerProps {
   validationError: string | null;
   repoType: string;
   repoName: string | null;
+  repoUrl: string;
   copied: boolean;
   onCopy: () => void;
   onDownload: (format: 'md' | 'txt' | 'json' | 'html') => void;
   showDownloadMenu: boolean;
   setShowDownloadMenu: (show: boolean | ((v: boolean) => boolean)) => void;
+  onExportImage: (format: 'png' | 'svg', repoUrl?: string) => void;
+  showExportImageMenu: boolean;
+  setShowExportImageMenu: (show: boolean | ((v: boolean) => boolean)) => void;
   fileTypeData: { name: string; value: number }[];
   languageData: { name: string; percentage: number }[];
   outputRef: React.RefObject<HTMLDivElement | null>;
@@ -89,11 +94,15 @@ export default function OutputViewer({
   validationError,
   repoType,
   repoName,
+  repoUrl,
   copied,
   onCopy,
   onDownload,
   showDownloadMenu,
   setShowDownloadMenu,
+  onExportImage,
+  showExportImageMenu,
+  setShowExportImageMenu,
   fileTypeData,
   languageData,
   outputRef,
@@ -173,6 +182,34 @@ export default function OutputViewer({
                       className="w-full text-left px-3.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                       .{fmt}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="relative">
+              <button
+                onClick={() => setShowExportImageMenu((v) => !v)}
+                disabled={isEmpty}
+                aria-label="Export Image"
+                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
+              >
+                <Image size={12} aria-hidden="true" />
+                <span className="hidden sm:inline">Export Image</span>
+                <ChevronDown size={10} aria-hidden="true" />
+              </button>
+              {showExportImageMenu && (
+                <div className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg py-1 min-w-[120px] z-20">
+                  {(['png', 'svg'] as const).map((fmt) => (
+                    <button
+                      key={fmt}
+                      onClick={() => onExportImage(fmt, repoUrl)}
+                      aria-label={`Save as ${fmt.toUpperCase()}`}
+                      className="w-full text-left px-3.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+                    >
+                      <Image size={12} className="text-gray-400" aria-hidden="true" />
+                      Save .{fmt.toUpperCase()}
                     </button>
                   ))}
                 </div>
