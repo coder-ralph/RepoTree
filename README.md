@@ -5,11 +5,24 @@ A web tool that visualizes GitHub and GitLab repositories with clean ASCII trees
 ![RepoTree Preview](https://raw.githubusercontent.com/coder-ralph/RepoTree/main/public/opengraph-image.png)
 
 <div align="center">
-  <a href="https://www.producthunt.com/products/repotree?embed=true&amp;amp;utm_source=badge-featured&amp;amp;utm_medium=badge&amp;amp;utm_campaign=badge-repotree" target="_blank" rel="noopener noreferrer">
-    <img alt="RepoTree - Visualize &amp; analyze GitHub &amp; GitLab repos instantly | Product Hunt" width="150" height="36" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1113350&amp;theme=light&amp;t=1775545024553">
+  <a href="https://www.producthunt.com/products/repotree?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-repotree" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+    <img
+      alt="RepoTree - Visualize &amp; analyze GitHub &amp; GitLab repos instantly | Product Hunt"
+      width="250"
+      height="54"
+      src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1113350&amp;theme=light&amp;t=1775545024553"
+    >
   </a>
-  <a href="https://open-launch.com/projects/repotree" target="_blank" rel="noopener noreferrer">
-    <img src="https://open-launch.com/api/badge/79b3264d-6411-4e68-aaa8-8a325bc28561/featured-dark.svg" alt="Featured on Open-Launch" width="150" height="36" />
+</div>
+
+<div align="center">
+  <a href="https://open-launch.com/projects/repotree" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+    <img
+      src="https://open-launch.com/api/badge/79b3264d-6411-4e68-aaa8-8a325bc28561/featured-dark.svg"
+      alt="Featured on Open-Launch"
+      width="250"
+      height="54"
+    />
   </a>
 </div>
 
