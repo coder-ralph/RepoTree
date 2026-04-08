@@ -9,6 +9,8 @@ import {
   validateRepositoryStructure,
   PERFORMANCE_THRESHOLDS,
   type RepoValidationResult,
+  type EntryCounts,
+  countEntries,
 } from '@/lib/repo-tree-utils';
 import { detectProviderFromUrl } from '@/lib/providers';
 import { convertMapToJson } from '@/lib/utils';
@@ -91,6 +93,7 @@ export interface RepoTreeGeneratorState {
   showInputErrorBorder: boolean;
   filteredMap: DirectoryMap;
   treeString: string;
+  entryCounts: EntryCounts;
   validateUrl: (url: string) => ValidationError;
   handleUrlChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleFetchStructure: (url?: string, skipValidation?: boolean) => Promise<void>;
@@ -511,6 +514,7 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
     showInputErrorBorder,
     filteredMap,
     treeString,
+    entryCounts: structureMap.size > 0 ? countEntries(structureMap) : { folders: 0, files: 0 },
     validateUrl,
     handleUrlChange,
     handleFetchStructure,

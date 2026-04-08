@@ -56,6 +56,7 @@ export default function RepoTreeGenerator() {
     outputRef,
     isEmpty,
     viewMode,
+    entryCounts,
     searchTerm,
     setSearchTerm,
     treeString,
@@ -245,7 +246,7 @@ export default function RepoTreeGenerator() {
             />
           )}
 
-          <RepoMetaFooter repoValidation={repoValidation} isEmpty={isEmpty} />
+          <RepoMetaFooter repoValidation={repoValidation} isEmpty={isEmpty} entryCounts={entryCounts} />
 
           <StarNote show={showStarNote} />
         </div>

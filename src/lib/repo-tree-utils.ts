@@ -285,6 +285,32 @@ export const analyzeRepository = (map: DirectoryMap) => {
   return { fileTypes: fileTypeData, languages: languageData };
 };
 
+export interface EntryCounts {
+  folders: number;
+  files: number;
+}
+
+export const countEntries = (map: DirectoryMap): EntryCounts => {
+  let folders = 0;
+  let files = 0;
+
+  const traverse = (node: DirectoryMap | { type: 'file'; name: string }) => {
+    if (node instanceof Map) {
+      folders++;
+      for (const [, value] of node) {
+        traverse(value);
+      }
+    } else if (node.type === 'file') {
+      files++;
+    }
+  };
+
+  for (const [, value] of map) {
+    traverse(value);
+  }
+  return { folders, files };
+};
+
 const getLanguageFromExtension = (ext: string): string => {
   const map: Record<string, string> = {
     js: 'JavaScript', jsx: 'JavaScript', ts: 'TypeScript', tsx: 'TypeScript',
