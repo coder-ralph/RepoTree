@@ -1,8 +1,37 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { FolderTree, Github } from 'lucide-react';
 import ThemeToggle from '@/components/theme-toggle';
 import UserMenu from '@/components/auth/user-menu';
 import RepoHelp from '@/components/repo-help';
+
+function IconWithTooltip({ 
+  children, 
+  label 
+}: { 
+  children: React.ReactNode; 
+  label: string;
+}) {
+  const [show, setShow] = useState(false);
+
+  return (
+    <div 
+      className="relative inline-flex"
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      {children}
+      {show && (
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white dark:text-gray-100 bg-gray-900 dark:bg-gray-700 rounded-md shadow-lg whitespace-nowrap z-50 animate-in fade-in zoom-in-95 duration-200">
+          {label}
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-px w-0 h-0 border-l-4 border-r-4 border-b-4 border-l-transparent border-r-transparent border-b-gray-900 dark:border-b-gray-700" />
+        </div>
+      )}
+    </div>
+  );
+}
 
 const Header = () => {
   return (
@@ -21,18 +50,21 @@ const Header = () => {
         {/* Right nav */}
         <div className="flex items-center gap-1">
           <RepoHelp />
-          <ThemeToggle />
+          <IconWithTooltip label="Source Code">
+            <a
+              href="https://github.com/coder-ralph/RepoTree"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="View source code"
+              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <Github size={17} />
+            </a>
+          </IconWithTooltip>
+          <IconWithTooltip label="Toggle Theme">
+            <ThemeToggle />
+          </IconWithTooltip>
           <UserMenu />
-          <div className="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1" />
-          <a
-            href="https://github.com/coder-ralph/RepoTree"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="View on GitHub"
-            className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          >
-            <Github size={17} />
-          </a>
         </div>
       </div>
     </header>
