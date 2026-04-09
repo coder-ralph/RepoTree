@@ -42,8 +42,8 @@ const features = [
   },
   {
     icon: Download,
-    title: 'Multiple export formats',
-    desc: 'Download as .md, .txt, .json, or .html — ready for your README.',
+    title: 'Export & share anywhere',
+    desc: 'Export as .md, .txt, .json, .html, PNG, or SVG for documentation, READMEs, and quick sharing.',
   },
   {
     icon: Search,
