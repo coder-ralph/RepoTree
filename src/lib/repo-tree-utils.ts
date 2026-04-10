@@ -363,7 +363,7 @@ export const filterTreeEntries = (
 ): TreeItem[] => {
   const { maxDepth, excludePatterns } = options;
 
-  if (!maxDepth && (!excludePatterns || excludePatterns.length === 0)) {
+  if (maxDepth === null && (!excludePatterns || excludePatterns.length === 0)) {
     return tree;
   }
 
