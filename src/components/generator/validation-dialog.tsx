@@ -57,7 +57,7 @@ export default function ValidationDialog({
             ))}
             {hasFilters && repoValidation.warnings.length > 0 && (
               <p className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20 rounded px-2 py-1.5">
-                Filters applied: Max Depth {maxDepth}, {excludePatterns?.length || 0} exclude pattern(s).
+                Filters applied:{maxDepth !== null && maxDepth !== undefined ? ` Max Depth ${maxDepth}` : ''}{maxDepth !== null && maxDepth !== undefined && excludePatterns && excludePatterns.length > 0 ? ',' : ''}{excludePatterns && excludePatterns.length > 0 ? ` ${excludePatterns.length} exclude pattern(s)` : ''}.
               </p>
             )}
             {!hasFilters && repoValidation.warnings.length > 0 && (
