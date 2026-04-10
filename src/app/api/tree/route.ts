@@ -6,7 +6,7 @@ import type { ProviderType } from '@/lib/providers';
 
 export async function POST(req: Request) {
   try {
-    const { url, providerType, maxDepth, excludePatterns } = await req.json();
+    const { url, providerType } = await req.json();
 
     if (!url || typeof url !== 'string') {
       return NextResponse.json({ error: 'Repository URL is required' }, { status: 400 });
@@ -35,8 +35,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ 
       tree, 
-      provider: resolvedProvider,
-      filters: { maxDepth, excludePatterns }
+      provider: resolvedProvider
     });
   } catch (error) {
     console.error('[API/TREE]', error);

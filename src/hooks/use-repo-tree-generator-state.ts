@@ -206,9 +206,7 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             url: effectiveUrl, 
-            providerType: repoType,
-            maxDepth,
-            excludePatterns: excludePatternsInput.split(',').map(p => p.trim()).filter(Boolean)
+            providerType: repoType
           }),
         });
 
