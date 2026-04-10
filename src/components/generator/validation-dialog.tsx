@@ -12,6 +12,8 @@ interface ValidationDialogProps {
   repoValidation: RepoValidationResult | null;
   onContinue: () => void;
   onCancel: () => void;
+  maxDepth?: number | null;
+  excludePatterns?: string[];
 }
 
 export default function ValidationDialog({
@@ -20,7 +22,10 @@ export default function ValidationDialog({
   repoValidation,
   onContinue,
   onCancel,
+  maxDepth,
+  excludePatterns,
 }: ValidationDialogProps) {
+  const hasFilters = (maxDepth !== null && maxDepth !== undefined) || (excludePatterns && excludePatterns.length > 0);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -50,16 +55,27 @@ export default function ValidationDialog({
                 <AlertDescription className="text-amber-700 dark:text-amber-300 text-sm">{w}</AlertDescription>
               </Alert>
             ))}
+            {hasFilters && repoValidation.warnings.length > 0 && (
+              <p className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20 rounded px-2 py-1.5">
+                Filters applied:{maxDepth !== null && maxDepth !== undefined ? ` Max Depth ${maxDepth}` : ''}{maxDepth !== null && maxDepth !== undefined && excludePatterns && excludePatterns.length > 0 ? ',' : ''}{excludePatterns && excludePatterns.length > 0 ? ` ${excludePatterns.length} exclude pattern(s)` : ''}.
+              </p>
+            )}
+            {!hasFilters && repoValidation.warnings.length > 0 && (
+              <p className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20 rounded px-2 py-1.5">
+                Tip: Try setting Max Depth (2-4) or excluding patterns (e.g., node_modules, dist) to reduce output.
+              </p>
+            )}
             <div className="flex gap-2 pt-1">
-              {repoValidation.isValid && (
-                <Button size="sm" onClick={onContinue}>
-                  Continue anyway
-                </Button>
-              )}
+              <Button size="sm" onClick={onContinue}>
+                Continue Anyway
+              </Button>
               <Button variant="outline" size="sm" onClick={onCancel}>
                 Cancel
               </Button>
             </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 pt-1">
+              Large repositories may take longer and impact performance.
+            </p>
           </div>
         )}
       </DialogContent>
