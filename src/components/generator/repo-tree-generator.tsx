@@ -45,6 +45,7 @@ export default function RepoTreeGenerator() {
     repoValidation,
     showValidationDialog,
     setShowValidationDialog,
+    setAllowLargeRepo,
     hasOutput,
     showInputErrorBorder,
     showStarNote,
@@ -52,6 +53,7 @@ export default function RepoTreeGenerator() {
     setShowDownloadMenu,
     showExportImageMenu,
     setShowExportImageMenu,
+    isLargeExport,
     inputRef,
     outputRef,
     isEmpty,
@@ -74,14 +76,21 @@ export default function RepoTreeGenerator() {
     setExpanded,
     handleUrlChange,
     handleFetchStructure,
+    handleValidateAndGenerate,
     handleRepoSelect,
     handleClearInput,
     validateUrl,
+    maxDepth,
+    setMaxDepth,
+    excludePatternsInput,
+    setExcludePatternsInput,
+    excludePatterns,
   } = state;
 
   const handleValidationContinue = () => {
+    setAllowLargeRepo(true);
     setShowValidationDialog(false);
-    handleFetchStructure(repoUrl, true);
+    handleValidateAndGenerate();
   };
 
   return (
@@ -92,6 +101,8 @@ export default function RepoTreeGenerator() {
         repoValidation={repoValidation}
         onContinue={handleValidationContinue}
         onCancel={() => setShowValidationDialog(false)}
+        maxDepth={maxDepth}
+        excludePatterns={excludePatterns}
       />
 
       <div className="w-full max-w-4xl mx-auto px-4 sm:px-6">
@@ -147,12 +158,16 @@ export default function RepoTreeGenerator() {
               <div className="pb-5 space-y-3">
                 <div className="flex flex-col sm:flex-row gap-2">
                   <div className="relative w-full sm:w-32 flex-shrink-0">
+                    <label htmlFor="repoType" className="sr-only">
+                      Repository provider
+                    </label>
                     <select
+                      id="repoType"
                       value={repoType}
                       onChange={(e) => {
                         const next = e.target.value as ProviderType;
                         setRepoType(next);
-                        if (repoUrl.trim()) setValidation(validateUrl(repoUrl));
+                        if (repoUrl.trim()) setValidation(validateUrl(repoUrl, next));
                       }}
                       className="w-full h-11 pl-3 pr-8 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors"
                     >
@@ -209,6 +224,51 @@ export default function RepoTreeGenerator() {
                     {loading ? 'Generating…' : 'Generate'}
                   </Button>
                 </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="maxDepth" className="text-xs font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                      Max Depth
+                    </label>
+                    <select
+                      id="maxDepth"
+                      value={maxDepth ?? ''}
+                      onChange={(e) => setMaxDepth(e.target.value ? parseInt(e.target.value, 10) : null)}
+                      className="h-9 px-2.5 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors"
+                    >
+                      <option value="">Unlimited</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                      <option value="9">9</option>
+                      <option value="10">10</option>
+                    </select>
+                  </div>
+
+                  <div className="flex-1 flex items-center gap-2">
+                    <label htmlFor="excludeItems" className="text-xs font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                      Exclude
+                    </label>
+                    <input
+                      id="excludeItems"
+                      type="text"
+                      value={excludePatternsInput}
+                      onChange={(e) => setExcludePatternsInput(e.target.value)}
+                      placeholder="node_modules, dist, *.log"
+                      className="flex-1 h-9 px-3 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors"
+                    />
+                    {excludePatterns.length > 0 && (
+                      <span className="text-[10px] text-blue-600 dark:text-blue-400 font-medium">
+                        {excludePatterns.length} pattern{excludePatterns.length !== 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -240,13 +300,20 @@ export default function RepoTreeGenerator() {
               onExportImage={handleExportImage}
               showExportImageMenu={showExportImageMenu}
               setShowExportImageMenu={setShowExportImageMenu}
+              isLargeExport={isLargeExport}
               fileTypeData={fileTypeData}
               languageData={languageData}
               outputRef={outputRef}
             />
           )}
 
-          <RepoMetaFooter repoValidation={repoValidation} isEmpty={isEmpty} entryCounts={entryCounts} />
+          <RepoMetaFooter 
+            repoValidation={repoValidation} 
+            isEmpty={isEmpty} 
+            entryCounts={entryCounts} 
+            maxDepth={maxDepth}
+            excludePatterns={excludePatterns}
+          />
 
           <StarNote show={showStarNote} />
         </div>

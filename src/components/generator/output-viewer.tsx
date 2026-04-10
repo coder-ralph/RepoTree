@@ -14,7 +14,7 @@ import {
   Copy,
   Download,
   FolderTree,
-  Image,
+  Image as ImageIcon,
   ListTree,
   Maximize,
   Minimize,
@@ -72,6 +72,7 @@ interface OutputViewerProps {
   onExportImage: (format: 'png' | 'svg', repoUrl?: string) => void;
   showExportImageMenu: boolean;
   setShowExportImageMenu: (show: boolean | ((v: boolean) => boolean)) => void;
+  isLargeExport: boolean;
   fileTypeData: { name: string; value: number }[];
   languageData: { name: string; percentage: number }[];
   outputRef: React.RefObject<HTMLDivElement | null>;
@@ -103,6 +104,7 @@ export default function OutputViewer({
   onExportImage,
   showExportImageMenu,
   setShowExportImageMenu,
+  isLargeExport,
   fileTypeData,
   languageData,
   outputRef,
@@ -195,23 +197,37 @@ export default function OutputViewer({
                 aria-label="Export Image"
                 className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
               >
-                <Image size={12} aria-hidden="true" />
+                <ImageIcon size={12} aria-hidden="true" />
                 <span className="hidden sm:inline">Export Image</span>
                 <ChevronDown size={10} aria-hidden="true" />
               </button>
               {showExportImageMenu && (
-                <div className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg py-1 min-w-[120px] z-20">
-                  {(['png', 'svg'] as const).map((fmt) => (
-                    <button
-                      key={fmt}
-                      onClick={() => onExportImage(fmt, repoUrl)}
-                      aria-label={`Save as ${fmt.toUpperCase()}`}
-                      className="w-full text-left px-3.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
-                    >
-                      <Image size={12} className="text-gray-400" aria-hidden="true" />
-                      Save .{fmt.toUpperCase()}
-                    </button>
-                  ))}
+                <div className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg py-1 min-w-[160px] z-20">
+                  {(['png', 'svg'] as const).map((fmt) => {
+                    const isPngDisabled = fmt === 'png' && isLargeExport;
+                    return (
+                      <button
+                        key={fmt}
+                        onClick={() => !isPngDisabled && onExportImage(fmt, repoUrl)}
+                        disabled={isPngDisabled}
+                        aria-label={`Save as ${fmt.toUpperCase()}${isPngDisabled ? ' (disabled)' : ''}`}
+                        title={isPngDisabled ? 'PNG export is disabled for large repositories due to browser limitations. Use SVG export instead.' : undefined}
+                        className={`w-full text-left px-3.5 py-2 text-xs transition-colors flex items-center gap-2 ${
+                          isPngDisabled
+                            ? 'text-gray-400 cursor-not-allowed'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        <ImageIcon size={12} className={isPngDisabled ? 'text-gray-300' : 'text-gray-400'} aria-hidden="true" />
+                        Save .{fmt.toUpperCase()}
+                      </button>
+                    );
+                  })}
+                  {isLargeExport && (
+                    <div className="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700">
+                      PNG is disabled for large repositories due to browser limitations. Use SVG instead.
+                    </div>
+                  )}
                 </div>
               )}
             </div>

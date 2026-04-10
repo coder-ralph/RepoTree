@@ -1,17 +1,20 @@
-import { File, Folder, Info } from 'lucide-react';
+import { File, Folder, Info, Layers, Filter } from 'lucide-react';
 import { PERFORMANCE_THRESHOLDS, type RepoValidationResult, type EntryCounts } from '@/lib/repo-tree-utils';
 
 interface RepoMetaFooterProps {
   repoValidation: RepoValidationResult | null;
   isEmpty: boolean;
   entryCounts: EntryCounts;
+  maxDepth?: number | null;
+  excludePatterns?: string[];
 }
 
-export default function RepoMetaFooter({ repoValidation, isEmpty, entryCounts }: RepoMetaFooterProps) {
+export default function RepoMetaFooter({ repoValidation, isEmpty, entryCounts, maxDepth, excludePatterns }: RepoMetaFooterProps) {
+  const hasFilters = (maxDepth !== null && maxDepth !== undefined) || (excludePatterns && excludePatterns.length > 0);
   if (!repoValidation || isEmpty) return null;
 
   return (
-    <div className="px-5 sm:px-6 py-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+    <div className="px-5 sm:px-6 py-3 border-t border-gray-100 dark:border-gray-800 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500 dark:text-gray-400">
       <div className="flex items-center gap-2">
         <div className="relative group">
           <Info size={11} />
@@ -28,6 +31,22 @@ export default function RepoMetaFooter({ repoValidation, isEmpty, entryCounts }:
         )}
       </div>
       <div className="flex items-center gap-3 sm:gap-4">
+        {hasFilters && (
+          <div className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
+            {maxDepth !== null && maxDepth !== undefined && (
+              <div className="flex items-center gap-1">
+                <Layers size={11} />
+                <span>Depth {maxDepth}</span>
+              </div>
+            )}
+            {excludePatterns && excludePatterns.length > 0 && (
+              <div className="flex items-center gap-1">
+                <Filter size={11} />
+                <span>{excludePatterns.length} excluded</span>
+              </div>
+            )}
+          </div>
+        )}
         <div className="flex items-center gap-1">
           <Folder size={12} className="text-blue-500 dark:text-blue-400" />
           <span>{entryCounts.folders.toLocaleString()} folders</span>

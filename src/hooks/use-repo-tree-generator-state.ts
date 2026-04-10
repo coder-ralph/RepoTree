@@ -8,11 +8,14 @@ import {
   generateStructure,
   validateRepositoryStructure,
   PERFORMANCE_THRESHOLDS,
+  GITHUB_LIMITS,
   type RepoValidationResult,
   type EntryCounts,
+  type TreeItem,
   countEntries,
+  FilterOptions,
+  filterTreeEntries,
 } from '@/lib/repo-tree-utils';
-import { detectProviderFromUrl } from '@/lib/providers';
 import { convertMapToJson } from '@/lib/utils';
 import type { TreeCustomizationOptions } from '@/types/tree-customization';
 import { saveAs } from 'file-saver';
@@ -70,6 +73,8 @@ export interface RepoTreeGeneratorState {
   repoValidation: RepoValidationResult | null;
   showValidationDialog: boolean;
   setShowValidationDialog: (show: boolean) => void;
+  allowLargeRepo: boolean;
+  setAllowLargeRepo: (allow: boolean) => void;
   copied: boolean;
   expanded: boolean;
   setExpanded: (v: boolean) => void;
@@ -78,6 +83,12 @@ export interface RepoTreeGeneratorState {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   customizationOptions: TreeCustomizationOptions;
+  maxDepth: number | null;
+  setMaxDepth: (depth: number | null) => void;
+  excludePatterns: string[];
+  setExcludePatterns: (patterns: string[]) => void;
+  excludePatternsInput: string;
+  setExcludePatternsInput: (input: string) => void;
   fileTypeData: { name: string; value: number }[];
   languageData: { name: string; percentage: number }[];
   selectedRepoName: string | null;
@@ -94,9 +105,13 @@ export interface RepoTreeGeneratorState {
   filteredMap: DirectoryMap;
   treeString: string;
   entryCounts: EntryCounts;
-  validateUrl: (url: string) => ValidationError;
+  isLargeExport: boolean;
+  rawTree: TreeItem[];
+  filteredTree: TreeItem[];
+  validateUrl: (url: string, provider?: ProviderType) => ValidationError;
   handleUrlChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleFetchStructure: (url?: string, skipValidation?: boolean) => Promise<void>;
+  handleValidateAndGenerate: (skipValidation?: boolean) => Promise<void>;
   handleRepoSelect: (url: string, provider: string) => void;
   copyToClipboard: () => void;
   handleClearInput: () => void;
@@ -114,6 +129,7 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
   const [validation, setValidation] = useState<ValidationError>({ message: '', isError: false });
   const [repoValidation, setRepoValidation] = useState<RepoValidationResult | null>(null);
   const [showValidationDialog, setShowValidationDialog] = useState(false);
+  const [allowLargeRepo, setAllowLargeRepo] = useState(false);
   const [copied, setCopied] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('ascii');
@@ -125,6 +141,10 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
   const [languageData, setLanguageData] = useState<{ name: string; percentage: number }[]>([]);
   const [selectedRepoName, setSelectedRepoName] = useState<string | null>(null);
   const [showStarNote, setShowStarNote] = useState(false);
+  const [maxDepth, setMaxDepth] = useState<number | null>(null);
+  const [excludePatternsInput, setExcludePatternsInput] = useState('');
+  const [rawTree, setRawTree] = useState<TreeItem[]>([]);
+  const [filteredTree, setFilteredTree] = useState<TreeItem[]>([]);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const outputRef = useRef<HTMLDivElement>(null);
@@ -136,23 +156,19 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
   }, [isAuthenticated]);
 
   useEffect(() => {
-    const detected = detectProviderFromUrl(repoUrl);
-    if (detected) setRepoType(detected);
-  }, [repoUrl]);
-
-  useEffect(() => {
     const saved = localStorage.getItem('lastRepoUrl');
     if (saved) setRepoUrl(saved);
   }, []);
 
   const validateUrl = useCallback(
-    (url: string): ValidationError => {
+    (url: string, provider?: ProviderType): ValidationError => {
       const trimmed = url.trim();
       if (!trimmed) return { message: 'Enter a repository URL', isError: true };
-      if (repoType === 'github' && !/^https?:\/\/github\.com\/[\w.-]+\/[\w.-]+\/?$/.test(trimmed)) {
+      const effectiveProvider = provider ?? repoType;
+      if (effectiveProvider === 'github' && !/^https?:\/\/github\.com\/[\w.-]+\/[\w.-]+\/?$/.test(trimmed)) {
         return { message: 'Enter a valid GitHub URL', isError: true };
       }
-      if (repoType === 'gitlab' && !/^https?:\/\/gitlab\.com\/[\w./-]+\/[\w.-]+\/?$/.test(trimmed)) {
+      if (effectiveProvider === 'gitlab' && !/^https?:\/\/gitlab\.com\/[\w./-]+\/[\w.-]+\/?$/.test(trimmed)) {
         return { message: 'Enter a valid GitLab URL', isError: true };
       }
       return { message: '', isError: false };
@@ -188,7 +204,12 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
         const res = await fetch('/api/tree', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: effectiveUrl, providerType: repoType }),
+          body: JSON.stringify({ 
+            url: effectiveUrl, 
+            providerType: repoType,
+            maxDepth,
+            excludePatterns: excludePatternsInput.split(',').map(p => p.trim()).filter(Boolean)
+          }),
         });
 
         if (currentRequestId !== requestIdRef.current) return;
@@ -208,16 +229,27 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
 
         if (currentRequestId !== requestIdRef.current) return;
 
-        const repoVal = validateRepositoryStructure(tree);
+        setRawTree(tree);
+
+        const excludePatterns = excludePatternsInput.split(',').map(p => p.trim()).filter(Boolean);
+        const filterOptions: FilterOptions = {
+          maxDepth,
+          excludePatterns
+        };
+        
+        const filtered = filterTreeEntries(tree, filterOptions);
+        setFilteredTree(filtered);
+
+        const repoVal = validateRepositoryStructure(filtered);
         setRepoValidation(repoVal);
 
-        if (!skipValidation && (!repoVal.isValid || repoVal.warnings.length > 0)) {
+        if (!skipValidation && !allowLargeRepo && (!repoVal.isValid || repoVal.warnings.length > 0)) {
           setShowValidationDialog(true);
           setLoading(false);
           return;
         }
 
-        const map = generateStructure(tree);
+        const map = generateStructure(tree, filterOptions);
         setStructureMap(map);
         setValidation({ message: '', isError: false });
         localStorage.setItem('lastRepoUrl', effectiveUrl);
@@ -243,7 +275,48 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
         }
       }
     },
-    [repoUrl, repoType, validateUrl]
+    [repoUrl, repoType, validateUrl, maxDepth, excludePatternsInput, allowLargeRepo]
+  );
+
+  const handleValidateAndGenerate = useCallback(
+    async () => {
+      if (filteredTree.length === 0 && rawTree.length > 0) {
+        const excludePatterns = excludePatternsInput.split(',').map(p => p.trim()).filter(Boolean);
+        const filterOptions: FilterOptions = {
+          maxDepth,
+          excludePatterns
+        };
+        
+        const filtered = filterTreeEntries(rawTree, filterOptions);
+        setFilteredTree(filtered);
+        
+        const repoVal = validateRepositoryStructure(filtered);
+        setRepoValidation(repoVal);
+
+        const map = generateStructure(rawTree, filterOptions);
+        setStructureMap(map);
+        setValidation({ message: '', isError: false });
+
+        const { fileTypes, languages } = analyzeRepository(map);
+        setFileTypeData(fileTypes);
+        setLanguageData(languages);
+        setShowValidationDialog(false);
+
+        setTimeout(() => outputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
+      } else if (filteredTree.length > 0) {
+        const map = generateStructure(rawTree, {
+          maxDepth,
+          excludePatterns: excludePatternsInput.split(',').map(p => p.trim()).filter(Boolean)
+        });
+        setStructureMap(map);
+        setShowValidationDialog(false);
+        
+        const { fileTypes, languages } = analyzeRepository(map);
+        setFileTypeData(fileTypes);
+        setLanguageData(languages);
+      }
+    },
+    [filteredTree, rawTree, maxDepth, excludePatternsInput]
   );
 
   const handleRepoSelect = useCallback(
@@ -253,9 +326,12 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
       const parts = url.replace(/\/$/, '').split('/');
       setSelectedRepoName(parts[parts.length - 1]);
       setStructureMap(new Map());
+      setRawTree([]);
+      setFilteredTree([]);
       setValidation({ message: '', isError: false });
       setRepoValidation(null);
       setSearchTerm('');
+      setAllowLargeRepo(false);
       handleFetchStructure(url, false);
     },
     [handleFetchStructure]
@@ -305,6 +381,7 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
     setRepoValidation(null);
     setValidation({ message: '', isError: false });
     setShowStarNote(false);
+    setAllowLargeRepo(false);
     inputRef.current?.focus();
   }, []);
 
@@ -344,6 +421,10 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
   }, []);
 
   const handleExportImage = useCallback(async (format: 'png' | 'svg', repoUrl?: string) => {
+    if (format === 'png' && repoValidation && (repoValidation.totalEntries > PERFORMANCE_THRESHOLDS.LARGE_REPO_ENTRIES || repoValidation.estimatedSize > GITHUB_LIMITS.MAX_SIZE_BYTES)) {
+      return;
+    }
+
     const sanitizeRepoName = (name: string | null): string => {
       if (!name) return 'repository';
       return name.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
@@ -470,7 +551,7 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
     }
 
     setShowExportImageMenu(false);
-  }, [treeString, selectedRepoName]);
+  }, [treeString, selectedRepoName, repoValidation]);
 
   const isEmpty = structureMap.size === 0;
   const hasOutput = !isEmpty || loading || sourceTab === 'url';
@@ -491,6 +572,8 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
     repoValidation,
     showValidationDialog,
     setShowValidationDialog,
+    allowLargeRepo,
+    setAllowLargeRepo,
     copied,
     expanded,
     setExpanded,
@@ -515,9 +598,19 @@ export function useRepoTreeGeneratorState(isAuthenticated: boolean): RepoTreeGen
     filteredMap,
     treeString,
     entryCounts: structureMap.size > 0 ? countEntries(structureMap) : { folders: 0, files: 0 },
+    isLargeExport: repoValidation !== null && (repoValidation.totalEntries > PERFORMANCE_THRESHOLDS.LARGE_REPO_ENTRIES || repoValidation.estimatedSize > GITHUB_LIMITS.MAX_SIZE_BYTES),
+    rawTree,
+    filteredTree,
+    maxDepth,
+    setMaxDepth,
+    excludePatterns: excludePatternsInput.split(',').map(p => p.trim()).filter(Boolean),
+    setExcludePatterns: (patterns: string[]) => setExcludePatternsInput(patterns.join(', ')),
+    excludePatternsInput,
+    setExcludePatternsInput,
     validateUrl,
     handleUrlChange,
     handleFetchStructure,
+    handleValidateAndGenerate,
     handleRepoSelect,
     copyToClipboard,
     handleClearInput,

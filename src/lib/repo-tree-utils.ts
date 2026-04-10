@@ -49,26 +49,30 @@ export const validateRepositoryStructure = (tree: TreeItem[]): RepoValidationRes
   if (result.estimatedSize > GITHUB_LIMITS.MAX_SIZE_BYTES) {
     result.isValid = false;
     result.errors.push(
-      `Repository exceeds the ${GITHUB_LIMITS.MAX_SIZE_MB}MB size limit. Estimated: ${(result.estimatedSize / (1024 * 1024)).toFixed(1)}MB.`
+      `This repository exceeds GitHub's recommended API limits (${GITHUB_LIMITS.MAX_SIZE_MB}MB). Processing may fail or be incomplete.`
     );
   }
 
-  if (result.totalEntries > PERFORMANCE_THRESHOLDS.MAX_RECOMMENDED_ENTRIES) {
-    result.warnings.push(
-      `Large repository (${result.totalEntries.toLocaleString()} entries). Performance may be affected.`
-    );
-  } else if (result.totalEntries > PERFORMANCE_THRESHOLDS.LARGE_REPO_ENTRIES) {
-    result.warnings.push(
-      `Medium-sized repository (${result.totalEntries.toLocaleString()} entries). Processing may take a moment.`
-    );
+  if (result.errors.length === 0) {
+    if (result.totalEntries > PERFORMANCE_THRESHOLDS.MAX_RECOMMENDED_ENTRIES) {
+      result.warnings.push(
+        `Large repository (${result.totalEntries.toLocaleString()} entries). Performance may be affected.`
+      );
+    } else if (result.totalEntries > PERFORMANCE_THRESHOLDS.LARGE_REPO_ENTRIES) {
+      result.warnings.push(
+        `Medium-sized repository (${result.totalEntries.toLocaleString()} entries). Processing may take a moment.`
+      );
+    }
   }
 
   return result;
 };
 
-export const generateStructure = (tree: TreeItem[]): DirectoryMap => {
+export const generateStructure = (tree: TreeItem[], options?: FilterOptions): DirectoryMap => {
+  const filteredTree = options ? filterTreeEntries(tree, options) : tree;
+  
   const structureMap: DirectoryMap = new Map();
-  const sortedTree = [...tree].sort((a, b) => a.path.localeCompare(b.path));
+  const sortedTree = [...filteredTree].sort((a, b) => a.path.localeCompare(b.path));
 
   for (const item of sortedTree) {
     const parts = item.path.split('/');
@@ -309,6 +313,88 @@ export const countEntries = (map: DirectoryMap): EntryCounts => {
     traverse(value);
   }
   return { folders, files };
+};
+
+export interface FilterOptions {
+  maxDepth: number | null;
+  excludePatterns: string[];
+}
+
+export const getPathDepth = (path: string): number => {
+  return path.split('/').filter(Boolean).length;
+};
+
+const globToRegex = (pattern: string): RegExp => {
+  const escaped = pattern
+    .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+    .replace(/\*/g, '.*')
+    .replace(/\?/g, '.');
+  return new RegExp(`^${escaped}$`, 'i');
+};
+
+export const matchesExclude = (path: string, patterns: string[]): boolean => {
+  if (patterns.length === 0) return false;
+
+  const segments = path.split('/');
+  const pathParts = segments.filter(Boolean);
+  const fileName = pathParts[pathParts.length - 1] || '';
+
+  for (const pattern of patterns) {
+    if (!pattern.trim()) continue;
+
+    const trimmedPattern = pattern.trim();
+    const regex = globToRegex(trimmedPattern);
+
+    if (regex.test(fileName)) return true;
+
+    if (regex.test(segments[0] || '')) return true;
+
+    for (const segment of pathParts) {
+      if (regex.test(segment)) return true;
+    }
+  }
+
+  return false;
+};
+
+export const filterTreeEntries = (
+  tree: TreeItem[],
+  options: FilterOptions
+): TreeItem[] => {
+  const { maxDepth, excludePatterns } = options;
+
+  if (!maxDepth && (!excludePatterns || excludePatterns.length === 0)) {
+    return tree;
+  }
+
+  const excludedDirs = new Set<string>();
+
+  if (excludePatterns.length > 0) {
+    for (const item of tree) {
+      if (item.type === 'tree' && matchesExclude(item.path, excludePatterns)) {
+        excludedDirs.add(item.path);
+      }
+    }
+  }
+
+  return tree.filter((item) => {
+    if (excludePatterns.length > 0) {
+      if (excludedDirs.has(item.path)) {
+        return false;
+      }
+      for (const excludedDir of excludedDirs) {
+        if (item.path.startsWith(excludedDir + '/')) {
+          return false;
+        }
+      }
+    }
+
+    if (maxDepth !== null && getPathDepth(item.path) > maxDepth) {
+      return false;
+    }
+
+    return true;
+  });
 };
 
 const getLanguageFromExtension = (ext: string): string => {
