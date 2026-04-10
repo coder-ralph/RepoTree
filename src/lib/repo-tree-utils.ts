@@ -379,6 +379,9 @@ export const filterTreeEntries = (
 
   return tree.filter((item) => {
     if (excludePatterns.length > 0) {
+      if (matchesExclude(item.path, excludePatterns)) {
+        return false;
+      }
       if (excludedDirs.has(item.path)) {
         return false;
       }
