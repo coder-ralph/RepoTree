@@ -225,7 +225,7 @@ export default function OutputViewer({
                   })}
                   {isLargeExport && (
                     <div className="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700">
-                      PNG is disabled for large repositories due to browser limitations. Use SVG instead.
+                      PNG disabled for large repos. Use SVG.
                     </div>
                   )}
                 </div>
