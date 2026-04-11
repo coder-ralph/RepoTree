@@ -21,7 +21,7 @@ export default function PrivacyPolicy() {
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-1 tracking-tight">
             Privacy Policy
           </h1>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-8">
+          <p className="text-xs text-gray-500 dark:text-gray-500 mb-8">
             Last updated: March 23, 2026
           </p>
 
@@ -98,7 +98,7 @@ export default function PrivacyPolicy() {
                   href="https://github.com/coder-ralph/RepoTree/issues"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
+                  className="text-blue-600 underline hover:no-underline"
                 >
                   GitHub
                 </a>.
@@ -107,7 +107,7 @@ export default function PrivacyPolicy() {
 
             <p className="text-xs">
               See also:{' '}
-              <a href="/legal/cookie-policy" className="text-blue-600 hover:underline">
+              <a href="/legal/cookie-policy" className="text-blue-600 underline hover:no-underline">
                 Cookie Policy
               </a>
             </p>

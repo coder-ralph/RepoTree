@@ -33,7 +33,7 @@ const steps = [
   {
     icon: Download,
     title: 'Export or copy',
-    desc: 'Copy to clipboard or download as .md, .txt, .json, or .html — ready to paste into your README.',
+    desc: 'Copy to clipboard or export as .md, .txt, .json, .html, PNG, or SVG — ready for README files, documentation, and sharing.',
   },
 ];
 
@@ -145,12 +145,12 @@ export default function GuidePage() {
                   <tr>
                     <td className="px-4 py-2.5 text-gray-900 dark:text-white font-medium">GitHub</td>
                     <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400">60 req/hr</td>
-                    <td className="px-4 py-2.5 text-green-600 dark:text-green-400 font-medium">5,000 req/hr</td>
+                    <td className="px-4 py-2.5 text-green-700 dark:text-green-400 font-medium">5,000 req/hr</td>
                   </tr>
                   <tr>
                     <td className="px-4 py-2.5 text-gray-900 dark:text-white font-medium">GitLab</td>
                     <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400">Varies</td>
-                    <td className="px-4 py-2.5 text-green-600 dark:text-green-400 font-medium">Higher limits</td>
+                    <td className="px-4 py-2.5 text-green-700 dark:text-green-400 font-medium">Higher limits</td>
                   </tr>
                 </tbody>
               </table>

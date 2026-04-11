@@ -76,13 +76,16 @@ const MinimalistVideoPlayer = ({ src }: { src: string }) => {
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
     >
-      <video ref={videoRef} className="w-full h-auto" src={src} onClick={togglePlay} />
+      <video ref={videoRef} className="w-full h-auto" src={src} onClick={togglePlay}>
+        <track kind="captions" src="" label="English" default />
+      </video>
       <div
         className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}
       >
         <div className="absolute inset-0 flex items-center justify-center">
           <button
             onClick={togglePlay}
+            aria-label={isPlaying ? 'Pause video' : 'Play video'}
             className="bg-black/50 hover:bg-black/70 text-white p-4 rounded-full transition-all"
           >
             {isPlaying ? <Pause size={24} /> : <Play size={24} className="ml-0.5" />}
@@ -97,17 +100,17 @@ const MinimalistVideoPlayer = ({ src }: { src: string }) => {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <button onClick={togglePlay} className="text-white hover:text-blue-400 transition-colors">
+              <button onClick={togglePlay} aria-label={isPlaying ? 'Pause video' : 'Play video'} className="text-white hover:text-blue-400 transition-colors">
                 {isPlaying ? <Pause size={16} /> : <Play size={16} />}
               </button>
-              <button onClick={toggleMute} className="text-white hover:text-blue-400 transition-colors">
+              <button onClick={toggleMute} aria-label={isMuted ? 'Unmute video' : 'Mute video'} className="text-white hover:text-blue-400 transition-colors">
                 {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
               </button>
               <span className="text-white text-xs font-mono">
                 {formatTime(currentTime)} / {formatTime(duration)}
               </span>
             </div>
-            <button onClick={toggleFullscreen} className="text-white hover:text-blue-400 transition-colors">
+            <button onClick={toggleFullscreen} aria-label="Enter fullscreen" className="text-white hover:text-blue-400 transition-colors">
               <Maximize size={16} />
             </button>
           </div>
@@ -181,6 +184,17 @@ export default function DocsPage() {
                       <li><strong className="text-gray-800 dark:text-gray-300">Descriptions</strong> — auto-generated file/folder descriptions</li>
                       <li><strong className="text-gray-800 dark:text-gray-300">Root folder name</strong> — show or hide the repository name</li>
                       <li><strong className="text-gray-800 dark:text-gray-300">Trailing slashes</strong> — append / to directories</li>
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="filtering">
+                  <AccordionTrigger className="text-sm">Filtering & performance</AccordionTrigger>
+                  <AccordionContent>
+                    <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2 leading-relaxed">
+                      <li><strong className="text-gray-800 dark:text-gray-300">Max depth</strong> — limit recursion depth from 1–10 or keep it unlimited</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Exclude items</strong> — skip folders and files like node_modules, dist, or *.log before generation</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Pre-generation filtering</strong> — apply filters before building ASCII, interactive, and analysis views</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Large repository handling</strong> — improved validation and safer exports for big repositories</li>
                     </ul>
                   </AccordionContent>
                 </AccordionItem>

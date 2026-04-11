@@ -21,7 +21,7 @@ export default function CookiePolicy() {
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-1 tracking-tight">
             Cookie Policy
           </h1>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-8">
+          <p className="text-xs text-gray-500 dark:text-gray-500 mb-8">
             Last updated: March 23, 2026
           </p>
 

@@ -37,10 +37,10 @@ export default function OutputPlaceholder({
 
   return (
     <div className="bg-[#1d1f21] min-h-[220px] flex flex-col items-center justify-center gap-2 px-6">
-      <p className="text-sm text-gray-500 font-mono text-center">
+      <p className="text-sm text-gray-400 font-mono text-center">
         Enter a {provider === 'github' ? 'GitHub' : 'GitLab'} repository URL and click Generate
       </p>
-      <p className="text-xs text-gray-600 font-mono text-center">
+      <p className="text-xs text-gray-500 font-mono text-center">
         or browse your repositories above
       </p>
     </div>
