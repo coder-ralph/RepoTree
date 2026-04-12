@@ -64,6 +64,27 @@ const getFileIcon = (filename: string) => {
   }
 };
 
+const sortEntries = (
+  entries: [string, DirectoryMap | { type: 'file' }][],
+  sortOrder: TreeCustomizationOptions['sortOrder']
+): [string, DirectoryMap | { type: 'file' }][] => {
+  return [...entries].sort(([keyA, valueA], [keyB, valueB]) => {
+    const isDirA = valueA instanceof Map;
+    const isDirB = valueB instanceof Map;
+
+    if (sortOrder === 'default') {
+      if (isDirA !== isDirB) return isDirA ? -1 : 1;
+      return keyA.localeCompare(keyB);
+    }
+
+    if (sortOrder === 'name-asc') {
+      return keyA.localeCompare(keyB);
+    }
+
+    return keyB.localeCompare(keyA);
+  });
+};
+
 interface TreeNodeProps {
   name: string;
   content: DirectoryMap | { type: 'file' };
@@ -74,6 +95,7 @@ interface TreeNodeProps {
 const TreeNode: React.FC<TreeNodeProps> = ({ name, content, depth, customizationOptions }) => {
   const [isExpanded, setIsExpanded] = useState(depth < 2);
   const isFolder = content instanceof Map;
+  const sortOrder = customizationOptions.sortOrder ?? 'default';
 
   const getIndentClass = () => `tree-node-depth-${Math.min(depth, 8)}`;
 
@@ -101,13 +123,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ name, content, depth, customization
         </div>
 
         <div style={{ height: isExpanded ? 'auto' : 0, overflow: 'hidden' }}>
-          {isExpanded && Array.from(content.entries())
-            .sort(([a, va], [b, vb]) => {
-              const aDir = va instanceof Map;
-              const bDir = vb instanceof Map;
-              if (aDir !== bDir) return aDir ? -1 : 1;
-              return a.localeCompare(b);
-            })
+          {isExpanded && sortEntries(Array.from(content.entries()), sortOrder)
             .map(([childName, childContent]) => (
               <TreeNode
                 key={childName}
@@ -149,15 +165,11 @@ const InteractiveTreeView: React.FC<Props> = ({ structure, customizationOptions 
     );
   }
 
+  const sortOrder = customizationOptions.sortOrder ?? 'default';
+
   return (
     <div className="tree-container">
-      {Array.from(structure.entries())
-        .sort(([a, va], [b, vb]) => {
-          const aDir = va instanceof Map;
-          const bDir = vb instanceof Map;
-          if (aDir !== bDir) return aDir ? -1 : 1;
-          return a.localeCompare(b);
-        })
+      {sortEntries(Array.from(structure.entries()), sortOrder)
         .map(([name, content]) => (
           <TreeNode
             key={name}

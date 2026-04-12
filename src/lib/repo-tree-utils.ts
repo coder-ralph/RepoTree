@@ -225,8 +225,17 @@ export const buildStructureString = (
   const sorted = [...entries].sort(([keyA, valueA], [keyB, valueB]) => {
     const isDirA = valueA instanceof Map;
     const isDirB = valueB instanceof Map;
-    if (isDirA !== isDirB) return isDirA ? -1 : 1;
-    return keyA.localeCompare(keyB);
+    
+    if (customizationOptions.sortOrder === 'default') {
+      if (isDirA !== isDirB) return isDirA ? -1 : 1;
+      return keyA.localeCompare(keyB);
+    }
+    
+    if (customizationOptions.sortOrder === 'name-asc') {
+      return keyA.localeCompare(keyB);
+    }
+    
+    return keyB.localeCompare(keyA);
   });
 
   for (let i = 0; i < sorted.length; i++) {
@@ -318,6 +327,10 @@ export const countEntries = (map: DirectoryMap): EntryCounts => {
 export interface FilterOptions {
   maxDepth: number | null;
   excludePatterns: string[];
+  includePatterns: string[];
+  focusPath: string | null;
+  hideHiddenFiles: boolean;
+  sortOrder: 'default' | 'name-asc' | 'name-desc';
 }
 
 export const getPathDepth = (path: string): number => {
@@ -332,7 +345,7 @@ const globToRegex = (pattern: string): RegExp => {
   return new RegExp(`^${escaped}$`, 'i');
 };
 
-export const matchesExclude = (path: string, patterns: string[]): boolean => {
+export const matchesPattern = (path: string, patterns: string[]): boolean => {
   if (patterns.length === 0) return false;
 
   const segments = path.split('/');
@@ -357,19 +370,45 @@ export const matchesExclude = (path: string, patterns: string[]): boolean => {
   return false;
 };
 
+export const matchesInclude = (path: string, patterns: string[]): boolean => {
+  if (patterns.length === 0) return true;
+  return matchesPattern(path, patterns);
+};
+
+export const matchesExclude = (path: string, patterns: string[]): boolean => {
+  if (patterns.length === 0) return false;
+  return matchesPattern(path, patterns);
+};
+
+const isHiddenEntry = (path: string): boolean => {
+  const segments = path.split('/').filter(Boolean);
+  return segments.some((seg) => seg.startsWith('.'));
+};
+
 export const filterTreeEntries = (
   tree: TreeItem[],
   options: FilterOptions
 ): TreeItem[] => {
-  const { maxDepth, excludePatterns } = options;
+  const { maxDepth, excludePatterns, includePatterns, focusPath, hideHiddenFiles } = options;
 
-  if (maxDepth === null && (!excludePatterns || excludePatterns.length === 0)) {
+  const hasFilters =
+    maxDepth !== null ||
+    (excludePatterns && excludePatterns.length > 0) ||
+    (includePatterns && includePatterns.length > 0) ||
+    focusPath !== null ||
+    hideHiddenFiles;
+
+  if (!hasFilters) {
     return tree;
   }
 
-  const excludedDirs = new Set<string>();
+  const focusPathParts = focusPath ? focusPath.split('/').filter(Boolean) : null;
+  const focusPathDepth = focusPath ? focusPathParts!.length : 0;
 
-  if (excludePatterns.length > 0) {
+  const excludedDirs = new Set<string>();
+  const includedDirs = new Set<string>();
+
+  if (excludePatterns && excludePatterns.length > 0) {
     for (const item of tree) {
       if (item.type === 'tree' && matchesExclude(item.path, excludePatterns)) {
         excludedDirs.add(item.path);
@@ -377,8 +416,37 @@ export const filterTreeEntries = (
     }
   }
 
+  if (includePatterns && includePatterns.length > 0) {
+    for (const item of tree) {
+      if (matchesInclude(item.path, includePatterns)) {
+        const parts = item.path.split('/').filter(Boolean);
+        for (let i = 1; i <= parts.length; i++) {
+          includedDirs.add(parts.slice(0, i).join('/'));
+        }
+      }
+    }
+  }
+
   return tree.filter((item) => {
-    if (excludePatterns.length > 0) {
+    if (focusPath !== null) {
+      const itemParts = item.path.split('/').filter(Boolean);
+      if (focusPathParts) {
+        const match = focusPathParts.every((part, i) => itemParts[i] === part);
+        if (!match && item.path !== focusPath) {
+          return false;
+        }
+      }
+    }
+
+    if (includePatterns && includePatterns.length > 0) {
+      if (!matchesInclude(item.path, includePatterns)) {
+        if (!includedDirs.has(item.path)) {
+          return false;
+        }
+      }
+    }
+
+    if (excludePatterns && excludePatterns.length > 0) {
       if (matchesExclude(item.path, excludePatterns)) {
         return false;
       }
@@ -392,11 +460,38 @@ export const filterTreeEntries = (
       }
     }
 
-    if (maxDepth !== null && getPathDepth(item.path) > maxDepth) {
+    if (hideHiddenFiles && isHiddenEntry(item.path)) {
       return false;
     }
 
+    if (maxDepth !== null) {
+      const itemDepth = focusPath !== null
+        ? item.path.split('/').filter(Boolean).length - focusPathDepth
+        : getPathDepth(item.path);
+      if (itemDepth > maxDepth) {
+        return false;
+      }
+    }
+
     return true;
+  });
+};
+
+export const sortTreeEntries = (
+  items: TreeItem[],
+  sortOrder: 'default' | 'name-asc' | 'name-desc'
+): TreeItem[] => {
+  return [...items].sort((a, b) => {
+    if (sortOrder === 'default') {
+      const aIsDir = a.type === 'tree';
+      const bIsDir = b.type === 'tree';
+      if (aIsDir !== bIsDir) return aIsDir ? -1 : 1;
+      return a.path.localeCompare(b.path);
+    }
+    if (sortOrder === 'name-asc') {
+      return a.path.localeCompare(b.path);
+    }
+    return b.path.localeCompare(a.path);
   });
 };
 
