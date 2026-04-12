@@ -58,7 +58,7 @@ const features = [
   {
     icon: Zap,
     title: 'Customizable output',
-    desc: 'Icons, line numbers, descriptions, trailing slashes — your choice.',
+    desc: 'Icons, line numbers, descriptions, trailing slashes, sort order, hide hidden files, include patterns, focus path — your choice.',
   },
 ];
 
