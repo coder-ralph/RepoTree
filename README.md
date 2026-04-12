@@ -43,7 +43,7 @@ A web tool that visualizes GitHub and GitLab repositories with clean ASCII trees
 - **Multiple export formats** — download as .md, .txt, .json, or .html
 - **Export as image** — download and share your tree as PNG or SVG
 - **Real-time search** — filter files and folders as you type
-- **Customizable output** — icons, line numbers, descriptions, trailing slashes
+- **Customizable output** — icons, line numbers, descriptions, trailing slashes, sort order, hide hidden files, include patterns, focus path
 - **Dark & light themes** — automatic system preference detection
 - **OAuth authentication** — secure GitHub and GitLab sign-in for private repo access
 

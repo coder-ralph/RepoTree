@@ -184,6 +184,10 @@ export default function DocsPage() {
                       <li><strong className="text-gray-800 dark:text-gray-300">Descriptions</strong> — auto-generated file/folder descriptions</li>
                       <li><strong className="text-gray-800 dark:text-gray-300">Root folder name</strong> — show or hide the repository name</li>
                       <li><strong className="text-gray-800 dark:text-gray-300">Trailing slashes</strong> — append / to directories</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Sort order</strong> — organize files and folders by directories first, A–Z, or Z–A</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Hide hidden files</strong> — hide dotfiles and dot-directories like .env, .gitignore, or .github</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Include patterns</strong> — show only matching files or folders such as src, *.ts, or components/*</li>
+                      <li><strong className="text-gray-800 dark:text-gray-300">Focus path</strong> — generate only a specific subdirectory or subtree such as src/ or packages/ui</li>
                     </ul>
                   </AccordionContent>
                 </AccordionItem>
