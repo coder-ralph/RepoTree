@@ -45,10 +45,14 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-syntax-highlighter": "^15.5.13",
-    "eslint": "^8",
-    "eslint-config-next": "^15.0.3",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^15.0.7",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "overrides": {
+    "glob": "^10.0.0",
+    "rimraf": "^5.0.0"
   }
 }
