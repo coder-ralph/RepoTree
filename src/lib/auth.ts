@@ -7,6 +7,7 @@ export const authOptions: NextAuthOptions = {
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      issuer: 'https://github.com/login/oauth',
       authorization: {
         params: {
           scope: 'read:user repo',
@@ -16,6 +17,7 @@ export const authOptions: NextAuthOptions = {
     GitlabProvider({
       clientId: process.env.GITLAB_CLIENT_ID!,
       clientSecret: process.env.GITLAB_CLIENT_SECRET!,
+      issuer: 'https://gitlab.com',
       authorization: {
         params: {
           scope: 'read_user read_repository api',
